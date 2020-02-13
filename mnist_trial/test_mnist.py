@@ -4,7 +4,7 @@
 import torch
 from mnist_trial.train_mnist import Net
 from torchvision import datasets, transforms
-
+import numpy as np
 
 def main():
     model = Net()
@@ -30,7 +30,10 @@ def main():
         data, target = data.to(device), target.to(device)
         print('data = {}'.format(data))
         output = model(data)
+        print('target = {}'.format(target))
         print('output = {}'.format(output))
+        pred = output.argmax(dim=1, keepdim=True)
+        print('pred = {}'.format(pred))
         break
 
     print('Done in main-eval')
