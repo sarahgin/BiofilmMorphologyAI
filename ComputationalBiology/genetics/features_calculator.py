@@ -1,4 +1,4 @@
-from BiofilmMorphologyAI.ComputationalBiology.biologyutils.GenomeSequence import GenomeSequence
+from BiofilmMorphologyAI.ComputationalBiology.biologyutils.WholeGenomeSequence import SpeciesGenomeSequence
 from BiofilmMorphologyAI.ComputationalBiology.biologyutils.protein_utils import get_hydrophobic_amino_acids
 
 # TODO: make a class of features calculator?
@@ -9,6 +9,7 @@ from BiofilmMorphologyAI.ComputationalBiology.biologyutils.protein_utils import 
 #
 # def get_single_feature(sequence_obj, feature):
 #     pass
+
 
 def get_tuple_features(single_tuple, genome):
     """
@@ -21,7 +22,7 @@ def get_tuple_features(single_tuple, genome):
     end_s = single_tuple.gene.location.end.position
     strand = single_tuple.gene.location.strand
 
-    gene_sequence = genome.get_reference_seq(start_s, end_s, strand)  # string
+    gene_sequence = genome.get_sub_sequence(start_s, end_s, strand)  # string
     print(gene_sequence)
     # prot_sequence = t.gene_product
 

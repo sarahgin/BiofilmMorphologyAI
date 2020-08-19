@@ -11,4 +11,4 @@ def get_hydrophobic_amino_acids():
     Methionine (M)
     Tryptophan (W)
     """
-    return ['G', 'A', 'V', 'L', 'I', 'P', 'F','M', 'W']
+    return ['G', 'A', 'V', 'L', 'I', 'P', 'F', 'M', 'W']

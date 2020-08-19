@@ -1,6 +1,6 @@
 import os
 
-from BiofilmMorphologyAI.ComputationalBiology.biologyutils.GenomeSequence import GenomeSequence
+from BiofilmMorphologyAI.ComputationalBiology.biologyutils.WholeGenomeSequence import SpeciesGenomeSequence
 from BiofilmMorphologyAI.ComputationalBiology.fileutils.gene_bank_parser import \
     filter_tuples, genbank_to_tuples, read_genbank_file
 from BiofilmMorphologyAI.ComputationalBiology.genetics.features_calculator import get_tuple_features
@@ -16,7 +16,7 @@ if __name__ == '__main__':
     lst_CDS = filter_tuples(lst, product_type='CDS')
 
     # TODO: handle minus strand
-    genome = GenomeSequence(record_gb.seq)
+    genome = SpeciesGenomeSequence(record_gb.seq)
     # # 1st gene
     # start1 = lst_CDS[0].gene.location.start.position
     # end1 = lst_CDS[0].gene.location.end.position
@@ -54,7 +54,7 @@ if __name__ == '__main__':
         #     print()
 
     # for a single gene+protein:
-    dict_features = get_tuple_features(lst_CDS[0], GenomeSequence(record_gb.seq))
+    dict_features = get_tuple_features(lst_CDS[0], SpeciesGenomeSequence(record_gb.seq))
     # compute GC content for 1st gene
     print(dict_features)
 

@@ -9,6 +9,8 @@ import collections
 # defining a new type
 from Cython import typedef
 
+from BiofilmMorphologyAI.ComputationalBiology.genetics.Gene import Gene
+
 genbank_item_tuple = collections.namedtuple('genbank_feature', ['gene', 'gene_product'])
 
 
@@ -42,6 +44,19 @@ def compare_genomic_position(seq_pos1, seq_pos2):
     return (seq_pos1.strand == seq_pos1.strand and
             seq_pos1.location.start == seq_pos2.location.start and
             seq_pos1.location.end == seq_pos2.location.end)
+
+
+def genebank_to_species(gene_bank_file):
+    record_gb = read_genbank_file(gene_bank_file) # get 1st record
+
+    dict_all_genes = {}
+    features = record_gb.features
+    assert(features[0].type == 'source')  # TODO: add check instead of assertion
+    for i in range(1, len(features)):
+        if features[i].type == 'gene':
+            # get gene id
+            # dict_all_genes[gene_id] = Gene()
+            Gene(start=0, end=99, strand=1, sequence='', gene_product=None, name="", id="")
 
 
 def genbank_to_tuples(record_gb):
