@@ -1,7 +1,7 @@
 # TODO: make this a class with a genome and function to fetch subsequence from the genome sequence
 class WholeGenomeSequence:
 
-    def __init__(self, genome_sequence: str, species_name='', species_id=''):
+    def __init__(self, genome_sequence: str):
         self.genome_sequence = genome_sequence
         # self.species_name = species_name
         # self.species_id = species_id

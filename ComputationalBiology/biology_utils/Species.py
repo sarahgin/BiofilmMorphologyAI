@@ -4,13 +4,12 @@ from ComputationalBiology.biology_utils import Gene
 
 class Species:
 
-    def __init__(self, species_name: str,  species_id: str, all_genes: dict, genome_seq: str):
-        self.species_name = species_name
-        self.species_id = species_id
-        self.genome_sequence = WholeGenomeSequence(genome_seq)
-
-        # Collection of genes: dictionary of string-unique id(key)-->Gene(value)
+    def __init__(self, name: str,  description: str, all_genes: dict, sequence: str):
+        self.name = name
+        self.description = description
         self.all_genes = all_genes
+        self.sequence = sequence
+        self.genome_sequence = WholeGenomeSequence(sequence)
 
     def get_gene(self, gene_id: str) -> Gene:
         # TODO: handle if not exists

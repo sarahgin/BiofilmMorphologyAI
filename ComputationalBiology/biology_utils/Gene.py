@@ -5,27 +5,26 @@ class Gene:
     """
     Genomic Sequence on the DNA.
     Attributes:
-        DNA sequence (substring of the genome): String (or Seq of biopython)
         Start position
         End position
-        Strand # TODO: DNA sequence is different for the minus strand - maybe reverse complement
-        Gene Name
-        Gene ID
-        GeneProduct: represents the gene product (if regulatory: this is None)
+        Strand
+        Type - gene or regulatory
+        GeneProduct: represents the gene product
     """
-    def __init__(self, start: int, end: int, strand, name: str, locus_tag: str): #, sequence, gene_product):
+    def __init__(self, start: int, end: int, strand, type: str, qualifiers, gp = None):
+
         self.start = start
         self.end = end
         self.strand = strand
-        self.locus_tag = locus_tag  # assuming this is unique
-        self.name = name
-        self.type = type  # TODO: type is enum: one of: 'CDS','rRNA','tRNA','ncRNA','tmRNA', 'regulatory'
-        self.id = '{}_{}_{}'.format(start, end, strand)
-        #
-        # self.gene_product = gene_product  # if type is
-        # self.sequence = sequence  #
-        # self.gene_features_dict = {}
-        # self.protein_features_dict = {}
+        self.type = type
+        self.id = self.create_id()
+
+        #raw data
+        self.qualifiers = qualifiers
+        self.gene_product = gp
+
+    def create_id(self):
+        return '{}_{}_{}'.format(self.start, self.end, self.strand)
 
     def get_id(self) -> str:
         return self.id
