@@ -7,9 +7,8 @@ from Bio import SeqIO
 import collections
 
 # defining a new type
-from Cython import typedef
 
-from BiofilmMorphologyAI.ComputationalBiology.genetics.Gene import Gene
+from ComputationalBiology.biology_utils.Gene import Gene
 
 genbank_item_tuple = collections.namedtuple('genbank_feature', ['gene', 'gene_product'])
 

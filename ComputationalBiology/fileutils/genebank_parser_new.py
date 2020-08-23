@@ -4,7 +4,7 @@
 import os
 from Bio import SeqIO
 
-from BiofilmMorphologyAI.ComputationalBiology.biologyutils.Species import Species
+from ComputationalBiology.biology_utils.Species import Species
 
 
 def read_genbank_file(gene_bank_file: str):

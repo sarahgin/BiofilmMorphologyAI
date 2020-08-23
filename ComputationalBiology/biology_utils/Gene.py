@@ -1,4 +1,4 @@
-from BiofilmMorphologyAI.ComputationalBiology.data_analysis.gene_features_calculator import calculate_feature
+from ComputationalBiology.data_analysis.gene_features_calculator import calculate_feature
 
 
 class Gene:

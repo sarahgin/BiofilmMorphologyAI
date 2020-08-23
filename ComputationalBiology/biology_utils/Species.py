@@ -1,5 +1,5 @@
-from BiofilmMorphologyAI.ComputationalBiology.biologyutils.WholeGenomeSequence import WholeGenomeSequence
-from BiofilmMorphologyAI.ComputationalBiology.genetics import Gene
+from ComputationalBiology.biology_utils.WholeGenomeSequence import WholeGenomeSequence
+from ComputationalBiology.biology_utils import Gene
 
 
 class Species:
