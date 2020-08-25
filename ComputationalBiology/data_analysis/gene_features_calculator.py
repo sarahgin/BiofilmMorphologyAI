@@ -1,29 +1,31 @@
-#  Compute different feature for a Gene object
+import re
 
-def calculate_feature(feature_name, seq):
-    if feature_name == 'gc_content':
-        return compute_gc_content(seq)
-    else:
-        return None #  ivnalid feature name
 
-def compute_gc_content(seq):
+def compute_gc_content(dna_sequence):
     """
-    Given a genomic sequence (String or Seq), compute GC content.
-    Return #of G+C, #of total nucleotides
-    input: DNA sequence (str or Seq)
-    output:#GC, #GC/(#A+#T+#C+#G)
+    Given a genomic sequence (str), compute GC content.
+    input: DNA sequence (str)
+    output:%GC
     """
-    gene_len = len(seq)
-    counter_G = seq.count('G')
-    counter_C = seq.count('C')
-    counter_A = seq.count('A')
-    counter_T = seq.count('T')
-    print('counter_A:{}, counter_C:{}, counter_G:{}, counter_T: {}'.format(
-        counter_A, counter_C, counter_G, counter_T))
-    sum_nt = sum([counter_A, counter_C, counter_G, counter_T])
-    print('sum_nt:', sum_nt)
-    print('gene_len:', gene_len)
-    # assert (gene_len == sum_nt), 'genome_len: {}, sum_nt: {} '.format(gene_len, sum_nt)
-    # TODO: add  warning if needed, e.g. illegal nucleotide
-    return counter_C + counter_G,  (counter_C + counter_G) / len(seq)
+    matches = re.findall(r'[GC]', dna_sequence.upper())
+    return len(matches), len(matches) / len(dna_sequence) * 100
+
+
+def compute_melting_point(dna_sequence):
+    #Tm = 4(G + C) + 2(A + T)
+    gc_count, _ = compute_gc_content(dna_sequence)
+    return 4*gc_count + 2*(compute_length(dna_sequence) - gc_count)
+
+
+def compute_length(dna_sequence):
+    return len(dna_sequence)
+
+
+def is_valid_dna(dna_sequence):
+    matches = re.findall(r'[^ATGC]', dna_sequence.upper())
+    return len(matches) == 0
+
+
+if __name__ == '__main__':
+    print(is_valid_dna('ATAG'))
 

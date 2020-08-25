@@ -70,9 +70,8 @@ def init_species(record_gb):
 
     species_obj = Species(name=record_gb.name,
                           description=record_gb.description,
-                          all_genes = all_genes,
-                          sequence = record_gb.seq._data)
-    print('done')
+                          all_genes=all_genes,
+                          sequence=record_gb.seq._data)
     return species_obj
 
 
