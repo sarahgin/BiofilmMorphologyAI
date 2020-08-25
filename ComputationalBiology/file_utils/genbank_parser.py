@@ -54,11 +54,15 @@ def init_all_genes(features_list):
             translation = '' if not 'translation' in f.qualifiers.keys() else f.qualifiers['translation'][0]
             is_pseudo = 'pseudo' in f.qualifiers.keys()
 
+            start_codon_idx = -1 if not 'codon_start' in f.qualifiers.keys() else int(f.qualifiers['codon_start'][0])
+
             assert((f.type != 'CDS' or translation != '') or is_pseudo)
+            assert((f.type == 'CDS' and start_codon_idx != -1) or (f.type != 'CDS'))
 
             gp = GeneProduct(type = f.type,
                              translation=translation,
                              is_pseudo = is_pseudo,
+                             start_codon_idx=start_codon_idx,
                              qualifiers = f.qualifiers)
             all_genes[gene_key].gene_product = gp
     return all_genes

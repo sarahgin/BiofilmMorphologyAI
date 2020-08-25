@@ -1,6 +1,3 @@
-from ComputationalBiology.data_analysis.gene_features_calculator import calculate_feature
-
-
 class Gene:
     """
     Genomic Sequence on the DNA.
@@ -11,7 +8,7 @@ class Gene:
         Type - gene or regulatory
         GeneProduct: represents the gene product
     """
-    def __init__(self, start: int, end: int, strand, type: str, qualifiers, gp = None):
+    def __init__(self, start: int, end: int, strand, type: str, qualifiers, gp=None):
 
         self.start = start
         self.end = end
@@ -28,13 +25,6 @@ class Gene:
 
     def get_id(self) -> str:
         return self.id
-
-    def set_feature(self, feature_name):
-        self.gene_features_dict[feature_name] = calculate_feature(feature_name, self.sequence)
-
-    def set_all_features(self, feature_names):
-        for f in feature_names:
-            self.set_feature(f)
 
     def is_coding(self):
         return self.gene_product is None

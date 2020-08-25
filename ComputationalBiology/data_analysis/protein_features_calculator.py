@@ -20,5 +20,9 @@ def is_valid_protein(amino_acid_sequence):
 def compute_length(amino_acid_sequence):
     return len(amino_acid_sequence)
 
+
+def compute_all_features():
+    return 0
+
 if __name__ == '__main__':
     print(is_valid_protein('AQAX'))

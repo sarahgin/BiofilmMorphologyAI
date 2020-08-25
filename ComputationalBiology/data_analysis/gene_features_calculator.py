@@ -26,6 +26,15 @@ def is_valid_dna(dna_sequence):
     return len(matches) == 0
 
 
+#if not (gene_seq[0:3] == 'ATG' and gene_seq[-3:] in ['TAG', 'TGA', 'TAA']):
+#    print((len(gene_seq) - 3), len(protein_seq) * 3)
+#    print(lst_CDS[i])
+
+
+def compute_all_features():
+    return 0
+
+
 if __name__ == '__main__':
     print(is_valid_dna('ATAG'))
 
