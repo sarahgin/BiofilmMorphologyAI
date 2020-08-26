@@ -13,7 +13,7 @@ if __name__ == '__main__':
     # serialize the species
 
 
-    calculate_all_features_species(spp, gene_prod_types=['CDS'])
+    calculate_all_features_species(spp)
     print('done')
 
 
