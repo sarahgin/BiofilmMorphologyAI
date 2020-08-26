@@ -59,7 +59,7 @@ def calculate_all_features_gene(gene: Gene):
     name = gene.qualifiers['gene'][0] if 'gene' in gene.qualifiers else ''
     product_type = gene.gene_product.type if gene.gene_product is not None else ''
     features_dict = {'GENE_ID': gene.get_id(), 'GENE_NAME': name, 'TYPE': gene.type,
-                     'PRODUCT_TYPE': product_type}
+                     'PRODUCT_TYPE': product_type, 'STRAND': gene.strand}
     for gene_feature in GeneFeatures:
         key = gene_feature
         func = gene_features_map[key]
