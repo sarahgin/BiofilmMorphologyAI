@@ -26,9 +26,16 @@ if __name__ == '__main__':
 
     # Plot histogram of lengths:
     x = df_cds['LENGTH'].values
-    sns.distplot(x)
-    plt.show()
+    fig = sns.distplot(x)
+    plt.xlabel('LENGTH')
+    plt.ylabel('counts')
+    plt.title('Length histogram of CDS genes')
+    plt.show(fig)
 
+    # scatter plot:
+    # NOTE: I EXPECT A POSITIVE CORRELATION!
+    fig2 = sns.jointplot(x='MELTING_POINT', y='GC_CONTENT', data=df_cds)
+    plt.show(fig2)
     print('Done main_analysis')
 
 
