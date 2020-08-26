@@ -1,5 +1,3 @@
-from ComputationalBiology.biology_utils.Gene import Gene
-
 
 class GeneProduct:
     def __init__(self, type, translation, is_pseudo, start_codon_idx, qualifiers):
