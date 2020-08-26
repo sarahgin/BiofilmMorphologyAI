@@ -46,7 +46,7 @@ def calculate_all_features_species(spp: Species):
         gene = spp.all_genes[gene_key]
         current_features_dict = calculate_all_features_gene(gene)
         df = df.append(current_features_dict, ignore_index=True)
-        break
+        # break
 
     print(df)
     return df
