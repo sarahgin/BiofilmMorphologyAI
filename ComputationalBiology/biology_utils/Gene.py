@@ -8,7 +8,7 @@ class Gene:
         Type - gene or regulatory
         GeneProduct: represents the gene product
     """
-    def __init__(self, start: int, end: int, strand, type: str, coding_sequence, qualifiers, gp=None):
+    def __init__(self, start: int, end: int, strand: int, type: str, coding_sequence: str, qualifiers, gp=None):
 
         self.start = start
         self.end = end
@@ -17,8 +17,7 @@ class Gene:
         self.coding_sequence = coding_sequence
         self.id = self.create_id()
 
-        #raw data
-        self.qualifiers = qualifiers
+        self.qualifiers = qualifiers  # raw data information
         self.gene_product = gp
 
     def create_id(self):

@@ -75,11 +75,11 @@ def init_all_genes(record_gb):
             assert((f.type != 'CDS' or translation != '') or is_pseudo)
             assert((f.type == 'CDS' and start_codon_idx != -1) or (f.type != 'CDS'))
 
-            gp = GeneProduct(type = f.type,
+            gp = GeneProduct(type=f.type,
                              translation=translation,
-                             is_pseudo = is_pseudo,
+                             is_pseudo=is_pseudo,
                              start_codon_idx=start_codon_idx,
-                             qualifiers = f.qualifiers)
+                             qualifiers=f.qualifiers)
             all_genes[gene_key].gene_product = gp
     return all_genes
 
@@ -91,7 +91,7 @@ def init_species(record_gb):
     species_obj = Species(name=record_gb.name,
                           description=record_gb.description,
                           all_genes=all_genes,
-                          sequence=record_gb.seq._data)
+                          sequence=str(record_gb.seq))
     return species_obj
 
 

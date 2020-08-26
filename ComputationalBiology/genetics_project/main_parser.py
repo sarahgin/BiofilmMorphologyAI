@@ -9,7 +9,11 @@ if __name__ == '__main__':
     assert(os.path.exists(genbank_file))  # making sure that the path is valid
     record_gb = genbank_parser.read_genbank_file(genbank_file)
     spp = genbank_parser.init_species(record_gb)
-    calculate_all_features_species(spp)
+    print('done sepcies')
+    # serialize the species
+
+
+    calculate_all_features_species(spp, gene_prod_types=['CDS'])
     print('done')
 
 

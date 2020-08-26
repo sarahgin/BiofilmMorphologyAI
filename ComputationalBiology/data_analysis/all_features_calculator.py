@@ -40,20 +40,28 @@ protein_features_map = {
 }
 
 
-def calculate_all_features_species(spp: Species):
+def calculate_all_features_species(spp: Species, gene_prod_types=[]):
+    # gene_type is a list containing the required type
+    # if it is an empty list it means that we should not filter out any type
     df = pd.DataFrame()
     for gene_key in spp.all_genes:
         gene = spp.all_genes[gene_key]
+        # if gene_prod_types != [] and gene.type == 'gene' and gene.gene_product.type not in gene_prod_types:
+        #     continue
+
         current_features_dict = calculate_all_features_gene(gene)
         df = df.append(current_features_dict, ignore_index=True)
-        # break
+        break
 
     print(df)
     return df
 
 
-def calculate_all_features_gene(gene : Gene):
-    features_dict = {}
+def calculate_all_features_gene(gene: Gene):
+    name = gene.qualifiers['gene'][0] if 'gene' in gene.qualifiers else ''
+    product_type = gene.gene_product.type if gene.gene_product is not None else ''
+    features_dict = {'GENE_ID': gene.get_id(), 'GENE_NAME': name, 'TYPE': gene.type,
+                     'PRODUCT_TYPE': product_type}
     for gene_feature in GeneFeatures:
         key = gene_feature
         func = gene_features_map[key]
