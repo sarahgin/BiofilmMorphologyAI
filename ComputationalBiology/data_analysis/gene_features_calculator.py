@@ -1,7 +1,7 @@
 import re
 
 
-def compute_gc_content(dna_sequence):
+def compute_gc_content(dna_sequence: str):
     """
     Given a genomic sequence (str), compute GC content.
     input: DNA sequence (str)
@@ -10,22 +10,22 @@ def compute_gc_content(dna_sequence):
     return compute_gc_count(dna_sequence) / len(dna_sequence) * 100
 
 
-def compute_gc_count(dna_sequence):
+def compute_gc_count(dna_sequence: str):
     matches = re.findall(r'[GC]', dna_sequence.upper())
     return len(matches)
 
 
-def compute_melting_point(dna_sequence):
+def compute_melting_point(dna_sequence: str):
     #Tm = 4(G + C) + 2(A + T)
     gc_count = compute_gc_count(dna_sequence)
     return 4*gc_count + 2*(compute_gene_length(dna_sequence) - gc_count)
 
 
-def compute_gene_length(dna_sequence):
+def compute_gene_length(dna_sequence: str):
     return len(dna_sequence)
 
 
-def is_valid_dna(dna_sequence):
+def is_valid_dna(dna_sequence: str):
     matches = re.findall(r'[^ATGC]', dna_sequence.upper())
     return len(matches) == 0
 

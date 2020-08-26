@@ -18,6 +18,7 @@ def read_genbank_file(gene_bank_file: str):
         record_gb = next(gen)  # content of 1st record
         return record_gb
 
+
 def get_coding_gene_seq(genome_sequence, start, end, strand):
 
     assert(0 <= start < len(genome_sequence))
@@ -50,27 +51,28 @@ def init_all_genes(record_gb):
         gene_key = str(start) + '_' + str(end) + '_' + str(strand)
 
         #ASSUMING EACH GENE AND PRODUCT HAVE THE SAME START+END+STRAND - TODO:check!
-        if not gene_key in all_genes.keys():
+        if gene_key not in all_genes.keys():
 
             if 'gene' in f.qualifiers.keys():
-                assert(len(f.qualifiers['gene'])  <= 1), 'ERROR_' + features_list[i].type +  '_' + features_list[i+1].type
+                assert(len(f.qualifiers['gene']) <= 1), 'ERROR_' + features_list[i].type + \
+                                                        '_' + features_list[i+1].type
 
-            if (f.type != 'gene' and f.type != 'regulatory'):
+            if f.type != 'gene' and f.type != 'regulatory':
                 print('NO previous gene found for: ' + gene_key)
                 continue
 
             g = Gene(start=start,
                      end=end,
                      strand=strand,
-                     type=f.type,
+                     gene_type=f.type,
                      qualifiers=f.qualifiers,
                      coding_sequence=coding_seq)
             all_genes[gene_key] = g
         else:
-            translation = '' if not 'translation' in f.qualifiers.keys() else f.qualifiers['translation'][0]
+            translation = '' if 'translation' not in f.qualifiers.keys() else f.qualifiers['translation'][0]
             is_pseudo = 'pseudo' in f.qualifiers.keys()
 
-            start_codon_idx = -1 if not 'codon_start' in f.qualifiers.keys() else int(f.qualifiers['codon_start'][0])
+            start_codon_idx = -1 if 'codon_start' not in f.qualifiers.keys() else int(f.qualifiers['codon_start'][0])
 
             assert((f.type != 'CDS' or translation != '') or is_pseudo)
             assert((f.type == 'CDS' and start_codon_idx != -1) or (f.type != 'CDS'))

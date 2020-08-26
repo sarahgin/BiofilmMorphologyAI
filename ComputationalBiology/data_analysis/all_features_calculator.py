@@ -12,6 +12,7 @@ class GeneFeatures(Enum):
     MELTING_POINT = 2
     LENGTH = 3
 
+
 class ProteinFeatures(Enum):
     HYDROPHOBIC_AA = 1
     HYDROPHILIC_AA = 2
@@ -21,6 +22,7 @@ class ProteinFeatures(Enum):
     NEGATIVE_AA = 6
     NONPOLAR_AA = 7
     LENGTH = 8
+
 
 gene_features_map = {
         GeneFeatures.GC_CONTENT: compute_gc_content,
@@ -49,13 +51,14 @@ def calculate_all_features_species(spp: Species):
 
         current_features_dict = calculate_all_features_gene(gene)
         df = df.append(current_features_dict, ignore_index=True)
-        break
+        # break
 
     print(df)
     return df
 
 
 def calculate_all_features_gene(gene: Gene):
+
     name = gene.qualifiers['gene'][0] if 'gene' in gene.qualifiers else ''
     product_type = gene.gene_product.type if gene.gene_product is not None else ''
     features_dict = {'GENE_ID': gene.get_id(), 'GENE_NAME': name, 'TYPE': gene.type,
