@@ -7,17 +7,21 @@ def compute_gc_content(dna_sequence):
     input: DNA sequence (str)
     output:%GC
     """
+    return compute_gc_count(dna_sequence) / len(dna_sequence) * 100
+
+
+def compute_gc_count(dna_sequence):
     matches = re.findall(r'[GC]', dna_sequence.upper())
-    return len(matches), len(matches) / len(dna_sequence) * 100
+    return len(matches)
 
 
 def compute_melting_point(dna_sequence):
     #Tm = 4(G + C) + 2(A + T)
-    gc_count, _ = compute_gc_content(dna_sequence)
-    return 4*gc_count + 2*(compute_length(dna_sequence) - gc_count)
+    gc_count = compute_gc_count(dna_sequence)
+    return 4*gc_count + 2*(compute_gene_length(dna_sequence) - gc_count)
 
 
-def compute_length(dna_sequence):
+def compute_gene_length(dna_sequence):
     return len(dna_sequence)
 
 

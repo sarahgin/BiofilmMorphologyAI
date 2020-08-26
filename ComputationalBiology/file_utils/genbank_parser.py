@@ -18,8 +18,22 @@ def read_genbank_file(gene_bank_file: str):
         record_gb = next(gen)  # content of 1st record
         return record_gb
 
+def get_coding_gene_seq(genome_sequence, start, end, strand):
 
-def init_all_genes(features_list):
+    assert(0 <= start < len(genome_sequence))
+    assert(0 <= end < len(genome_sequence))
+
+    seq = genome_sequence[start:end]
+    if strand == -1:
+        seq = seq.reverse_complement()
+
+    return str(seq)
+
+
+def init_all_genes(record_gb):
+    features_list = record_gb.features
+    genome_sequence = record_gb.seq
+
     all_genes = {}
     # for f in features_list:
     for i in range(len(features_list)) :
@@ -32,6 +46,7 @@ def init_all_genes(features_list):
         start = f.location.start
         end = f.location.end
         strand = f.location.strand
+        coding_seq = get_coding_gene_seq(genome_sequence, start, end, strand)
         gene_key = str(start) + '_' + str(end) + '_' + str(strand)
 
         #ASSUMING EACH GENE AND PRODUCT HAVE THE SAME START+END+STRAND - TODO:check!
@@ -47,8 +62,9 @@ def init_all_genes(features_list):
             g = Gene(start=start,
                      end=end,
                      strand=strand,
-                     type = f.type,
-                     qualifiers=f.qualifiers)
+                     type=f.type,
+                     qualifiers=f.qualifiers,
+                     coding_sequence=coding_seq)
             all_genes[gene_key] = g
         else:
             translation = '' if not 'translation' in f.qualifiers.keys() else f.qualifiers['translation'][0]
@@ -69,7 +85,7 @@ def init_all_genes(features_list):
 
 
 def init_species(record_gb):
-    all_genes = init_all_genes(record_gb.features)
+    all_genes = init_all_genes(record_gb)
     print(len(all_genes.keys()))
 
     species_obj = Species(name=record_gb.name,
