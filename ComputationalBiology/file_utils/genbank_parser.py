@@ -61,10 +61,13 @@ def init_all_genes(record_gb):
                 print('NO previous gene found for: ' + gene_key)
                 continue
 
+            name = f.qualifiers['gene'][0] if 'gene' in f.qualifiers else ''
+
             g = Gene(start=start,
                      end=end,
                      strand=strand,
                      gene_type=f.type,
+                     name=name,
                      qualifiers=f.qualifiers,
                      coding_sequence=coding_seq)
             all_genes[gene_key] = g
@@ -77,10 +80,12 @@ def init_all_genes(record_gb):
             assert((f.type != 'CDS' or translation != '') or is_pseudo)
             assert((f.type == 'CDS' and start_codon_idx != -1) or (f.type != 'CDS'))
 
+            description = f.qualifiers['product']
             gp = GeneProduct(type=f.type,
                              translation=translation,
                              is_pseudo=is_pseudo,
                              start_codon_idx=start_codon_idx,
+                             description=description,
                              qualifiers=f.qualifiers)
             all_genes[gene_key].gene_product = gp
     return all_genes

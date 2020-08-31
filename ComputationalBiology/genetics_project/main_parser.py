@@ -1,6 +1,6 @@
 import os
 
-from ComputationalBiology.data_analysis.all_features_calculator import calculate_all_features_species
+from ComputationalBiology.data_analysis.all_features_calculator import create_species_df
 from ComputationalBiology.data_analysis.main_analysis import FEATURES_DF_FILE
 from ComputationalBiology.file_utils import genbank_parser
 
@@ -12,8 +12,9 @@ if __name__ == '__main__':
     spp = genbank_parser.init_species(record_gb)
     print('done sepcies')
     # TODO: serialize the species
+    print('Creating  df of features...')
+    df = create_species_df(spp)
 
-    df = calculate_all_features_species(spp)
     # Serialize the df
     if not os.path.exists(FEATURES_DF_FILE):
         print('Saving pickle file: {}'.format(FEATURES_DF_FILE))

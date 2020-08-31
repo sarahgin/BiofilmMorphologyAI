@@ -30,37 +30,58 @@ def compute_hydrophobic_aa(amino_acid_sequence: str) -> float:
     input: protein sequence
     output: number of hydropobic amino acids, percentage of hydrophobic amino acids
     """
+    if len(amino_acid_sequence) == 0:
+        return None
+
     matches = re.findall(r'[GAVLIPFMW]', amino_acid_sequence.upper())
     return len(matches)/len(amino_acid_sequence)*100
 
 
 def compute_hydrophilic_aa(amino_acid_sequence: str) -> float:
+    if len(amino_acid_sequence) == 0:
+        return None
+
     matches = re.findall(r'[KRHDESTCPNQ]', amino_acid_sequence.upper())
     return len(matches)/len(amino_acid_sequence)*100
 
 
 #AMINO ACID 5 GROUPING
 def compute_nonpolar_aa(amino_acid_sequence: str) -> float:
+    if len(amino_acid_sequence) == 0:
+        return None
+
     matches = re.findall(r'[GAVLMI]', amino_acid_sequence.upper())
     return len(matches)/len(amino_acid_sequence)*100
 
 
 def compute_aromatic_aa(amino_acid_sequence: str) -> float:
+    if len(amino_acid_sequence) == 0:
+        return None
+
     matches = re.findall(r'[FYW]', amino_acid_sequence.upper())
     return len(matches)/len(amino_acid_sequence)*100
 
 
 def compute_positive_aa(amino_acid_sequence: str) -> float:
+    if len(amino_acid_sequence) == 0:
+        return None
+
     matches = re.findall(r'[KRH]', amino_acid_sequence.upper())
     return len(matches)/len(amino_acid_sequence)*100
 
 
 def compute_negative_aa(amino_acid_sequence: str) -> float:
+    if len(amino_acid_sequence) == 0:
+        return None
+
     matches = re.findall(r'[DE]', amino_acid_sequence.upper())
     return len(matches)/len(amino_acid_sequence)*100
 
 
 def compute_polar_aa(amino_acid_sequence: str) -> float:
+    if len(amino_acid_sequence) == 0:
+        return None
+
     matches = re.findall(r'[STCPNQ]', amino_acid_sequence.upper())
     return len(matches)/len(amino_acid_sequence)*100
 
@@ -72,10 +93,3 @@ def is_valid_protein(amino_acid_sequence: str) -> bool:
 
 def compute_protein_length(amino_acid_sequence: str) -> int:
     return len(amino_acid_sequence)
-
-
-def compute_all_features():
-    return 0
-
-if __name__ == '__main__':
-    print(is_valid_protein('AQAX'))
