@@ -39,6 +39,7 @@ def init_all_genes(record_gb):
     # for f in features_list:
     for i in range(len(features_list)) :
         f = features_list[i]
+
         #if f.type == 'CDS':
 
         if f.type == 'source':
@@ -80,7 +81,7 @@ def init_all_genes(record_gb):
             assert((f.type != 'CDS' or translation != '') or is_pseudo)
             assert((f.type == 'CDS' and start_codon_idx != -1) or (f.type != 'CDS'))
 
-            description = f.qualifiers['product']
+            description = '' if 'product' not in f.qualifiers.keys() else f.qualifiers['product']
             gp = GeneProduct(type=f.type,
                              translation=translation,
                              is_pseudo=is_pseudo,
