@@ -1,13 +1,15 @@
 import os
 
 from ComputationalBiology.data_analysis.all_features_calculator import create_species_df
-from ComputationalBiology.data_analysis.main_analysis import FEATURES_DF_FILE
 from ComputationalBiology.file_utils import genbank_parser
 
 
+species_name = 'BS3610'
+#species_name = 'AL590842.1_EColi'
+FEATURES_DF_FILE = '../../data/dataframes/features_' + species_name + '.pickle'
+
 if __name__ == '__main__':
-    genbank_file = '../../data/GeneticData/BS3610.gb'
-    #genbank_file = '../../data/GeneticData/AL590842.1_EColi.gb'
+    genbank_file = '../../data/GeneticData/' + species_name + '.gb'
 
     assert(os.path.exists(genbank_file))  # making sure that the path is valid
     record_gb = genbank_parser.read_genbank_file(genbank_file)

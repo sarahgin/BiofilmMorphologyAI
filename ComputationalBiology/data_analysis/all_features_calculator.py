@@ -19,8 +19,7 @@ class GeneralFeatures(Enum):
 
 class GeneFeatures(Enum):
     GC_CONTENT = 1
-    MELTING_POINT = 2
-    DNA_LENGTH = 3
+    DNA_LENGTH = 2
 
 
 class ProteinFeatures(Enum):
@@ -36,7 +35,6 @@ class ProteinFeatures(Enum):
 
 gene_features_map = {
     GeneFeatures.GC_CONTENT: compute_gc_content,
-    GeneFeatures.MELTING_POINT: compute_melting_point,
     GeneFeatures.DNA_LENGTH: compute_gene_length
 }
 

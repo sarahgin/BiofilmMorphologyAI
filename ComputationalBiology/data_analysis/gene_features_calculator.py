@@ -15,12 +15,6 @@ def compute_gc_count(dna_sequence: str):
     return len(matches)
 
 
-def compute_melting_point(dna_sequence: str):
-    #Tm = 4(G + C) + 2(A + T)
-    gc_count = compute_gc_count(dna_sequence)
-    return 4*gc_count + 2*(compute_gene_length(dna_sequence) - gc_count)
-
-
 def compute_gene_length(dna_sequence: str):
     return len(dna_sequence)
 
