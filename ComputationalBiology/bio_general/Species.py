@@ -1,5 +1,5 @@
-from ComputationalBiology.biology_utils.WholeGenomeSequence import WholeGenomeSequence
-from ComputationalBiology.biology_utils import Gene
+from ComputationalBiology.bio_general.WholeGenomeSequence import WholeGenomeSequence
+from ComputationalBiology.bio_general import Gene
 
 
 class Species:
