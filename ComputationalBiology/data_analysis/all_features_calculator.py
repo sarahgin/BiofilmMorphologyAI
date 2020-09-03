@@ -1,3 +1,5 @@
+# from pytictoc import TicToc
+# t = TicToc() #create instance of class
 from enum import Enum
 
 import pandas as pd
@@ -64,7 +66,6 @@ protein_features_map = {
 }
 
 
-
 def create_species_df(spp: Species):
     # TODO: when adding new features, no need to recompute
     # all of the table, just add the new feture
@@ -75,21 +76,23 @@ def create_species_df(spp: Species):
     """
     # gene_type is a list containing the required type
     # if it is an empty list it means that we should not filter out any type
-    df = pd.DataFrame()
+    df_general = pd.DataFrame()
+    df_kmers = pd.DataFrame()
+
+    list_of_dict = []
     for gene_key in spp.all_genes:
         gene = spp.all_genes[gene_key]
 
+        #  dictionary fro current gene:
         current_features_dict = create_gene_features_dict(gene)
-
-        # Add to current_features_dict all of the features
         current_features_dict.update(current_features_dict[GeneralFeatures.HEXAMER_DICT.name])
         current_features_dict.update(current_features_dict[GeneralFeatures.CODON_DICT.name])
+        list_of_dict.append(current_features_dict)
 
-        # add new line
-        df = df.append(current_features_dict, ignore_index=True)
+        if len(list_of_dict) % 100 == 0:
+            print("gene num:", len(list_of_dict))
 
-        if len(df) % 1 == 0:
-            print("gene num:", len(df))
+    df = pd.DataFrame(list_of_dict)
 
     return df
 
@@ -112,9 +115,3 @@ def create_gene_features_dict(gene: Gene):
     return features_dict
 
 
-if __name__ == '__main__':
-    x = {'1': 2}
-    y = {'2': 3}
-
-    x.update(y)
-    print(x)

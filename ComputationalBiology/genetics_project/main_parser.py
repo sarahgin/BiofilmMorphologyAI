@@ -1,4 +1,5 @@
 import os
+from pytictoc import TicToc
 
 from ComputationalBiology.data_analysis.all_features_calculator import create_species_df
 from ComputationalBiology.file_utils import genbank_parser
