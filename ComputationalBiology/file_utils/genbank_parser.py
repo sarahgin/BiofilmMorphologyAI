@@ -1,12 +1,11 @@
 """
 " The goal: to parse a GeneBank file and retrieve the information as Python objects
 """
-import os
 from Bio import SeqIO
 
-from ComputationalBiology.biology_utils.Gene import Gene
-from ComputationalBiology.biology_utils.GeneProduct import GeneProduct
-from ComputationalBiology.biology_utils.Species import Species
+from ComputationalBiology.bio_general.Gene import Gene
+from ComputationalBiology.bio_general.GeneProduct import GeneProduct
+from ComputationalBiology.bio_general.Species import Species
 
 
 def read_genbank_file(gene_bank_file: str):
@@ -76,16 +75,20 @@ def init_all_genes(record_gb):
             translation = '' if 'translation' not in f.qualifiers.keys() else f.qualifiers['translation'][0]
             is_pseudo = 'pseudo' in f.qualifiers.keys()
 
-            start_codon_idx = -1 if 'codon_start' not in f.qualifiers.keys() else int(f.qualifiers['codon_start'][0])
+            # From the documentation: 'codon_start' indicates the offset at which the first
+            # complete codon of a coding feature can be found, relative to the first base
+            # of that feature. Value format is: 1 or 2 or 3, hence we put 1 as the default
+            codon_start = 1 if 'codon_start' not in f.qualifiers.keys()\
+                                        else int(f.qualifiers['codon_start'][0])
 
             assert((f.type != 'CDS' or translation != '') or is_pseudo)
-            assert((f.type == 'CDS' and start_codon_idx != -1) or (f.type != 'CDS'))
+            assert((f.type == 'CDS' and codon_start != -1) or (f.type != 'CDS'))
 
             description = '' if 'product' not in f.qualifiers.keys() else f.qualifiers['product']
             gp = GeneProduct(type=f.type,
                              translation=translation,
                              is_pseudo=is_pseudo,
-                             start_codon_idx=start_codon_idx,
+                             codon_start=codon_start,
                              description=description,
                              qualifiers=f.qualifiers)
             all_genes[gene_key].gene_product = gp

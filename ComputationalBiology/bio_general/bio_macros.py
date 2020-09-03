@@ -1,3 +1,5 @@
+from enum import Enum
+
 genetic_code = {
     'ATA': 'I', 'ATC': 'I', 'ATT': 'I', 'ATG': 'M',
     'ACA': 'T', 'ACC': 'T', 'ACG': 'T', 'ACT': 'T',
@@ -15,3 +17,17 @@ genetic_code = {
     'TTC': 'F', 'TTT': 'F', 'TTA': 'L', 'TTG': 'L',
     'TAC': 'Y', 'TAT': 'Y', 'TAA': '_', 'TAG': '_',
     'TGC': 'C', 'TGT': 'C', 'TGA': '_', 'TGG': 'W'}
+
+ALL_NT = 'ACGT'
+
+ALL_AA = 'GAVLIPFMWKRHDESTCPNQ'
+
+
+class ValidAlphabet(Enum):
+    NT = 1
+    AA = 2
+
+alphabets_dict = {
+    ValidAlphabet.NT: ALL_NT,
+    ValidAlphabet.AA: ALL_AA
+}

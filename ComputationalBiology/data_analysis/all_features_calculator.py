@@ -1,8 +1,8 @@
 from enum import Enum
+
 import pandas as pd
 
-from ComputationalBiology.biology_utils import Species
-from ComputationalBiology.biology_utils.Gene import Gene
+from ComputationalBiology.bio_general import Species
 from ComputationalBiology.data_analysis.gene_features_calculator import *
 from ComputationalBiology.data_analysis.general_features_calculator import *
 from ComputationalBiology.data_analysis.protein_features_calculator import *
@@ -15,6 +15,9 @@ class GeneralFeatures(Enum):
     PRODUCT_TYPE = 4
     STRAND = 5
     PRODUCT_DESCRIPTION = 6
+    HEXAMER_DICT = 7
+    CODON_DICT = 8
+    # TODO: add tss?
 
 
 class GeneFeatures(Enum):
@@ -33,6 +36,17 @@ class ProteinFeatures(Enum):
     AA_LENGTH = 8
 
 
+general_features_map = {
+    GeneralFeatures.GENE_ID: get_gene_id,
+    GeneralFeatures.GENE_NAME: get_gene_name,
+    GeneralFeatures.TYPE: get_type,
+    GeneralFeatures.PRODUCT_TYPE: get_product_type,
+    GeneralFeatures.STRAND: get_strand,
+    GeneralFeatures.PRODUCT_DESCRIPTION: get_product_description,
+    GeneralFeatures.HEXAMER_DICT: compute_hexamer_counts,
+    GeneralFeatures.CODON_DICT: compute_codon_counts
+}
+
 gene_features_map = {
     GeneFeatures.GC_CONTENT: compute_gc_content,
     GeneFeatures.DNA_LENGTH: compute_gene_length
@@ -49,14 +63,6 @@ protein_features_map = {
     ProteinFeatures.AA_LENGTH: compute_protein_length
 }
 
-general_features_map = {
-    GeneralFeatures.GENE_ID: get_gene_id,
-    GeneralFeatures.GENE_NAME: get_gene_name,
-    GeneralFeatures.TYPE: get_type,
-    GeneralFeatures.PRODUCT_TYPE: get_product_type,
-    GeneralFeatures.STRAND: get_strand,
-    GeneralFeatures.PRODUCT_DESCRIPTION: get_product_description
-}
 
 
 def create_species_df(spp: Species):
@@ -74,9 +80,15 @@ def create_species_df(spp: Species):
         gene = spp.all_genes[gene_key]
 
         current_features_dict = create_gene_features_dict(gene)
+
+        # Add to current_features_dict all of the features
+        current_features_dict.update(current_features_dict[GeneralFeatures.HEXAMER_DICT.name])
+        current_features_dict.update(current_features_dict[GeneralFeatures.CODON_DICT.name])
+
+        # add new line
         df = df.append(current_features_dict, ignore_index=True)
 
-        if len(df) % 100 == 0:
+        if len(df) % 1 == 0:
             print("gene num:", len(df))
 
     return df
@@ -98,3 +110,11 @@ def create_gene_features_dict(gene: Gene):
             features_dict[key.name] = func(gene.gene_product.translation)
 
     return features_dict
+
+
+if __name__ == '__main__':
+    x = {'1': 2}
+    y = {'2': 3}
+
+    x.update(y)
+    print(x)

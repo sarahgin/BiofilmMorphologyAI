@@ -36,7 +36,6 @@ def compute_hydrophobic_aa(amino_acid_sequence: str) -> float:
     matches = re.findall(r'[GAVLIPFMW]', amino_acid_sequence.upper())
     return len(matches)/len(amino_acid_sequence)*100
 
-
 def compute_hydrophilic_aa(amino_acid_sequence: str) -> float:
     if len(amino_acid_sequence) == 0:
         return None

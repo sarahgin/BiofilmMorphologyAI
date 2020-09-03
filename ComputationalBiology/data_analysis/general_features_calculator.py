@@ -1,4 +1,5 @@
-from ComputationalBiology.biology_utils.Gene import Gene
+from ComputationalBiology.bio_general.Gene import Gene
+
 
 def get_gene_id(gene: Gene):
     """
@@ -26,3 +27,4 @@ def get_strand(gene: Gene):
 
 def get_product_description(gene: Gene):
     return gene.gene_product.description if gene.gene_product is not None else None
+
