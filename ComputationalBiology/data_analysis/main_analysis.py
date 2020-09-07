@@ -61,29 +61,50 @@ def plot_all_features_heatmap(df, show=False):
 if __name__ == '__main__':
     # Load data and prepare df_cds:
     print('Loading pickle file: {}...'.format(FEATURES_DF_FILE))
-    df = pd.read_pickle(FEATURES_DF_FILE)
-    print(df.describe())
-    print(df.columns)
-    df_cds = get_df_by_product(df, 'CDS')
+    df_all = pd.read_pickle(FEATURES_DF_FILE)
+    df_cds = get_df_by_product(df_all, 'CDS')
+
     all_kmers = get_all_kmers(6, ValidAlphabet.NT)
+
+    df_kmers_all = df_all[all_kmers]
+    df_kmers_cds = df_cds[all_kmers]
+
+    sum_kmers_all = df_kmers_all.sum()
+    sum_kmers_cds = df_kmers_cds.sum()
+
+    #Analysis
 
     #print GC content mean value for species
     gc_mean = df_cds['GC_CONTENT'].mean()
     print(gc_mean)
 
     # Barplot of sum counts of all kmers - one figure per species
-    # fig = plt.bar(list(range(len(all_kmers))), s[all_kmers])
-    # plt.show()
+    #fig_bar = plt.bar(list(range(len(all_kmers))), list(sum_kmers_cds[all_kmers].values))
+    #plt.show()
 
-    # Boxplot of the kmers' distribution over all genes
-    #sns.boxplot(data=df_cds[all_kmers])
+    #fig_plot = plt.plot(sum_kmers_cds[all_kmers])
+    #plt.show()
 
     #find frequent kmers
-    s = df_cds.sum() # create sum per column
-    df_kmers = df_cds[all_kmers]  # get only kmers columns
-    sum_kmers = df_kmers.sum() # vector of 4096 elements
-    frequent_kmers = df_kmers[sum_kmers[sum_kmers > 3000].keys()]
-    print(frequent_kmers.columns)
+    #frequent_kmers_all = df_kmers_cds[sum_kmers_all[sum_kmers_all > 5000].keys()]
+    #frequent_kmers_cds = df_kmers_cds[sum_kmers_cds[sum_kmers_cds > 5000].keys()]
+
+    # print('ALL GENES')
+    # print(sum_kmers_all[sum_kmers_all > 5000].sort_values(ascending=False))
+    print('CDS GENES')
+    frequent_cds_kmers = sum_kmers_cds[sum_kmers_cds > 5000].sort_values(ascending=False)
+    print(frequent_cds_kmers)
+
+    # Boxplot of the kmers' distribution over all genes
+    #fig_box = sns.boxplot(data=df_cds[frequent_cds_kmers.keys()], showfliers=False)
+    # fig_box = plt.boxplot(df_cds[frequent_cds_kmers.keys()].values)
+    print(sum_kmers_cds[['AAAAAA', 'CCCCCC', 'GAGAGG', 'TGTGTG']])
+    fig_box1 = plt.boxplot(df_cds[['AAAAAA']].values)
+    plt.show()
+
+    print('done')
+    #frequent_kmers_all = df_kmers_all[sum_kmers_all[sum_kmers_all > 5000].keys()]
+    #print(frequent_kmers_all.sum())
 
     #create features histograms and heatmap
     # plot_all_features_histograms(df_cds)
