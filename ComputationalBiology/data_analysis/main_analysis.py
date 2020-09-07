@@ -5,7 +5,8 @@ import numpy as np
 from numpy import NaN
 from pandas import DataFrame
 
-from ComputationalBiology.data_analysis.all_features_calculator import GeneFeatures, ProteinFeatures
+from ComputationalBiology.data_analysis.all_features_calculator import GeneFeatures, ProteinFeatures, kmers_generator, \
+    ValidAlphabet
 from ComputationalBiology.file_utils.io_utils import create_dir_if_not_exists
 from ComputationalBiology.genetics_project.main_parser import species_name, FEATURES_DF_FILE
 
@@ -73,8 +74,20 @@ if __name__ == '__main__':
     # probably a missing data:
     # df_cds[df_cds['HYDROPHOBIC_AA'].isnull()].iloc[0]
 
-    plot_all_features_histograms(df_cds)
-    plot_all_features_heatmap(df_cds)
+    s = df.sum() # create sum per column
+    kmers_sum = []
+    kmers = []
+    for kmer  in kmers_generator(k=6, alphabet=ValidAlphabet.NT):
+        # plot_hist_feature(df_cds, feature_name=kmer, out_file='', show=True)
+        kmers_sum.append(s[kmer])
+        kmers.append(kmer)
+
+    fig = sns.scatterplot(kmers, kmers_sum)
+    plt.show()
+
+    print('aa')
+    # plot_all_features_histograms(df_cds)
+    # plot_all_features_heatmap(df_cds)
 
 
     # scatter plot:
