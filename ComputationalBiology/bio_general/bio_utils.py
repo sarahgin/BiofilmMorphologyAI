@@ -13,3 +13,10 @@ def kmers_generator(k: int, alphabet: ValidAlphabet):
     gen = product(alphabets_dict[alphabet], repeat=k)
     for x in gen:
         yield ''.join(x)
+
+
+def get_all_kmers(k, alphabet):
+    all_kmers = []
+    for kmer in kmers_generator(k, alphabet):
+        all_kmers.append(kmer)
+    return all_kmers

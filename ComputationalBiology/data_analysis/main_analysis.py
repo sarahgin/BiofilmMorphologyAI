@@ -5,6 +5,7 @@ import numpy as np
 from numpy import NaN
 from pandas import DataFrame
 
+from ComputationalBiology.bio_general.bio_utils import get_all_kmers
 from ComputationalBiology.data_analysis.all_features_calculator import GeneFeatures, ProteinFeatures, kmers_generator, \
     ValidAlphabet
 from ComputationalBiology.file_utils.io_utils import create_dir_if_not_exists
@@ -58,34 +59,33 @@ def plot_all_features_heatmap(df, show=False):
 
 
 if __name__ == '__main__':
-    # Load data:
+    # Load data and prepare df_cds:
     print('Loading pickle file: {}...'.format(FEATURES_DF_FILE))
     df = pd.read_pickle(FEATURES_DF_FILE)
-
-    # Print statistics:
     print(df.describe())
-
-    # print report columns:
     print(df.columns)
-
-    # Get only CDS samples:
     df_cds = get_df_by_product(df, 'CDS')
+    all_kmers = get_all_kmers(6, ValidAlphabet.NT)
 
-    # probably a missing data:
-    # df_cds[df_cds['HYDROPHOBIC_AA'].isnull()].iloc[0]
+    #print GC content mean value for species
+    gc_mean = df_cds['GC_CONTENT'].mean()
+    print(gc_mean)
 
-    s = df.sum() # create sum per column
-    kmers_sum = []
-    kmers = []
-    for kmer  in kmers_generator(k=6, alphabet=ValidAlphabet.NT):
-        # plot_hist_feature(df_cds, feature_name=kmer, out_file='', show=True)
-        kmers_sum.append(s[kmer])
-        kmers.append(kmer)
+    # Barplot of sum counts of all kmers - one figure per species
+    # fig = plt.bar(list(range(len(all_kmers))), s[all_kmers])
+    # plt.show()
 
-    fig = sns.scatterplot(kmers, kmers_sum)
-    plt.show()
+    # Boxplot of the kmers' distribution over all genes
+    #sns.boxplot(data=df_cds[all_kmers])
 
-    print('aa')
+    #find frequent kmers
+    s = df_cds.sum() # create sum per column
+    df_kmers = df_cds[all_kmers]  # get only kmers columns
+    sum_kmers = df_kmers.sum() # vector of 4096 elements
+    frequent_kmers = df_kmers[sum_kmers[sum_kmers > 3000].keys()]
+    print(frequent_kmers.columns)
+
+    #create features histograms and heatmap
     # plot_all_features_histograms(df_cds)
     # plot_all_features_heatmap(df_cds)
 

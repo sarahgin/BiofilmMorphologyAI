@@ -1,10 +1,10 @@
 import os
-from pytictoc import TicToc
 
 from ComputationalBiology.data_analysis.all_features_calculator import create_species_df
 from ComputationalBiology.file_utils import genbank_parser
 
-species_name = 'BS3610'
+#species_name = 'BS3610'
+species_name = 'UA159'
 # species_name = 'AL590842.1_EColi'
 FEATURES_DF_FILE = '../../data/dataframes/features_' + species_name + '.pickle'
 
