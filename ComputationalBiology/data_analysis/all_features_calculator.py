@@ -22,11 +22,13 @@ class GeneralFeatures(Enum):
     # TODO: add tss?
 
 
+# features of the DNA sequence
 class GeneFeatures(Enum):
     GC_CONTENT = 1
     DNA_LENGTH = 2
 
 
+# features of the protein sequence
 class ProteinFeatures(Enum):
     HYDROPHOBIC_AA = 1
     HYDROPHILIC_AA = 2
@@ -76,8 +78,6 @@ def create_species_df(spp: Species):
     """
     # gene_type is a list containing the required type
     # if it is an empty list it means that we should not filter out any type
-    df_general = pd.DataFrame()
-    df_kmers = pd.DataFrame()
 
     list_of_dict = []
     for gene_key in spp.all_genes:
@@ -85,8 +85,8 @@ def create_species_df(spp: Species):
 
         #  dictionary fro current gene:
         current_features_dict = create_gene_features_dict(gene)
-        current_features_dict.update(current_features_dict[GeneralFeatures.HEXAMER_DICT.name])
-        current_features_dict.update(current_features_dict[GeneralFeatures.CODON_DICT.name])
+        # current_features_dict.update(current_features_dict[GeneralFeatures.HEXAMER_DICT.name])
+        # current_features_dict.update(current_features_dict[GeneralFeatures.CODON_DICT.name])
         list_of_dict.append(current_features_dict)
 
         if len(list_of_dict) % 100 == 0:

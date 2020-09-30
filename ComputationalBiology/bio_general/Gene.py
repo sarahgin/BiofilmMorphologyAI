@@ -10,7 +10,7 @@ class Gene:
     """
     def __init__(self, start: int, end: int, strand: int, gene_type: str,
                  coding_sequence: str, name: str, qualifiers, gp=None):
-
+        # TODO: add locus tag?
         self.start = start
         self.end = end
         self.strand = strand

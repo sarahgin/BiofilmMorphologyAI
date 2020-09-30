@@ -10,7 +10,7 @@ from ComputationalBiology.bio_general.Species import Species
 
 def read_genbank_file(gene_bank_file: str):
     """
-    Returns the 1st record in the given genebank file
+    Returns the 1st record in the given genbank file
     """
     with open(gene_bank_file, 'r') as input_handle:
         gen = SeqIO.parse(input_handle, 'genbank')
