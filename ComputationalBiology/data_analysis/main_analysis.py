@@ -9,7 +9,7 @@ from ComputationalBiology.bio_general.bio_utils import get_all_kmers
 from ComputationalBiology.data_analysis.all_features_calculator import GeneFeatures, ProteinFeatures, kmers_generator, \
     ValidAlphabet
 from ComputationalBiology.file_utils.io_utils import create_dir_if_not_exists
-from ComputationalBiology.genetics_project.main_parser import species_name, FEATURES_DF_FILE
+from ComputationalBiology.genetics_project.main_parser_features_calc import species_name, FEATURES_DF_FILE
 
 
 def get_df_by_product(df: pd.DataFrame, product_type: str):

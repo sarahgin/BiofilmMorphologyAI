@@ -18,7 +18,7 @@ class GeneralFeatures(Enum):
     STRAND = 5
     PRODUCT_DESCRIPTION = 6
     HEXAMER_DICT = 7
-    CODON_DICT = 8
+    #CODON_DICT = 8
     # TODO: add tss?
 
 
@@ -47,8 +47,8 @@ general_features_map = {
     GeneralFeatures.PRODUCT_TYPE: get_product_type,
     GeneralFeatures.STRAND: get_strand,
     GeneralFeatures.PRODUCT_DESCRIPTION: get_product_description,
-    GeneralFeatures.HEXAMER_DICT: compute_hexamer_counts,
-    GeneralFeatures.CODON_DICT: compute_codon_counts
+    GeneralFeatures.HEXAMER_DICT: compute_hexamer_positions,
+    #GeneralFeatures.CODON_DICT: compute_codon_counts
 }
 
 gene_features_map = {
@@ -70,7 +70,6 @@ protein_features_map = {
 
 def create_species_df(spp: Species):
     # TODO: when adding new features, no need to recompute
-    # all of the table, just add the new feture
     """
     Go over all of the genes of the given species
     :param spp:
@@ -85,14 +84,13 @@ def create_species_df(spp: Species):
 
         #  dictionary fro current gene:
         current_features_dict = create_gene_features_dict(gene)
-        # current_features_dict.update(current_features_dict[GeneralFeatures.HEXAMER_DICT.name])
-        # current_features_dict.update(current_features_dict[GeneralFeatures.CODON_DICT.name])
         list_of_dict.append(current_features_dict)
 
         if len(list_of_dict) % 100 == 0:
             print("gene num:", len(list_of_dict))
 
     df = pd.DataFrame(list_of_dict)
+    df = df.set_index(GeneralFeatures.GENE_ID.name)
 
     return df
 

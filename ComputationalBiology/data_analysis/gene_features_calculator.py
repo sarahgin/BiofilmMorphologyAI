@@ -28,7 +28,7 @@ def is_valid_dna(dna_sequence: str):
     return len(matches) == 0
 
 
-#if not (gene_seq[0:3] == 'ATG' and gene_seq[-3:] in ['TAG', 'TGA', 'TAA']):
+# if not (gene_seq[0:3] == 'ATG' and gene_seq[-3:] in ['TAG', 'TGA', 'TAA']):
 #    print((len(gene_seq) - 3), len(protein_seq) * 3)
 #    print(lst_CDS[i])
 
@@ -63,15 +63,27 @@ def compute_all_kmer_counts(sequence: str, k: int,
     return result
 
 
-def compute_hexamer_counts(gene: Gene):
+def compute_all_kmer_positions(sequence: str, k: int,
+                               sliding_window=1, start_position=0):
+    result = {}
+    for pos in range(start_position, len(sequence) - k + 1, sliding_window):
+        current_kmer = sequence[pos: pos + k]
+        if current_kmer in result.keys():
+            result[current_kmer].append(pos)
+        else:
+            result[current_kmer] = [pos]
+
+    return result
+
+
+def compute_hexamer_positions(gene: Gene):
     # codon_start is starting from 1
     codon_start = gene.gene_product.codon_start if gene.gene_product is not None else 1
 
-    return compute_all_kmer_counts(gene.coding_sequence,
-                                   k=6,
-                                   sliding_window=1,
-                                   start_position=codon_start-1,  # convert to python indexing
-                                   alphabet=ValidAlphabet.NT)
+    return compute_all_kmer_positions(gene.coding_sequence,
+                                      k=6,
+                                      sliding_window=1,
+                                      start_position=codon_start - 1)  # convert to python indexing
 
 
 def compute_codon_counts(gene: Gene):
@@ -80,16 +92,14 @@ def compute_codon_counts(gene: Gene):
     return compute_all_kmer_counts(gene.coding_sequence,
                                    k=3,
                                    sliding_window=3,
-                                   start_position=codon_start-1,
+                                   start_position=codon_start - 1,
                                    alphabet=ValidAlphabet.NT)
 
 
 if __name__ == '__main__':
-
     res = compute_all_kmer_counts('AAACGT',
-                            k=3,
-                            sliding_window=3,
-                            start_position=0,
-                            alphabet=ValidAlphabet.NT)
+                                  k=3,
+                                  sliding_window=3,
+                                  start_position=0,
+                                  alphabet=ValidAlphabet.NT)
     print(res)
-
