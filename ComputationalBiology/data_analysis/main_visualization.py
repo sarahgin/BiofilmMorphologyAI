@@ -2,14 +2,12 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
-from numpy import NaN
 from pandas import DataFrame
 
 from ComputationalBiology.bio_general.bio_utils import get_all_kmers
-from ComputationalBiology.data_analysis.all_features_calculator import GeneFeatures, ProteinFeatures, kmers_generator, \
-    ValidAlphabet
+from ComputationalBiology.data_analysis.all_features_calculator import GeneFeatures, ProteinFeatures, ValidAlphabet
 from ComputationalBiology.file_utils.io_utils import create_dir_if_not_exists
-from ComputationalBiology.genetics_project.main_parser_features_calc import species_name, FEATURES_DF_FILE
+from ComputationalBiology.data_analysis.main_parser_features_calc import species_name, FEATURES_DF_FILE
 
 
 def get_df_by_product(df: pd.DataFrame, product_type: str):
@@ -40,7 +38,7 @@ def plot_all_features_histograms(df: DataFrame, show=False):
     for gene_feature in list(GeneFeatures.__members__.keys()) + list(ProteinFeatures.__members__.keys()):
         assert(gene_feature in df.columns)  # Assuming that the column exists
         print(gene_feature)
-        out_file = '../../results/features_histograms/{}/{}.png'.format(species_name, gene_feature)
+        out_file = '../../data_graphs/features_histograms/{}/{}.png'.format(species_name, gene_feature)
         create_dir_if_not_exists(out_file)
         plot_hist_feature(df, gene_feature, out_file=out_file, show=show)
 
@@ -53,7 +51,7 @@ def plot_all_features_heatmap(df, show=False):
     sns.heatmap(table, annot=True)
     if show:
         plt.show()
-    out_file = '../../results/features_correlations/{}/{}.png'.format(species_name, 'corr')
+    out_file = '../../data_graphs/features_correlations/{}/{}.png'.format(species_name, 'corr')
     create_dir_if_not_exists(out_file)
     fig.savefig(out_file)
 
