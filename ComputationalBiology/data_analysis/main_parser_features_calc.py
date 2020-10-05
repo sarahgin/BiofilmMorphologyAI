@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from ComputationalBiology.data_analysis.all_features_calculator import create_species_df
-from ComputationalBiology.data_analysis.kmers_analysis import analyze_kmers
+from ComputationalBiology.data_analysis.kmers_analysis import create_kmers_df
 from ComputationalBiology.file_utils import genbank_parser
 
 species_name = 'BS3610'
@@ -18,8 +18,8 @@ FEATURES_DF_FILE = '../../data/data_outputs/features_' + species_name + '.pickle
 overrideSpeciesParserFile = False
 SPECIES_PARSER_FILE = '../../data/data_outputs/species_' + species_name + '.pickle'
 
-overrideKmersDictFile = False
-KMERS_DICT_FILE = '../../data/data_outputs/kmers_dict_' + species_name + '.pickle'
+overrideKmersDictFile = True
+KMERS_DF_FILE = '../../data/data_outputs/kmers_dict_' + species_name + '.pickle'
 
 if __name__ == '__main__':
 
@@ -43,34 +43,13 @@ if __name__ == '__main__':
         species_df = pd.read_pickle(FEATURES_DF_FILE)
 
     #COMPUTE KMERS
-    if not os.path.exists(KMERS_DICT_FILE) or overrideKmersDictFile:
-        kmers_dict = analyze_kmers(species_df)
-        with open(KMERS_DICT_FILE, 'wb') as pickle_file:
-            pickle.dump(kmers_dict, file=pickle_file)
+    if not os.path.exists(KMERS_DF_FILE) or overrideKmersDictFile:
+        kmers_df = create_kmers_df(species_df, 'CDS')
+        with open(KMERS_DF_FILE, 'wb') as pickle_file:
+            pickle.dump(kmers_df, file=pickle_file)
     else:
-        with open(KMERS_DICT_FILE, 'rb') as pickle_file:
-            kmers_dict = pickle.load(file=pickle_file)
-
-    #VISUALIZE (JUNK!)
-    kmers_mean = []
-    kmers_var = []
-    kmers_count = []
-    for k in kmers_dict:
-        kmers_mean.append(np.mean(kmers_dict[k]))
-        kmers_var.append(np.var(kmers_dict[k]))
-        kmers_count.append(len(kmers_dict[k]))
-
-    plt.figure(1)
-    plt.plot(kmers_mean, 'o')
-    plt.show()
-
-    plt.figure(2)
-    plt.plot(kmers_var, 'o')
-    plt.show()
-
-    plt.figure(3)
-    plt.plot(kmers_count, 'o')
-    plt.show()
+        with open(KMERS_DF_FILE, 'rb') as pickle_file:
+            kmers_df = pickle.load(file=pickle_file)
 
     print('done')
 
