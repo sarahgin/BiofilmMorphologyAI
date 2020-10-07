@@ -14,6 +14,15 @@ def compute_gc_content(dna_sequence: str):
     return compute_gc_count(dna_sequence) / len(dna_sequence) * 100
 
 
+def compute_a_content(dna_sequence: str):
+    return compute_a_count(dna_sequence) / len(dna_sequence) * 100
+
+
+def compute_a_count(dna_sequence: str):
+    matches = re.findall(r'[A]', dna_sequence.upper())
+    return len(matches)
+
+
 def compute_gc_count(dna_sequence: str):
     matches = re.findall(r'[GC]', dna_sequence.upper())
     return len(matches)

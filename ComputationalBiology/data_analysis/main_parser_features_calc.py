@@ -44,7 +44,7 @@ if __name__ == '__main__':
 
     #COMPUTE KMERS
     if not os.path.exists(KMERS_DF_FILE) or overrideKmersDictFile:
-        kmers_df = create_kmers_df(species_df, 'CDS')
+        kmers_df = create_kmers_df(species_df, 'CDS', 500, 2000)
         with open(KMERS_DF_FILE, 'wb') as pickle_file:
             pickle.dump(kmers_df, file=pickle_file)
     else:

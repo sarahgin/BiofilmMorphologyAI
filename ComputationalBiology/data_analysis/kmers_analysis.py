@@ -8,12 +8,17 @@ from ComputationalBiology.bio_general.bio_utils import kmers_generator
 from ComputationalBiology.data_analysis.all_features_calculator import GeneralFeatures, GeneFeatures
 
 
-def create_kmers_df(species_df, product_type: str):
+def create_kmers_df(species_df, product_type: str, min_gene_length, max_gene_length):
     #Step 1: create a dict with hexamers as keys and values
     # are lists of all normalized positions
     kmers_dict = {}
     count = 1
+
+    #filter out step
     species_df = species_df[species_df['PRODUCT_TYPE'] == product_type]
+    species_df = species_df[species_df['DNA_LENGTH'] >= min_gene_length]
+    species_df = species_df[species_df['DNA_LENGTH'] <= max_gene_length]
+
     for index, row in species_df.iterrows():
         print(count)
         count += 1
