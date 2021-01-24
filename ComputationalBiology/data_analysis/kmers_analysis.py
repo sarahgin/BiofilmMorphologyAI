@@ -24,7 +24,8 @@ def create_kmers_df(species_df, product_type: str, min_gene_length, max_gene_len
         count += 1
         hex_dict = row[GeneralFeatures.HEXAMER_DICT.name]
         for k in hex_dict:
-            hex_norm = np.divide(hex_dict[k], row[GeneFeatures.DNA_LENGTH.name]-len(k)+1)
+            #hex_norm = np.divide(hex_dict[k], row[GeneFeatures.DNA_LENGTH.name]-len(k)+1)
+            hex_norm = hex_dict[k] #unnormed
             if k in kmers_dict:
                 kmers_dict[k] = np.append(kmers_dict[k], hex_norm)
             else:
