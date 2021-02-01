@@ -8,7 +8,7 @@ from ComputationalBiology.bio_general.bio_utils import kmers_generator
 from ComputationalBiology.data_analysis.all_features_calculator import GeneralFeatures, GeneFeatures
 
 
-def create_kmers_df(species_df, product_type: str, min_gene_length, max_gene_length):
+def create_kmers_df(species_df, product_type: str, min_gene_length=0, max_gene_length=np.inf):
     #Step 1: create a dict with hexamers as keys and values
     # are lists of all normalized positions
     kmers_dict = {}
@@ -35,6 +35,6 @@ def create_kmers_df(species_df, product_type: str, min_gene_length, max_gene_len
     #include {'kmer':'AAAAAA', 'position: [0.2,0.3,0.4]'
     hex_dict_list = []
     for k in kmers_dict:
-        hex_dict_list.append({'KMER': k, 'RELATIVE_POSITIONS': kmers_dict[k]})
+        hex_dict_list.append({'KMER': k, 'ABSOLUTE_POSITIONS': kmers_dict[k]})
 
     return pd.DataFrame(hex_dict_list)

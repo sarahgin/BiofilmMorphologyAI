@@ -21,7 +21,7 @@ FEATURES_DF_FILE = '../../data/data_outputs/features_' + species_name + '.pickle
 overrideSpeciesParserFile = False
 SPECIES_PARSER_FILE = '../../data/data_outputs/species_' + species_name + '.pickle'
 
-overrideKmersDictFile = False
+overrideKmersDictFile = True
 KMERS_DF_FILE = '../../data/data_outputs/kmers_dict_' + species_name + '.pickle'
 
 if __name__ == '__main__':
@@ -47,63 +47,11 @@ if __name__ == '__main__':
 
     # COMPUTE KMERS
     if not os.path.exists(KMERS_DF_FILE) or overrideKmersDictFile:
-        kmers_df = create_kmers_df(species_df, 'CDS', 500, 2000)
+        kmers_df = create_kmers_df(species_df, 'CDS')
         with open(KMERS_DF_FILE, 'wb') as pickle_file:
             pickle.dump(kmers_df, file=pickle_file)
     else:
         with open(KMERS_DF_FILE, 'rb') as pickle_file:
             kmers_df = pickle.load(file=pickle_file)
 
-    #NOTE: RELATIVE_POSITIONS is actually ABSOLUTE_POSITIONS
-    #filter out all positions that are greater than 100 nucleotides from gene beginning
-    kmers_df['RELATIVE_POSITIONS_FIRST_100'] \
-        = kmers_df['RELATIVE_POSITIONS'].apply(lambda x: [y for y in x if y <= 100])
-    #convert into 10-length bin vectors for histogram
-    kmers_df['POSITIONAL_BINS_DISTRIBUTION'] \
-        = kmers_df['RELATIVE_POSITIONS_FIRST_100'].apply(lambda x: np.histogram(x, bins=10)[0])
-    #save all kmer histogram pngs (4096)
-    kmers_pngs = kmers_df['RELATIVE_POSITIONS_FIRST_100'].to_list()
-    for index, row in kmers_df.iterrows():
-        kmer_name = row['KMER']
-        values = row['POSITIONAL_BINS_DISTRIBUTION']
-        fig = plt.figure()
-        plt.bar(range(10), values)
-        plt.title(kmer_name)
-        fig.savefig('../../data/data_outputs/PNGS/' + kmer_name + '.png')
-        plt.close()
-    exit(0)
-
-    #TODO: move to machine learning file
-    #KMEANS: The following code is for clustering analysis only
-    array_to_cluster_list = kmers_df['POSITIONAL_BINS_DISTRIBUTION'].to_list()
-    #kmeans = KMeans(n_clusters=2, random_state=0).fit(array_to_cluster.to_list())
-
-    #Elbow method
-    distortions = []
-    silhouette_scores = []
-    K = range(2, 20)
-    for k in K:
-        print(k)
-        kmeanModel = KMeans(n_clusters=k, random_state=0).fit(array_to_cluster_list)
-
-        score = sklearn.metrics.silhouette_score(array_to_cluster_list, kmeanModel.labels_)
-
-        silhouette_scores.append(score)
-        distortions.append(sum(np.min(cdist(array_to_cluster_list, kmeanModel.cluster_centers_, 'euclidean'), axis=1)) /
-                           len(array_to_cluster_list))
-
-    # Plot the elbow
-    plt.plot(K, distortions, 'bx-')
-    plt.plot(K, silhouette_scores, 'rx-')
-    plt.xlabel('k')
-    plt.ylabel('Distortion')
-    plt.title('The Elbow Method showing the optimal k')
-    plt.show()
-
-
-    print('done')
-
-# TODO: operons?
-# TODO: assert that locus_tag is unique
-#
-# # for cds: use codon_start, translation_table
+exit(0)
