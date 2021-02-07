@@ -1,7 +1,7 @@
 import re
 
 from ComputationalBiology.bio_general.Gene import Gene
-from ComputationalBiology.bio_general.bio_macros import ALL_NT, ValidAlphabet
+from ComputationalBiology.bio_general.bio_macros import ALL_NT, ValidAlphabet, Nucleotides
 from ComputationalBiology.bio_general.bio_utils import kmers_generator
 
 
@@ -93,6 +93,26 @@ def compute_hexamer_positions(gene: Gene):
                                       k=6,
                                       sliding_window=1,
                                       start_position=codon_start - 1)  # convert to python indexing
+
+
+def compute_hexamer_next_nucleotide(gene: Gene):
+    codon_start = gene.gene_product.codon_start if gene.gene_product is not None else 1
+    return compute_all_next_nucleotides(gene.coding_sequence,
+                                        k=6,
+                                        num_of_next_bases=1,
+                                        start_position=codon_start - 1)
+
+
+def compute_all_next_nucleotides(sequence: str, k: int,
+                                 num_of_next_bases=1, start_position=0):
+    result = {}
+    for pos in range(start_position, len(sequence) - k + 1 - num_of_next_bases):
+        current_kmer = sequence[pos: pos + k]
+        next_nucleotide = sequence[pos + k]
+        if current_kmer not in result.keys():
+            result[current_kmer] = {'A': 0, 'C': 0, 'G': 0, 'T': 0}
+        result[current_kmer][next_nucleotide] += 1
+    return result
 
 
 def compute_codon_counts(gene: Gene):

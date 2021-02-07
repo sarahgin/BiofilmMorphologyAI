@@ -18,7 +18,8 @@ class GeneralFeatures(Enum):
     STRAND = 5
     PRODUCT_DESCRIPTION = 6
     HEXAMER_DICT = 7
-    #CODON_DICT = 8
+    HEXAMER_NEXT_NUCLEOTIDE = 8
+    # CODON_DICT = 9
     # TODO: add tss?
 
 
@@ -48,6 +49,7 @@ general_features_map = {
     GeneralFeatures.STRAND: get_strand,
     GeneralFeatures.PRODUCT_DESCRIPTION: get_product_description,
     GeneralFeatures.HEXAMER_DICT: compute_hexamer_positions,
+    GeneralFeatures.HEXAMER_NEXT_NUCLEOTIDE: compute_hexamer_next_nucleotide,
     #GeneralFeatures.CODON_DICT: compute_codon_counts
 }
 
