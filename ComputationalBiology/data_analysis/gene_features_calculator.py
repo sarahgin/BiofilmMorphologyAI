@@ -1,7 +1,7 @@
 import re
 
 from ComputationalBiology.bio_general.Gene import Gene
-from ComputationalBiology.bio_general.bio_macros import ALL_NT, ValidAlphabet, Nucleotides
+from ComputationalBiology.bio_general.bio_macros import ALL_NT, ValidAlphabet
 from ComputationalBiology.bio_general.bio_utils import kmers_generator
 
 
