@@ -2,8 +2,7 @@ import pandas as pd
 import numpy as np
 
 from ComputationalBiology.bio_general.bio_macros import ValidAlphabet
-from ComputationalBiology.bio_general.bio_utils import kmers_generator
-
+from ComputationalBiology.bio_general.bio_utils import kmers_generator, merge_add_dicts
 
 from ComputationalBiology.data_analysis.all_features_calculator import GeneralFeatures, GeneFeatures
 
@@ -58,10 +57,14 @@ def create_next_nucleotide_df(species_df, product_type: str, min_gene_length=0, 
         for k in gene_next_nucleotide_dict:
             hex_next_nucleotide_dict = gene_next_nucleotide_dict[k]
             if k in next_nucleotide_dict:
-                next_nucleotide_dict[k] = next_nucleotide_dict[k] + np.array(list(hex_next_nucleotide_dict.values()))
+                next_nucleotide_dict[k] = merge_add_dicts(next_nucleotide_dict[k], hex_next_nucleotide_dict)
             else:
-                next_nucleotide_dict[k] = np.array(list(hex_next_nucleotide_dict.values()))
-
+                next_nucleotide_dict[k] = hex_next_nucleotide_dict
+            #if k in next_nucleotide_dict:
+            #    next_nucleotide_dict[k] = next_nucleotide_dict[k] + np.array(list(hex_next_nucleotide_dict.values()))
+            #else:
+            #    next_nucleotide_dict[k] = np.array(list(hex_next_nucleotide_dict.values()))
+    #TODO fix next line!
     next_nucleotide_df = pd.DataFrame.from_dict(next_nucleotide_dict, orient='index', columns=['A', 'C', 'G', 'T'])
 
     return next_nucleotide_df

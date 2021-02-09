@@ -20,3 +20,9 @@ def get_all_kmers(k, alphabet):
     for kmer in kmers_generator(k, alphabet):
         all_kmers.append(kmer)
     return all_kmers
+
+
+def merge_add_dicts(dict1, dict2):
+    merged_dict = {key: dict1.get(key, 0) + dict2.get(key, 0)
+                   for key in set(dict1) | set(dict2)}
+    return merged_dict

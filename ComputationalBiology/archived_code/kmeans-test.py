@@ -32,3 +32,5 @@
 # # TODO: assert that locus_tag is unique
 # #
 # # # for cds: use codon_start, translation_table
+
+#hex_norm = np.divide(hex_dict[k], row[GeneFeatures.DNA_LENGTH.name]-len(k)+1)

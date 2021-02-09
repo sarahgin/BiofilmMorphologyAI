@@ -16,13 +16,13 @@ from ComputationalBiology.file_utils import genbank_parser
 #species_name = 'AL590842.1_EColi'
 species_name = 'Bacillus-clausii'
 
-overrideFeaturesFile = True
+overrideFeaturesFile = False
 FEATURES_DF_FILE = '../../data/data_outputs/features_' + species_name + '.pickle'
 
-overrideSpeciesParserFile = True
+overrideSpeciesParserFile = False
 SPECIES_PARSER_FILE = '../../data/data_outputs/species_' + species_name + '.pickle'
 
-overrideKmersDictFile = True
+overrideKmersDictFile = False
 KMERS_DF_FILE = '../../data/data_outputs/kmers_dict_' + species_name + '.pickle'
 
 overrideNextNTDictFile = True
