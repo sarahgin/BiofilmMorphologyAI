@@ -21,6 +21,8 @@ class Gene:
 
         self.qualifiers = qualifiers  # raw data information
         self.gene_product = gp
+        #Note: converting from 1-based to 0-based coordinates
+        self.codon_start = self.gene_product.codon_start - 1 if self.gene_product is not None else 0
 
     def create_id(self):
         return '{}_{}_{}'.format(self.start, self.end, self.strand)

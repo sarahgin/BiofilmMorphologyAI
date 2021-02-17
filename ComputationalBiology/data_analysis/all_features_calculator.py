@@ -40,6 +40,8 @@ class ProteinFeatures(Enum):
     NONPOLAR_AA = 7
     AA_LENGTH = 8
 
+class KmerFeatures(Enum):
+    PREFIX_SUFFIX_DICT = 1
 
 general_features_map = {
     GeneralFeatures.GENE_ID: get_gene_id,
@@ -48,9 +50,6 @@ general_features_map = {
     GeneralFeatures.PRODUCT_TYPE: get_product_type,
     GeneralFeatures.STRAND: get_strand,
     GeneralFeatures.PRODUCT_DESCRIPTION: get_product_description,
-    GeneralFeatures.HEXAMER_DICT: compute_hexamer_positions,
-    GeneralFeatures.HEXAMER_NEXT_NUCLEOTIDE: compute_hexamer_next_nucleotide,
-    #GeneralFeatures.CODON_DICT: compute_codon_counts
 }
 
 gene_features_map = {
@@ -67,6 +66,14 @@ protein_features_map = {
     ProteinFeatures.NEGATIVE_AA: compute_negative_aa,
     ProteinFeatures.NONPOLAR_AA: compute_nonpolar_aa,
     ProteinFeatures.AA_LENGTH: compute_protein_length
+}
+
+kmer_features_map = {
+    KmerFeatures.PREFIX_SUFFIX_DICT: compute_all_suffixes_given_prefix,
+
+    #GeneralFeatures.HEXAMER_DICT: compute_hexamer_positions,
+    #GeneralFeatures.HEXAMER_NEXT_NUCLEOTIDE: compute_hexamer_next_nucleotide,
+    #GeneralFeatures.CODON_DICT: compute_codon_counts #TODO codon bias
 }
 
 
@@ -115,3 +122,32 @@ def create_gene_features_dict(gene: Gene):
     return features_dict
 
 
+def create_gene_features_dict(gene: Gene, prefix_length_min,
+                                          prefix_length_max,
+                                          suffix_length_min,
+                                          suffix_length_max):
+    seq = gene.coding_sequence
+    result = {}
+    #we need to save the total number of times the prefix
+    #appears so that we can divide the counts by this number to get percentages
+    for pos in range(gene.codon_start, len(seq) - 1): #TODO handle positions
+        print('pos' + str(pos))
+        for curr_prefix_len in range(prefix_length_min, prefix_length_max + 1):
+            curr_prefix = seq[pos: pos + curr_prefix_len]
+            for curr_suffix_len in range(suffix_length_min, suffix_length_max + 1):
+                if pos + curr_prefix_len + curr_suffix_len > len(seq):
+                    continue
+                curr_suffix = seq[pos + curr_prefix_len: pos + curr_prefix_len + curr_suffix_len]
+                print('prefix:' + curr_prefix + ',suffix:' + curr_suffix)
+                if curr_prefix not in result.keys():
+                    result[curr_prefix] = {}
+                if curr_suffix not in result[curr_prefix].keys():
+                    result[curr_prefix][curr_suffix] = 1
+                else:
+                    result[curr_prefix][curr_suffix] += 1
+    return result
+
+if __name__ == '__main__':
+    g = Gene(coding_sequence = 'AGTCGCCAATTT', start=0, end=12, strand=1, gene_type='CDS', name="dummy", qualifiers = None)
+    res = create_gene_features_dict(g, 3, 5, 2, 4)
+    print(res)

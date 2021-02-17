@@ -97,18 +97,22 @@ def compute_hexamer_positions(gene: Gene):
 
 def compute_hexamer_next_nucleotide(gene: Gene):
     codon_start = gene.gene_product.codon_start if gene.gene_product is not None else 1
-    return compute_all_next_nucleotides(gene.coding_sequence,
-                                        k=6,
-                                        num_of_next_bases=4,
-                                        start_position=codon_start - 1)
+    return compute_all_suffixes_given_prefix(gene.coding_sequence,
+                                             prefix_length=6,
+                                             suffix_length=4,
+                                             start_position=codon_start - 1)
 
-
-def compute_all_next_nucleotides(sequence: str, k: int,
-                                 num_of_next_bases=1, start_position=0):
+#start_position is the first position from which we begin the prefix analysis.
+#Use **0** when starting from the first nucleotide of the sequence
+#Use **gene.codon_start** when staring the sequence from the first amino-acid coding codon
+def compute_all_suffixes_given_prefix(sequence: str,
+                                      prefix_length: int,
+                                      suffix_length: int,
+                                      start_position: int):
     result = {}
-    for pos in range(start_position, len(sequence) - k + 1 - num_of_next_bases):
-        current_kmer = sequence[pos: pos + k]
-        next_nucleotide = sequence[pos + k: pos + k + num_of_next_bases]
+    for pos in range(start_position, len(sequence) - prefix_length + 1 - suffix_length):
+        current_kmer = sequence[pos: pos + prefix_length]
+        next_nucleotide = sequence[pos + prefix_length: pos + prefix_length + suffix_length]
         if current_kmer not in result.keys():
             result[current_kmer] = {}
         if next_nucleotide not in result[current_kmer].keys():
@@ -119,12 +123,10 @@ def compute_all_next_nucleotides(sequence: str, k: int,
 
 
 def compute_codon_counts(gene: Gene):
-    codon_start = gene.gene_product.codon_start if gene.gene_product is not None else 1
-
     return compute_all_kmer_counts(gene.coding_sequence,
                                    k=3,
                                    sliding_window=3,
-                                   start_position=codon_start - 1,
+                                   start_position=gene.codon_start,
                                    alphabet=ValidAlphabet.NT)
 
 

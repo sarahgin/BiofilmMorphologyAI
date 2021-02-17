@@ -41,21 +41,12 @@ if __name__ == '__main__':
         with open(SPECIES_PARSER_FILE, 'rb') as pickle_file:
             spp = pickle.load(file=pickle_file)
 
-    # COMPUTE FEATURES
+    # COMPUTE FEATURES PER GENE
     if not os.path.exists(FEATURES_DF_FILE) or overrideFeaturesFile:
         species_df = create_species_df(spp)
         species_df.to_pickle(FEATURES_DF_FILE)
     else:
         species_df = pd.read_pickle(FEATURES_DF_FILE)
-
-    # COMPUTE KMERS
-    if not os.path.exists(KMERS_DF_FILE) or overrideKmersDictFile:
-        kmers_df, next_nt_df = create_kmers_df(species_df, 'CDS')
-        with open(KMERS_DF_FILE, 'wb') as pickle_file:
-            pickle.dump(kmers_df, file=pickle_file)
-    else:
-        with open(KMERS_DF_FILE, 'rb') as pickle_file:
-            kmers_df = pickle.load(file=pickle_file)
 
     # COMPUTE NEXT_NT_DF
     if not os.path.exists(NEXT_NT_DF_FILE) or overrideNextNTDictFile:
@@ -65,5 +56,14 @@ if __name__ == '__main__':
     else:
         with open(NEXT_NT_DF_FILE, 'rb') as pickle_file:
             next_nt_df = pickle.load(file=pickle_file)
+
+    # # FURTHER ANALYZE STATISTICALLY SIGNIFICANT SEQUENCES FOUND IN PREVIOUS STEP
+    # if not os.path.exists(KMERS_DF_FILE) or overrideKmersDictFile:
+    #     kmers_df = create_kmers_df(species_df, 'CDS')
+    #     with open(KMERS_DF_FILE, 'wb') as pickle_file:
+    #         pickle.dump(kmers_df, file=pickle_file)
+    # else:
+    #     with open(KMERS_DF_FILE, 'rb') as pickle_file:
+    #         kmers_df = pickle.load(file=pickle_file)
 
 exit(0)
