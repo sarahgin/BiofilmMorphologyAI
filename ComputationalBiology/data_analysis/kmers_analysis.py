@@ -4,7 +4,7 @@ import numpy as np
 from ComputationalBiology.bio_general.bio_macros import ValidAlphabet
 from ComputationalBiology.bio_general.bio_utils import kmers_generator, merge_add_dicts
 
-from ComputationalBiology.data_analysis.all_features_calculator import GeneralFeatures, GeneFeatures
+from ComputationalBiology.data_analysis.all_features_calculator import GeneralFeatures, GeneFeatures, KmerFeatures
 
 
 def create_kmers_df(species_df, product_type: str, min_gene_length=0, max_gene_length=np.inf):
@@ -38,10 +38,11 @@ def create_kmers_df(species_df, product_type: str, min_gene_length=0, max_gene_l
 
     return pd.DataFrame(hex_dict_list)
 
-def create_next_nucleotide_df(species_df, product_type: str, min_gene_length=0, max_gene_length=np.inf):
+def create_prefix_suffix_agg_df(species_df, product_type: str, min_gene_length=0, max_gene_length=np.inf):
     #Step 1: create a dict with hexamers as keys and values
     # are lists of all normalized positions
-    next_nucleotide_dict = {}
+    next_prefix_suffix_agg_dict = {}
+    prefix_count_agg_dict = {}
     count = 1
 
     #filter out step
@@ -49,24 +50,25 @@ def create_next_nucleotide_df(species_df, product_type: str, min_gene_length=0, 
     species_df = species_df[species_df['DNA_LENGTH'] >= min_gene_length]
     species_df = species_df[species_df['DNA_LENGTH'] <= max_gene_length]
 
+    print('Total number of genes to aggregate: ', len(species_df))
     for index, row in species_df.iterrows(): #for each Gene
         print(count)
         count += 1
 
-        gene_next_nucleotide_dict = row[GeneralFeatures.HEXAMER_NEXT_NUCLEOTIDE.name]
-        for k in gene_next_nucleotide_dict:
-            hex_next_nucleotide_dict = gene_next_nucleotide_dict[k]
-            if k in next_nucleotide_dict:
-                next_nucleotide_dict[k] = merge_add_dicts(next_nucleotide_dict[k], hex_next_nucleotide_dict)
-            else:
-                next_nucleotide_dict[k] = hex_next_nucleotide_dict
-            #if k in next_nucleotide_dict:
-            #    next_nucleotide_dict[k] = next_nucleotide_dict[k] + np.array(list(hex_next_nucleotide_dict.values()))
-            #else:
-            #    next_nucleotide_dict[k] = np.array(list(hex_next_nucleotide_dict.values()))
-    #TODO fix next line!
-    next_nucleotide_df = pd.DataFrame.from_dict(next_nucleotide_dict, orient='index', columns=['A', 'C', 'G', 'T'])
+        gene_prefix_suffix_dict, prefix_count = row[KmerFeatures.PREFIX_SUFFIX_DICT.name]
+        for k in gene_prefix_suffix_dict:
 
-    return next_nucleotide_df
+            if k in prefix_count_agg_dict:
+                prefix_count_agg_dict[k] += prefix_count[k]
+            else:
+                prefix_count_agg_dict[k] = prefix_count[k]
+
+            prefix_suffix_dict = gene_prefix_suffix_dict[k]
+            if k in next_prefix_suffix_agg_dict:
+                next_prefix_suffix_agg_dict[k] = merge_add_dicts(next_prefix_suffix_agg_dict[k], prefix_suffix_dict)
+            else:
+                next_prefix_suffix_agg_dict[k] = prefix_suffix_dict
+
+    return next_prefix_suffix_agg_dict, prefix_count_agg_dict
 
 

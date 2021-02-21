@@ -40,8 +40,21 @@ class ProteinFeatures(Enum):
     NONPOLAR_AA = 7
     AA_LENGTH = 8
 
+
 class KmerFeatures(Enum):
     PREFIX_SUFFIX_DICT = 1
+
+
+PREFIX_LENGTH_MIN = 6
+PREFIX_LENGTH_MAX = 6
+SUFFIX_LENGTH_MIN = 4
+SUFFIX_LENGTH_MAX = 4
+
+features_to_compute = set((KmerFeatures.PREFIX_SUFFIX_DICT,
+                           GeneralFeatures.GENE_NAME,
+                           GeneralFeatures.GENE_ID,
+                           GeneralFeatures.PRODUCT_TYPE,
+                           GeneFeatures.DNA_LENGTH))
 
 general_features_map = {
     GeneralFeatures.GENE_ID: get_gene_id,
@@ -69,11 +82,11 @@ protein_features_map = {
 }
 
 kmer_features_map = {
-    KmerFeatures.PREFIX_SUFFIX_DICT: compute_all_suffixes_given_prefix,
+    KmerFeatures.PREFIX_SUFFIX_DICT: create_prefix_suffix_dict,
 
-    #GeneralFeatures.HEXAMER_DICT: compute_hexamer_positions,
-    #GeneralFeatures.HEXAMER_NEXT_NUCLEOTIDE: compute_hexamer_next_nucleotide,
-    #GeneralFeatures.CODON_DICT: compute_codon_counts #TODO codon bias
+    # GeneralFeatures.HEXAMER_DICT: compute_hexamer_positions,
+    # GeneralFeatures.HEXAMER_NEXT_NUCLEOTIDE: compute_hexamer_next_nucleotide,
+    # GeneralFeatures.CODON_DICT: compute_codon_counts #TODO codon bias
 }
 
 
@@ -107,47 +120,36 @@ def create_species_df(spp: Species):
 def create_gene_features_dict(gene: Gene):
     features_dict = {}
     for key in GeneralFeatures:
-        func = general_features_map[key]
-        features_dict[key.name] = func(gene)
+        if key in features_to_compute:
+            func = general_features_map[key]
+            features_dict[key.name] = func(gene)
 
     for key in GeneFeatures:
-        func = gene_features_map[key]
-        features_dict[key.name] = func(gene.coding_sequence)
+        if key in features_to_compute:
+            func = gene_features_map[key]
+            features_dict[key.name] = func(gene.coding_sequence)
+
+    for key in KmerFeatures:
+        if key in features_to_compute:
+            func = kmer_features_map[key]
+            features_dict[key.name] = func(gene,
+                                           PREFIX_LENGTH_MIN,
+                                           PREFIX_LENGTH_MAX,
+                                           SUFFIX_LENGTH_MIN,
+                                           SUFFIX_LENGTH_MAX)
 
     if gene.gene_product is not None:
         for key in ProteinFeatures:
-            func = protein_features_map[key]
-            features_dict[key.name] = func(gene.gene_product.translation)
+            if key in features_to_compute:
+                func = protein_features_map[key]
+                features_dict[key.name] = func(gene.gene_product.translation)
 
     return features_dict
 
 
-def create_gene_features_dict(gene: Gene, prefix_length_min,
-                                          prefix_length_max,
-                                          suffix_length_min,
-                                          suffix_length_max):
-    seq = gene.coding_sequence
-    result = {}
-    #we need to save the total number of times the prefix
-    #appears so that we can divide the counts by this number to get percentages
-    for pos in range(gene.codon_start, len(seq) - 1): #TODO handle positions
-        print('pos' + str(pos))
-        for curr_prefix_len in range(prefix_length_min, prefix_length_max + 1):
-            curr_prefix = seq[pos: pos + curr_prefix_len]
-            for curr_suffix_len in range(suffix_length_min, suffix_length_max + 1):
-                if pos + curr_prefix_len + curr_suffix_len > len(seq):
-                    continue
-                curr_suffix = seq[pos + curr_prefix_len: pos + curr_prefix_len + curr_suffix_len]
-                print('prefix:' + curr_prefix + ',suffix:' + curr_suffix)
-                if curr_prefix not in result.keys():
-                    result[curr_prefix] = {}
-                if curr_suffix not in result[curr_prefix].keys():
-                    result[curr_prefix][curr_suffix] = 1
-                else:
-                    result[curr_prefix][curr_suffix] += 1
-    return result
 
-if __name__ == '__main__':
-    g = Gene(coding_sequence = 'AGTCGCCAATTT', start=0, end=12, strand=1, gene_type='CDS', name="dummy", qualifiers = None)
-    res = create_gene_features_dict(g, 3, 5, 2, 4)
-    print(res)
+
+# if __name__ == '__main__':
+#    g = Gene(coding_sequence = 'AGTCGCCAATTT', start=0, end=12, strand=1, gene_type='CDS', name="dummy", qualifiers = None)
+#    res, counts = create_gene_features_dict(g, 3, 5, 2, 4)
+#    print(res)

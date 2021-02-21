@@ -85,6 +85,38 @@ def compute_all_kmer_positions(sequence: str, k: int,
     return result
 
 
+def create_prefix_suffix_dict(gene: Gene,
+                              prefix_length_min,
+                              prefix_length_max,
+                              suffix_length_min,
+                              suffix_length_max):
+    seq = gene.coding_sequence
+    result = {}
+    prefix_counts_dict = {}
+    # Note: if there are UTRs before 'AUG' (codon start), they are currently ignored
+    # gene.codon_start might be ~= 0
+    for pos in range(gene.codon_start, len(seq) - 1):
+        for curr_prefix_len in range(prefix_length_min, prefix_length_max + 1):
+            curr_prefix = seq[pos: pos + curr_prefix_len]
+            for curr_suffix_len in range(suffix_length_min, suffix_length_max + 1):
+                if pos + curr_prefix_len + curr_suffix_len > len(seq):
+                    continue
+                curr_suffix = seq[pos + curr_prefix_len: pos + curr_prefix_len + curr_suffix_len]
+
+                if curr_prefix not in result.keys():
+                    result[curr_prefix] = {}
+                    assert (curr_prefix not in prefix_counts_dict.keys())
+                    prefix_counts_dict[curr_prefix] = 1
+                else:
+                    prefix_counts_dict[curr_prefix] += 1
+
+                if curr_suffix not in result[curr_prefix].keys():
+                    result[curr_prefix][curr_suffix] = 1
+                else:
+                    result[curr_prefix][curr_suffix] += 1
+    return result, prefix_counts_dict
+
+
 def compute_hexamer_positions(gene: Gene):
     # codon_start is starting from 1
     codon_start = gene.gene_product.codon_start if gene.gene_product is not None else 1
@@ -105,21 +137,21 @@ def compute_hexamer_next_nucleotide(gene: Gene):
 #start_position is the first position from which we begin the prefix analysis.
 #Use **0** when starting from the first nucleotide of the sequence
 #Use **gene.codon_start** when staring the sequence from the first amino-acid coding codon
-def compute_all_suffixes_given_prefix(sequence: str,
-                                      prefix_length: int,
-                                      suffix_length: int,
-                                      start_position: int):
-    result = {}
-    for pos in range(start_position, len(sequence) - prefix_length + 1 - suffix_length):
-        current_kmer = sequence[pos: pos + prefix_length]
-        next_nucleotide = sequence[pos + prefix_length: pos + prefix_length + suffix_length]
-        if current_kmer not in result.keys():
-            result[current_kmer] = {}
-        if next_nucleotide not in result[current_kmer].keys():
-            result[current_kmer][next_nucleotide] = 0
-
-        result[current_kmer][next_nucleotide] += 1
-    return result
+#def compute_all_suffixes_given_prefix(sequence: str,
+#                                      prefix_length: int,
+#                                      suffix_length: int,
+#                                      start_position: int):
+#    result = {}
+#    for pos in range(start_position, len(sequence) - prefix_length + 1 - suffix_length):
+#        current_kmer = sequence[pos: pos + prefix_length]
+#        next_nucleotide = sequence[pos + prefix_length: pos + prefix_length + suffix_length]
+#        if current_kmer not in result.keys():
+#            result[current_kmer] = {}
+#        if next_nucleotide not in result[current_kmer].keys():
+#            result[current_kmer][next_nucleotide] = 0
+#
+#        result[current_kmer][next_nucleotide] += 1
+#    return result
 
 
 def compute_codon_counts(gene: Gene):

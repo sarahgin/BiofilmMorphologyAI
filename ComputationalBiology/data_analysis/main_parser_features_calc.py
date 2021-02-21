@@ -8,25 +8,25 @@ from sklearn.cluster import KMeans
 from scipy.spatial.distance import cdist
 
 from ComputationalBiology.data_analysis.all_features_calculator import create_species_df
-from ComputationalBiology.data_analysis.kmers_analysis import create_kmers_df, create_next_nucleotide_df
+from ComputationalBiology.data_analysis.kmers_analysis import create_kmers_df, create_prefix_suffix_agg_df
 from ComputationalBiology.file_utils import genbank_parser
 
-#species_name = 'BS3610'
+species_name = 'BS3610'
 #species_name = 'UA159'
 #species_name = 'AL590842.1_EColi'
-species_name = 'Bacillus-clausii'
+#species_name = 'Bacillus-clausii'
 
-overrideFeaturesFile = False
+overrideFeaturesFile = True
 FEATURES_DF_FILE = '../../data/data_outputs/features_' + species_name + '.pickle'
 
-overrideSpeciesParserFile = False
+overrideSpeciesParserFile = True
 SPECIES_PARSER_FILE = '../../data/data_outputs/species_' + species_name + '.pickle'
 
-overrideKmersDictFile = False
-KMERS_DF_FILE = '../../data/data_outputs/kmers_dict_' + species_name + '.pickle'
+#overrideKmersDictFile = False
+#KMERS_DF_FILE = '../../data/data_outputs/kmers_dict_' + species_name + '.pickle'
 
-overrideNextNTDictFile = True
-NEXT_NT_DF_FILE = '../../data/data_outputs/next_nt_dict_' + species_name + '.pickle'
+overridePrefixSuffixDictFile = True
+PREFIX_SUFFIX_DF_FILE = '../../data/data_outputs/prefix_suffix_dict_' + species_name + '.pickle'
 
 if __name__ == '__main__':
     # PARSE
@@ -49,13 +49,14 @@ if __name__ == '__main__':
         species_df = pd.read_pickle(FEATURES_DF_FILE)
 
     # COMPUTE NEXT_NT_DF
-    if not os.path.exists(NEXT_NT_DF_FILE) or overrideNextNTDictFile:
-        next_nt_df = create_next_nucleotide_df(species_df, 'CDS')
-        with open(NEXT_NT_DF_FILE, 'wb') as pickle_file:
-            pickle.dump(next_nt_df, file=pickle_file)
+    if not os.path.exists(PREFIX_SUFFIX_DF_FILE) or overridePrefixSuffixDictFile:
+        next_prefix_suffix_agg_dict, prefix_count_agg_dict = create_prefix_suffix_agg_df(species_df, 'CDS', min_gene_length=500, max_gene_length=1000)
+        prefix_suffix_tp = (next_prefix_suffix_agg_dict, prefix_count_agg_dict)
+        with open(PREFIX_SUFFIX_DF_FILE, 'wb') as pickle_file:
+            pickle.dump(prefix_suffix_tp, file=pickle_file)
     else:
-        with open(NEXT_NT_DF_FILE, 'rb') as pickle_file:
-            next_nt_df = pickle.load(file=pickle_file)
+        with open(PREFIX_SUFFIX_DF_FILE, 'rb') as pickle_file:
+            prefix_suffix_tp = pickle.load(file=pickle_file)
 
     # # FURTHER ANALYZE STATISTICALLY SIGNIFICANT SEQUENCES FOUND IN PREVIOUS STEP
     # if not os.path.exists(KMERS_DF_FILE) or overrideKmersDictFile:
