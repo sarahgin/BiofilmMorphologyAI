@@ -5,6 +5,8 @@ from enum import Enum
 import pandas as pd
 
 from ComputationalBiology.bio_general import Species
+from ComputationalBiology.bio_general.bio_macros import SUFFIX_LENGTH_MAX, PREFIX_LENGTH_MAX, PREFIX_LENGTH_MIN, \
+    SUFFIX_LENGTH_MIN
 from ComputationalBiology.data_analysis.gene_features_calculator import *
 from ComputationalBiology.data_analysis.general_features_calculator import *
 from ComputationalBiology.data_analysis.protein_features_calculator import *
@@ -45,16 +47,8 @@ class KmerFeatures(Enum):
     PREFIX_SUFFIX_DICT = 1
 
 
-PREFIX_LENGTH_MIN = 6
-PREFIX_LENGTH_MAX = 6
-SUFFIX_LENGTH_MIN = 4
-SUFFIX_LENGTH_MAX = 4
-
-features_to_compute = set((KmerFeatures.PREFIX_SUFFIX_DICT,
-                           GeneralFeatures.GENE_NAME,
-                           GeneralFeatures.GENE_ID,
-                           GeneralFeatures.PRODUCT_TYPE,
-                           GeneFeatures.DNA_LENGTH))
+features_to_compute = {KmerFeatures.PREFIX_SUFFIX_DICT, GeneralFeatures.GENE_NAME, GeneralFeatures.GENE_ID,
+                       GeneralFeatures.PRODUCT_TYPE, GeneFeatures.DNA_LENGTH}
 
 general_features_map = {
     GeneralFeatures.GENE_ID: get_gene_id,
@@ -145,9 +139,6 @@ def create_gene_features_dict(gene: Gene):
                 features_dict[key.name] = func(gene.gene_product.translation)
 
     return features_dict
-
-
-
 
 # if __name__ == '__main__':
 #    g = Gene(coding_sequence = 'AGTCGCCAATTT', start=0, end=12, strand=1, gene_type='CDS', name="dummy", qualifiers = None)

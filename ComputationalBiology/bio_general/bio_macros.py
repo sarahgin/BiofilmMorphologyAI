@@ -31,3 +31,8 @@ alphabets_dict = {
     ValidAlphabet.NT: ALL_NT,
     ValidAlphabet.AA: ALL_AA
 }
+
+PREFIX_LENGTH_MIN = 4
+PREFIX_LENGTH_MAX = 10
+SUFFIX_LENGTH_MIN = 4
+SUFFIX_LENGTH_MAX = 10
