@@ -19,16 +19,16 @@ species_name = 'BS3610'
 # species_name = 'AL590842.1_EColi'
 #species_name = 'Bacillus-clausii'
 
-overrideFeaturesFile = True
+overrideFeaturesFile = False
 FEATURES_DF_FILE = '../../data/data_outputs/features_' + species_name + '.pickle'
 
-overrideSpeciesParserFile = True
+overrideSpeciesParserFile = False
 SPECIES_PARSER_FILE = '../../data/data_outputs/species_' + species_name + '.pickle'
 
 # overrideKmersDictFile = False
 # KMERS_DF_FILE = '../../data/data_outputs/kmers_dict_' + species_name + '.pickle'
 
-overridePrefixSuffixDictFile = True
+overridePrefixSuffixDictFile = False
 PREFIX_SUFFIX_DF_FILE = '../../data/data_outputs/prefix_suffix_dict_' + species_name + '.pickle'
 
 
@@ -46,8 +46,8 @@ if __name__ == '__main__':
         with open(SPECIES_PARSER_FILE, 'rb') as pickle_file:
             spp = pickle.load(file=pickle_file)
 
-for prefix_length in range(PREFIX_LENGTH_MIN, PREFIX_LENGTH_MAX + 1):
-    for suffix_length in range(SUFFIX_LENGTH_MIN, SUFFIX_LENGTH_MAX + 1):
+for prefix_length in range(PREFIX_LENGTH_MAX, PREFIX_LENGTH_MIN-1, -1):
+    for suffix_length in range(SUFFIX_LENGTH_MAX, SUFFIX_LENGTH_MIN-1, -1):
 
         print('Starting analysis for prefix length: ' + str(prefix_length) + ', suffix length: ' + str(suffix_length))
         current_FEATURES_DF_FILE = '{}_p{}_s{}{}'.format(os.path.splitext(FEATURES_DF_FILE)[0],

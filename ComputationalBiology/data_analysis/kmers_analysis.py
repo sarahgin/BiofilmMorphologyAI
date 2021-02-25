@@ -52,7 +52,7 @@ def create_prefix_suffix_agg_df(species_df, product_type: str, min_gene_length=0
 
     print('Total number of genes to aggregate: ', len(species_df))
     for index, row in species_df.iterrows(): #for each Gene
-        print(count)
+        #print(count)
         count += 1
 
         gene_prefix_suffix_dict, prefix_count = row[KmerFeatures.PREFIX_SUFFIX_DICT.name]

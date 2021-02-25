@@ -102,7 +102,7 @@ def create_species_df(spp: Species):
         current_features_dict = create_gene_features_dict(gene)
         list_of_dict.append(current_features_dict)
 
-        if len(list_of_dict) % 100 == 0:
+        if len(list_of_dict) % 1000 == 0:
             print("gene num:", len(list_of_dict))
 
     df = pd.DataFrame(list_of_dict)
