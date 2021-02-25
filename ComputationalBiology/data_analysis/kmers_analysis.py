@@ -43,7 +43,7 @@ def create_prefix_suffix_agg_df(species_df, product_type: str, min_gene_length=0
     # are lists of all normalized positions
     next_prefix_suffix_agg_dict = {}
     prefix_count_agg_dict = {}
-    count = 1
+    count = 0
 
     #filter out step
     species_df = species_df[species_df['PRODUCT_TYPE'] == product_type]
@@ -52,8 +52,9 @@ def create_prefix_suffix_agg_df(species_df, product_type: str, min_gene_length=0
 
     print('Total number of genes to aggregate: ', len(species_df))
     for index, row in species_df.iterrows(): #for each Gene
-        #print(count)
         count += 1
+        if count % 100 == 0:
+            print("create_prefix_suffix_agg_df: gene num-", str(count))
 
         gene_prefix_suffix_dict, prefix_count = row[KmerFeatures.PREFIX_SUFFIX_DICT.name]
         for k in gene_prefix_suffix_dict:
