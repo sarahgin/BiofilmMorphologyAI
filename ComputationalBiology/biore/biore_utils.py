@@ -4,13 +4,17 @@ import re
 
 def translate(original_str: str):
     res = ''
-    for c in original_str:
-        if c in aa_group_list:
+    i = 0
+    while i < len(original_str):
+        c = original_str[i]
+        if c == "\\":
+            res += original_str[i+1]
+            i += 1
+        elif c in aa_group_list:
             res += group_into_aa_or(c)
-        elif c == '\\':
-            continue
         else:
             res += c
+        i += 1
     return res
 
 

@@ -79,5 +79,34 @@ alphabets_dict = {
     ValidAlphabet.AA: ALL_AA
 }
 
-if __name__ == '__main__':
-    a = '^(PN)+?$'
+class PTS_EXACT(Enum):
+    ER_IMPORT_EXACT = 1
+    ER_RETENTION_EXACT = 2
+    MITOCHONDRIA_IMPORT_EXACT = 3
+    NLS_EXACT = 4
+    PEROXISOME_IMPORT_EXACT = 5
+
+
+protein_targeting_signals_exact_dict = {
+    PTS_EXACT.ER_IMPORT_EXACT: '\M\M\S\F\V\S\L\L\L\V\G\I\L\F\W\A\T\E\A\E\Q\L\T\K\C\E\V\F\Q',
+    PTS_EXACT.ER_RETENTION_EXACT: '\K\D\E\L',
+    PTS_EXACT.MITOCHONDRIA_IMPORT_EXACT: '\M\L\S\L\R\Q\S\I\R\F\F\K\P\A\T\R\T\L\C\S\S\R\Y\L\L',
+    PTS_EXACT.NLS_EXACT: '\P\P\K\K\K\R\K\V',
+    PTS_EXACT.PEROXISOME_IMPORT_EXACT: '\S\K\L'
+}
+
+class PTS_GENERAL(Enum):
+    ER_IMPORT = 1
+    ER_RETENTION = 2
+    NLS = 3
+    MITOCHONDRIA_IMPORT = 4
+    PEROXISOME_IMPORT = 5
+
+
+protein_targeting_signals_dict = {
+    PTS_GENERAL.ER_IMPORT: '\M\M\S\F\V\SO{7}A{2}O\TN\AN\Q\L\TP\CN\V\F\Q',
+    PTS_GENERAL.ER_RETENTION: 'PNN\L',
+    PTS_GENERAL.NLS: '\P\A\A\K\R\V\K\L\D',#'\KP.{1}P', #'\P\PP{5}\V',
+    PTS_GENERAL.MITOCHONDRIA_IMPORT: '\M\L\S\LP\Q\S\IP\F\FP\P\A\TP\T\L\C\S\SP\Y\L\L',
+    PTS_GENERAL.PEROXISOME_IMPORT: '\SP\L'
+}
