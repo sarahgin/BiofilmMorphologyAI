@@ -34,9 +34,11 @@ class AA_GROUP(Enum):
     AROMATIC = 'R'
     NON_POLAR = 'O'
     POLAR = 'L'
+    HYDROPHOBIC = 'B'
+    HYDROPHILIC = 'Y'
 
 
-aa_group_list = ['P', 'N', 'R', 'O', 'L']
+aa_group_list = ['P', 'N', 'R', 'O', 'L', 'B', 'Y']
 
 
 class AA(Enum):
@@ -70,7 +72,12 @@ group_to_amino_acid_dict = {
                                AA.VALINE.value, AA.LEUCINE.value,
                                AA.ISOLEUCINE.value, AA.METHIONINE.value],
     AA_GROUP.POLAR.value: [AA.SERINE.value, AA.THREONINE.value, AA.CYSTEINE.value,
-                           AA.ASPARGINE.value, AA.GLUTAMINE.value]
+                           AA.ASPARGINE.value, AA.GLUTAMINE.value],
+    AA_GROUP.HYDROPHOBIC.value: [AA.ALANINE.value, AA.VALINE.value, AA.ISOLEUCINE.value, AA.LEUCINE.value,
+                           AA.METHIONINE.value, AA.PHENYLALANINE.value, AA.TYROSINE.value, AA.TRYPTOPHANE.value],
+    AA_GROUP.HYDROPHILIC.value: [AA.LYSINE.value, AA.ARGININE.value, AA.HISTIDINE.value,
+                           AA.ASPARTATE.value, AA.GLUTAMATE.value,
+                           AA.SERINE.value, AA.THREONINE.value, AA.ASPARGINE.value, AA.GLUTAMINE.value]
 
 }
 
@@ -79,34 +86,27 @@ alphabets_dict = {
     ValidAlphabet.AA: ALL_AA
 }
 
-class PTS_EXACT(Enum):
-    ER_IMPORT_EXACT = 1
-    ER_RETENTION_EXACT = 2
-    MITOCHONDRIA_IMPORT_EXACT = 3
-    NLS_EXACT = 4
-    PEROXISOME_IMPORT_EXACT = 5
+
+class PTS(Enum):
+    ER_IMPORT_1 = '\M\M\S\F\V\S\L\L\L\V\G\I\L\F\W\A\T\E\A\E\Q\L\T\K\C\E\V\F\Q'  # Lehninger exact
+    ER_IMPORT_2 = '\M\M\S\F\V\SO{7}A{2}O\TN\AN\Q\L\TP\CN\V\F\Q'  # Lehninger general
+    ER_IMPORT_3 = 'P+B{6-12}'  # pts5
+
+    ER_RETENTION_1 = '\K\D\E\L'  # Lehninger exact
+    ER_RETENTION_2 = 'PNN\L'  # Lehninger general
+
+    MITOCHONDRIA_IMPORT_1 = '\M\L\S\L\R\Q\S\I\R\F\F\K\P\A\T\R\T\L\C\S\S\R\Y\L\L'  # Lehninger exact
+    MITOCHONDRIA_IMPORT_2 = '\M\L\S\LP\Q\S\IP\F\FP\P\A\TP\T\L\C\S\SP\Y\L\L'  # Lehninger general
+    MITOCHONDRIA_IMPORT_3 = r'([^\E\N\R\K][\R\K]){3,5}'  # pts5
+
+    NLS_1 = '\P\P\K\K\K\R\K\V'
+    NLS_2 = '\P\A\A\K\R\V\K\L\D'
+    NLS_3 = '\KP.{1}P'
+    NLS_4 = '\P\PP{5}\V'
+    NLS_5 = '(P{5})|(P{2,4}.{10}P{2,4})'  # pts5
+
+    PEROXISOME_IMPORT_1 = '\S\K\L'
+    PEROXISOME_IMPORT_2 = '\SP\L'
 
 
-protein_targeting_signals_exact_dict = {
-    PTS_EXACT.ER_IMPORT_EXACT: '\M\M\S\F\V\S\L\L\L\V\G\I\L\F\W\A\T\E\A\E\Q\L\T\K\C\E\V\F\Q',
-    PTS_EXACT.ER_RETENTION_EXACT: '\K\D\E\L',
-    PTS_EXACT.MITOCHONDRIA_IMPORT_EXACT: '\M\L\S\L\R\Q\S\I\R\F\F\K\P\A\T\R\T\L\C\S\S\R\Y\L\L',
-    PTS_EXACT.NLS_EXACT: '\P\P\K\K\K\R\K\V',
-    PTS_EXACT.PEROXISOME_IMPORT_EXACT: '\S\K\L'
-}
-
-class PTS_GENERAL(Enum):
-    ER_IMPORT = 1
-    ER_RETENTION = 2
-    NLS = 3
-    MITOCHONDRIA_IMPORT = 4
-    PEROXISOME_IMPORT = 5
-
-
-protein_targeting_signals_dict = {
-    PTS_GENERAL.ER_IMPORT: '\M\M\S\F\V\SO{7}A{2}O\TN\AN\Q\L\TP\CN\V\F\Q',
-    PTS_GENERAL.ER_RETENTION: 'PNN\L',
-    PTS_GENERAL.NLS: '\P\A\A\K\R\V\K\L\D',#'\KP.{1}P', #'\P\PP{5}\V',
-    PTS_GENERAL.MITOCHONDRIA_IMPORT: '\M\L\S\LP\Q\S\IP\F\FP\P\A\TP\T\L\C\S\SP\Y\L\L',
-    PTS_GENERAL.PEROXISOME_IMPORT: '\SP\L'
-}
+pts_to_run = {PTS.ER_IMPORT_3, PTS.MITOCHONDRIA_IMPORT_3, PTS.NLS_5}
