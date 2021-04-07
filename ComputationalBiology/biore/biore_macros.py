@@ -88,25 +88,45 @@ alphabets_dict = {
 
 
 class PTS(Enum):
-    ER_IMPORT_1 = '\M\M\S\F\V\S\L\L\L\V\G\I\L\F\W\A\T\E\A\E\Q\L\T\K\C\E\V\F\Q'  # Lehninger exact
-    ER_IMPORT_2 = '\M\M\S\F\V\SO{7}A{2}O\TN\AN\Q\L\TP\CN\V\F\Q'  # Lehninger general
+    ER_IMPORT_1 = '\L\L\L\V\G\I\L\F\W\A.\E.\E.{3}\K.\E'  # Lehninger exact
+    ER_IMPORT_2 = 'B{10}.N.N.{3}P.N'
     ER_IMPORT_3 = 'P+B{6-12}'  # pts5
+    ER_IMPORT_ALL = '(' + ER_IMPORT_1 + ')|' + \
+                    '(' + ER_IMPORT_2 + ')|' + \
+                    '(' + ER_IMPORT_3 + ')'
 
-    ER_RETENTION_1 = '\K\D\E\L'  # Lehninger exact
-    ER_RETENTION_2 = 'PNN\L'  # Lehninger general
 
-    MITOCHONDRIA_IMPORT_1 = '\M\L\S\L\R\Q\S\I\R\F\F\K\P\A\T\R\T\L\C\S\S\R\Y\L\L'  # Lehninger exact
-    MITOCHONDRIA_IMPORT_2 = '\M\L\S\LP\Q\S\IP\F\FP\P\A\TP\T\L\C\S\SP\Y\L\L'  # Lehninger general
-    MITOCHONDRIA_IMPORT_3 = r'([^\E\N\R\K][\R\K]){3,5}'  # pts5
+    MITOCHONDRIA_IMPORT_0 = '[^\R\K]{4}\R[^\R\K]{3}\R[^\R\K]{2}\K[^\R\K]{3}\R[^\R\K]{5}\R[^\R\K]{3}'  # Lehninger exact
+    MITOCHONDRIA_IMPORT_1 = '[^\R\K]{4}[\R\K][^\R\K]{3}[\R\K][^\R\K]{2}[\R\K][^\R\K]{3}[\R\K][^\R\K]{5}[\R\K][^\R\K]{3}'  # Lehninger exact
+    MITOCHONDRIA_IMPORT_2 = '[^P]{4}P[^P]{3}P[^P]{2}P[^P]{3}P[^P]{5}P[^P]{3}'  # Lehninger general
+    MITOCHONDRIA_IMPORT_3 = '([^\E\\N\R\K][\R\K]){3,5}'  # pts5
+    MITOCHONDRIA_IMPORT_4 = '([^\R\K]{2,5}[\R\K]){3,5}'
+    MITOCHONDRIA_IMPORT_ALL = '(' + MITOCHONDRIA_IMPORT_0 + ')|' + \
+                              '(' + MITOCHONDRIA_IMPORT_1 + ')|' + \
+                              '(' + MITOCHONDRIA_IMPORT_2 + ')|' + \
+                              '(' + MITOCHONDRIA_IMPORT_3 + ')|' + \
+                              '(' + MITOCHONDRIA_IMPORT_4 + ')'
 
-    NLS_1 = '\P\P\K\K\K\R\K\V'
+    NLS_1 = '\K\K\K\R\K'
     NLS_2 = '\P\A\A\K\R\V\K\L\D'
     NLS_3 = '\KP.{1}P'
     NLS_4 = '\P\PP{5}\V'
     NLS_5 = '(P{5})|(P{2,4}.{10}P{2,4})'  # pts5
+    NLS_ALL = '(' + NLS_1 + ')|' + \
+              '(' + NLS_2 + ')|' + \
+              '(' + NLS_3 + ')|' + \
+              '(' + NLS_4 + ')|' + \
+              '(' + NLS_5 + ')'
 
+
+
+    #try later maybe
+    ER_RETENTION_1 = '\K\D\E\L'  # Lehninger exact
+    ER_RETENTION_2 = 'PNN\L'  # Lehninger general
     PEROXISOME_IMPORT_1 = '\S\K\L'
     PEROXISOME_IMPORT_2 = '\SP\L'
 
 
-pts_to_run = {PTS.ER_IMPORT_3, PTS.MITOCHONDRIA_IMPORT_3, PTS.NLS_5}
+pts_to_run = [PTS.NLS_1, PTS.NLS_2, PTS.NLS_3, PTS.NLS_4, PTS.NLS_5, PTS.NLS_ALL]
+#pts_to_run = [PTS.MITOCHONDRIA_IMPORT_0, PTS.MITOCHONDRIA_IMPORT_1, PTS.MITOCHONDRIA_IMPORT_2, PTS.MITOCHONDRIA_IMPORT_3, PTS.MITOCHONDRIA_IMPORT_4, PTS.MITOCHONDRIA_IMPORT_ALL]
+#pts_to_run = [PTS.ER_IMPORT_1, PTS.ER_IMPORT_2, PTS.ER_IMPORT_3, PTS.ER_IMPORT_ALL]
