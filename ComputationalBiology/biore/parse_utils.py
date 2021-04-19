@@ -3,6 +3,9 @@
 import pandas as pd
 import re
 
+from ComputationalBiology.biore.biore_utils import aa_into_group
+
+
 def parse_file(file_path):
     """
     The function parses the given tab-separated file and returns a dataframe object
@@ -78,6 +81,9 @@ if __name__ == '__main__':
     df3 = df2.copy()
     df3 = df3[df3['helix_len'] == 10]
     df3['sequences_Helix'].to_csv('data/helix_10.csv', header=True, sep='\t', index=False)
+
+    df3['translated_into_groups'] = df2['sequences_Helix'].apply(lambda x: aa_into_group(x))
+    df3.to_csv('data/helix_10_groups.csv', header=True, index=False)
 
     import matplotlib.pyplot as plt
     plt.hist(df2['helix_len'], bins=100)

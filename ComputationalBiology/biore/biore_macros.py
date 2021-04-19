@@ -64,7 +64,29 @@ class AA(Enum):
     TYROSINE = 'Y'
 
 
-group_to_amino_acid_dict = {
+aa_to_group_dict = {AA.ALANINE.value: AA_GROUP.NON_POLAR.value,
+                    AA.CYSTEINE.value: AA_GROUP.POLAR.value,
+                    AA.ASPARTATE.value: AA_GROUP.NEGATIVE.value,
+                    AA.GLUTAMATE.value: AA_GROUP.NEGATIVE.value,
+                    AA.PHENYLALANINE.value: AA_GROUP.AROMATIC.value,
+                    AA.GLYCINE.value: AA_GROUP.NON_POLAR.value,
+                    AA.HISTIDINE.value: AA_GROUP.POSITIVE.value,
+                    AA.ISOLEUCINE.value: AA_GROUP.NON_POLAR.value,
+                    AA.LYSINE.value: AA_GROUP.POSITIVE.value,
+                    AA.LEUCINE.value: AA_GROUP.NON_POLAR.value,
+                    AA.METHIONINE.value: AA_GROUP.NON_POLAR.value,
+                    AA.ASPARGINE.value: AA_GROUP.POLAR.value,
+                    AA.PROLINE.value: AA_GROUP.NON_POLAR.value,
+                    AA.GLUTAMINE.value: AA_GROUP.POLAR.value,
+                    AA.ARGININE.value: AA_GROUP.POSITIVE.value,
+                    AA.SERINE.value: AA_GROUP.POLAR.value,
+                    AA.THREONINE.value: AA_GROUP.POLAR.value,
+                    AA.VALINE.value: AA_GROUP.NON_POLAR.value,
+                    AA.TRYPTOPHANE.value: AA_GROUP.AROMATIC.value,
+                    AA.TYROSINE.value: AA_GROUP.AROMATIC.value
+                    }
+
+group_to_aa_dict = {
     AA_GROUP.POSITIVE.value: [AA.LYSINE.value, AA.ARGININE.value, AA.HISTIDINE.value],
     AA_GROUP.NEGATIVE.value: [AA.GLUTAMATE.value, AA.ASPARTATE.value],
     AA_GROUP.AROMATIC.value: [AA.PHENYLALANINE.value, AA.TYROSINE.value, AA.TRYPTOPHANE.value],
@@ -74,10 +96,10 @@ group_to_amino_acid_dict = {
     AA_GROUP.POLAR.value: [AA.SERINE.value, AA.THREONINE.value, AA.CYSTEINE.value,
                            AA.ASPARGINE.value, AA.GLUTAMINE.value],
     AA_GROUP.HYDROPHOBIC.value: [AA.ALANINE.value, AA.VALINE.value, AA.ISOLEUCINE.value, AA.LEUCINE.value,
-                           AA.METHIONINE.value, AA.PHENYLALANINE.value, AA.TYROSINE.value, AA.TRYPTOPHANE.value],
+                                 AA.METHIONINE.value, AA.PHENYLALANINE.value, AA.TYROSINE.value, AA.TRYPTOPHANE.value],
     AA_GROUP.HYDROPHILIC.value: [AA.LYSINE.value, AA.ARGININE.value, AA.HISTIDINE.value,
-                           AA.ASPARTATE.value, AA.GLUTAMATE.value,
-                           AA.SERINE.value, AA.THREONINE.value, AA.ASPARGINE.value, AA.GLUTAMINE.value]
+                                 AA.ASPARTATE.value, AA.GLUTAMATE.value,
+                                 AA.SERINE.value, AA.THREONINE.value, AA.ASPARGINE.value, AA.GLUTAMINE.value]
 
 }
 
@@ -95,7 +117,6 @@ class PTS(Enum):
                     '(' + ER_IMPORT_2 + ')|' + \
                     '(' + ER_IMPORT_3 + ')'
 
-
     MITOCHONDRIA_IMPORT_0 = '[^\R\K]{4}\R[^\R\K]{3}\R[^\R\K]{2}\K[^\R\K]{3}\R[^\R\K]{5}\R[^\R\K]{3}'  # Lehninger exact
     MITOCHONDRIA_IMPORT_1 = '[^\R\K]{4}[\R\K][^\R\K]{3}[\R\K][^\R\K]{2}[\R\K][^\R\K]{3}[\R\K][^\R\K]{5}[\R\K][^\R\K]{3}'  # Lehninger exact
     MITOCHONDRIA_IMPORT_2 = '[^P]{4}P[^P]{3}P[^P]{2}P[^P]{3}P[^P]{5}P[^P]{3}'  # Lehninger general
@@ -111,22 +132,24 @@ class PTS(Enum):
     NLS_2 = '\P\A\A\K\R\V\K\L\D'
     NLS_3 = '\KP.{1}P'
     NLS_4 = '\P\PP{5}\V'
-    NLS_5 = '(P{5})|(P{2,4}.{10}P{2,4})'  # pts5
+    NLS_5 = 'P{5}'
+    NLS_6 = 'P{2,4}.{9,11}P{2,4}'  # pts5
+    NLS_7 = 'P{2}.{10}P{2}'
     NLS_ALL = '(' + NLS_1 + ')|' + \
               '(' + NLS_2 + ')|' + \
               '(' + NLS_3 + ')|' + \
               '(' + NLS_4 + ')|' + \
-              '(' + NLS_5 + ')'
+              '(' + NLS_5 + ')|' + \
+              '(' + NLS_6 + ')|' + \
+              '(' + NLS_7 + ')'
 
-
-
-    #try later maybe
+    # try later maybe
     ER_RETENTION_1 = '\K\D\E\L'  # Lehninger exact
     ER_RETENTION_2 = 'PNN\L'  # Lehninger general
     PEROXISOME_IMPORT_1 = '\S\K\L'
     PEROXISOME_IMPORT_2 = '\SP\L'
 
-    #alpha helix regexes
+    # alpha helix regexes
     ALPHA_HELIX_1 = '[\A\E\L\M\K]{10}'
     ALPHA_HELIX_2 = '[^\P\G\Y\S]{10}'
     ALPHA_HELIX_ALL = '(' + ALPHA_HELIX_1 + ')|' + \
@@ -134,7 +157,7 @@ class PTS(Enum):
 
 
 pts_to_run = [PTS.NLS_ALL]
-#pts_to_run = [PTS.NLS_1, PTS.NLS_2, PTS.NLS_3, PTS.NLS_4, PTS.NLS_5, PTS.NLS_ALL]
-#pts_to_run = [PTS.MITOCHONDRIA_IMPORT_0, PTS.MITOCHONDRIA_IMPORT_1, PTS.MITOCHONDRIA_IMPORT_2, PTS.MITOCHONDRIA_IMPORT_3, PTS.MITOCHONDRIA_IMPORT_4, PTS.MITOCHONDRIA_IMPORT_ALL]
-#pts_to_run = [PTS.ER_IMPORT_1, PTS.ER_IMPORT_2, PTS.ER_IMPORT_3, PTS.ER_IMPORT_ALL]
-#pts_to_run = [PTS.ALPHA_HELIX_1, PTS.ALPHA_HELIX_2, PTS.ALPHA_HELIX_ALL]
+# pts_to_run = [PTS.NLS_1, PTS.NLS_2, PTS.NLS_3, PTS.NLS_4, PTS.NLS_5, PTS.NLS_6, PTS.NLS_ALL]
+# pts_to_run = [PTS.MITOCHONDRIA_IMPORT_0, PTS.MITOCHONDRIA_IMPORT_1, PTS.MITOCHONDRIA_IMPORT_2, PTS.MITOCHONDRIA_IMPORT_3, PTS.MITOCHONDRIA_IMPORT_4, PTS.MITOCHONDRIA_IMPORT_ALL]
+# pts_to_run = [PTS.ER_IMPORT_1, PTS.ER_IMPORT_2, PTS.ER_IMPORT_3, PTS.ER_IMPORT_ALL]
+# pts_to_run = [PTS.ALPHA_HELIX_1, PTS.ALPHA_HELIX_2, PTS.ALPHA_HELIX_ALL]
