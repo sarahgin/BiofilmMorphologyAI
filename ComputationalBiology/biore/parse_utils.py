@@ -22,13 +22,13 @@ def get_subsequences(motif_info: str, sequence: str):
     """
     res = []
     # find all matches of (HELIX (\d+)..(\d+))# TODO: make general fo beta
-    all_matches = re.findall('HELIX (\d+)..(\d+)', motif_info)
+    all_matches = re.findall('HELIX (\d+)\\.\\.(\d+)', motif_info)
     assert(all_matches is not None)
 
     # go over the matches
     for start, end in all_matches:
         # print(int(start)- int(end))
-        res.append(sequence[int(start): int(end)])
+        res.append(sequence[int(start)-1:int(end)+1-1])
 
     return res
 
@@ -59,15 +59,33 @@ def motif_sequences_to_file(df: pd.DataFrame, col_name: str):
 
 
 if __name__ == '__main__':
-    file_path = 'data/human1.tab'
-    df = parse_file(file_path)
+    # parsing file to create all helices:
+    if False:
+        file_path = 'data/human1.tab'
+        df = parse_file(file_path)
 
-    df_all_helices = motif_sequences_to_file(df=df, col_name='Helix')
+        df_all_helices = motif_sequences_to_file(df=df, col_name='Helix')
 
-    df_all_helices.to_csv('data/all_helix.csv', header=False, sep='\t', index=False)
+        df_all_helices.to_csv('data/all_helix.csv', header=True, sep='\t', index=False)
 
-    print(df.columns)
-    print(df.iloc[0, 'Sequence'])
-    print(df.iloc[0, 'Helix'])
+    #read helix data:
+    print('reading...')
+    df2 = pd.read_csv('data/all_helix.csv')
+    df2['helix_len'] = df2['sequences_Helix'].apply(lambda x: len(x))
+    df2.describe()
 
-    print('in main:', df.head())
+    # get only 10-mers
+    df3 = df2.copy()
+    df3 = df3[df3['helix_len'] == 10]
+    df3['sequences_Helix'].to_csv('data/helix_10.csv', header=True, sep='\t', index=False)
+
+    import matplotlib.pyplot as plt
+    plt.hist(df2['helix_len'], bins=100)
+    plt.show()
+
+    print('done')
+    # print(df.columns)
+    # print(df.iloc[0, 'Sequence'])
+    # print(df.iloc[0, 'Helix'])
+    #
+    # print('in main:', df.head())
