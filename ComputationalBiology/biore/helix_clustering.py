@@ -7,16 +7,18 @@ import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 import logomaker
 
+#cluster_by_column = 'translated_into_groups'
+cluster_by_column = 'sequences_Helix'
 
 def hamming_distance(str1, str2):
     return sum(c1 != c2 for c1, c2 in zip(str1, str2))
 
 
 def create_logo(items):
-    df = pd.DataFrame(items, columns=['translated_into_groups'])
+    df = pd.DataFrame(items, columns=[cluster_by_column])
 
     for p in range(10):
-        df['position_' + str(p)] = df['translated_into_groups'].apply(lambda x: x[p])
+        df['position_' + str(p)] = df[cluster_by_column].apply(lambda x: x[p])
 
     df_logo = pd.DataFrame(np.zeros((10, 5)), columns=aa_group_list_logo)
 
@@ -82,7 +84,7 @@ def search_num_cluster(scores):
 if __name__ == '__main__':
     aa_group_list_logo = ['P', 'N', 'R', 'O', 'L']
     df = pd.read_csv('data/helix_10_groups.csv')
-    df = df.sort_values(by=['translated_into_groups'])
+    df = df.sort_values(by=[cluster_by_column])
 
     # df1 = df.iloc[0:100]
     # df2 = df.iloc[3500:3600]
@@ -100,7 +102,7 @@ if __name__ == '__main__':
                 print(i, ' out of ', num_seqs)
 
             for j in range(0, num_seqs):
-                score = hamming_distance(df.loc[i, 'translated_into_groups'], df.loc[j, 'translated_into_groups'])
+                score = hamming_distance(df.loc[i, cluster_by_column], df.loc[j, cluster_by_column])
                 scores[i][j] = score
         # save to pickle
         with open(SCORES_PICKLE_FILE, 'wb') as pickle_file:
@@ -110,14 +112,13 @@ if __name__ == '__main__':
             scores = pickle.load(file=pickle_file)
     if True:
         # k-means clustering of helix sequences
-        num_clusters = 50
+        num_clusters = 10
         kmeans = KMeans(num_clusters, init='k-means++')
         results = kmeans.fit(scores)
         labels = results.labels_
         clusters = [[] for i in range(num_clusters)]
         for i in range(0, num_seqs):
-            # clusters[labels[i]].append(df.loc[i, 'translated_into_groups'])
-            clusters[labels[i]].append(df.loc[i, 'sequences_Helix'])
+            clusters[labels[i]].append(df.loc[i, cluster_by_column])
 
         # create logo for each cluster
         c = 1
