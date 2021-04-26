@@ -4,7 +4,7 @@ import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import sklearn.cluster as cluster
+from sklearn.cluster import KMeans
 import logomaker
 
 
@@ -45,6 +45,36 @@ def create_logo(items):
     ss_logo.ax.set_yticks([0, .5, 1])
     ss_logo.ax.axvline(2.5, color='k', linewidth=1, linestyle=':')
     ss_logo.ax.set_ylabel('probability')
+    return ss_logo
+
+
+def search_num_cluster(scores):
+    """
+    :param scores: Data for running K-means, in this case a list of lists
+    """
+    # run kmeans for different values of K:
+
+    errors = []  # vector for errors
+    k_range = range(2, 200)
+    for k in k_range:
+        print(k)
+        kmeans = KMeans(n_clusters=k)
+        # kmeans = KMeans(n_clusters=k, init='k-means++', max_iter=300, n_init=10, random_state=0)
+        kmeans.fit(scores)  # kmeans algorithm fits to the X dataset
+
+        errors.append(kmeans.inertia_)
+
+        # label = kmeans.labels_
+        # from sklearn.metrics import silhouette_score
+        # sil_coeff = silhouette_score(scores, label, metric='euclidean')
+
+        # kmeans inertia_ attribute is:  Sum of squared distances of samples to their closest cluster center.
+
+    # Plot the elbow graph
+    plt.plot(k_range, errors)
+    plt.title('The Elbow Method Graph')
+    plt.xlabel('Number of clusters')
+    plt.ylabel('errors')
     plt.show()
 
 
@@ -54,9 +84,9 @@ if __name__ == '__main__':
     df = pd.read_csv('data/helix_10_groups.csv')
     df = df.sort_values(by=['translated_into_groups'])
 
-    #df1 = df.iloc[0:100]
-    #df2 = df.iloc[3500:3600]
-    #df = df1.append(df2, ignore_index=True)
+    # df1 = df.iloc[0:100]
+    # df2 = df.iloc[3500:3600]
+    # df = df1.append(df2, ignore_index=True)
 
     num_seqs = len(df)
 
@@ -80,15 +110,19 @@ if __name__ == '__main__':
             scores = pickle.load(file=pickle_file)
     if True:
         # k-means clustering of helix sequences
-        num_clusters = 10
-        kmeans = cluster.KMeans(num_clusters)
+        num_clusters = 50
+        kmeans = KMeans(num_clusters, init='k-means++')
         results = kmeans.fit(scores)
         labels = results.labels_
         clusters = [[] for i in range(num_clusters)]
         for i in range(0, num_seqs):
-            clusters[labels[i]].append(df.loc[i, 'translated_into_groups'])
+            # clusters[labels[i]].append(df.loc[i, 'translated_into_groups'])
+            clusters[labels[i]].append(df.loc[i, 'sequences_Helix'])
 
         # create logo for each cluster
+        c = 1
         for items in clusters:
-            create_logo(items)
-            plt.show()
+            logo = create_logo(items)
+            plt.title('Number of helices in this cluster: ' + str(len(items)))
+            logo.fig.savefig('./data/cluster_' + str(c) + '.png')
+            c = c + 1
