@@ -7,8 +7,13 @@ import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 import logomaker
 
-#cluster_by_column = 'translated_into_groups'
+# cluster_by_column = 'translated_into_groups'
 cluster_by_column = 'sequences_Helix'
+helix_length = 10
+aa_group_list_logo = ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W',
+                      'Y']
+alphabet_size = len(aa_group_list_logo)
+
 
 def hamming_distance(str1, str2):
     return sum(c1 != c2 for c1, c2 in zip(str1, str2))
@@ -17,12 +22,12 @@ def hamming_distance(str1, str2):
 def create_logo(items):
     df = pd.DataFrame(items, columns=[cluster_by_column])
 
-    for p in range(10):
+    for p in range(helix_length):
         df['position_' + str(p)] = df[cluster_by_column].apply(lambda x: x[p])
 
-    df_logo = pd.DataFrame(np.zeros((10, 5)), columns=aa_group_list_logo)
+    df_logo = pd.DataFrame(np.zeros((helix_length, alphabet_size)), columns=aa_group_list_logo)
 
-    for p in range(10):
+    for p in range(helix_length):
         for g in aa_group_list_logo:
             df_logo.loc[p, g] = (sum(df['position_' + str(p)] == g))
 
@@ -82,7 +87,6 @@ def search_num_cluster(scores):
 
 # this main does kmeans over 10-length helix sequences (that were translated into groups)
 if __name__ == '__main__':
-    aa_group_list_logo = ['P', 'N', 'R', 'O', 'L']
     df = pd.read_csv('data/helix_10_groups.csv')
     df = df.sort_values(by=[cluster_by_column])
 
