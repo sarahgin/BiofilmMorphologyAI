@@ -65,6 +65,10 @@ if __name__ == '__main__':
         # compute scores
         scores = [[0 for i in range(num_seqs)] for j in range(num_seqs)]
         for i in range(0, num_seqs):
+
+            if i % 100 == 0:  # printing for debug only
+                print(i, ' out of ', num_seqs)
+
             for j in range(0, num_seqs):
                 score = hamming_distance(df.loc[i, 'translated_into_groups'], df.loc[j, 'translated_into_groups'])
                 scores[i][j] = score
