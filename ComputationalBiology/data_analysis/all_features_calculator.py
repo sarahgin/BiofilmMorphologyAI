@@ -76,7 +76,7 @@ protein_features_map = {
 }
 
 kmer_features_map = {
-    KmerFeatures.PREFIX_SUFFIX_DICT: create_prefix_suffix_dict,
+    KmerFeatures.PREFIX_SUFFIX_DICT: create_gene_prefix_suffix_dict,
 
     # GeneralFeatures.HEXAMER_DICT: compute_hexamer_positions,
     # GeneralFeatures.HEXAMER_NEXT_NUCLEOTIDE: compute_hexamer_next_nucleotide,

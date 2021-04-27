@@ -85,17 +85,19 @@ def compute_all_kmer_positions(sequence: str, k: int,
     return result
 
 
-def create_prefix_suffix_dict(gene: Gene,
+
+def create_prefix_suffix_dict(seq: str,
                               prefix_length_min,
                               prefix_length_max,
                               suffix_length_min,
-                              suffix_length_max):
-    seq = gene.coding_sequence
+                              suffix_length_max,
+                              codon_start=1):
+    # seq = gene.coding_sequence
     result = {}
     prefix_counts_dict = {}
     # Note: if there are UTRs before 'AUG' (codon start), they are currently ignored
     # gene.codon_start might be ~= 0
-    for pos in range(gene.codon_start, len(seq) - 1):
+    for pos in range(codon_start, len(seq) - 1):
         for curr_prefix_len in range(prefix_length_min, prefix_length_max + 1):
             curr_prefix = seq[pos: pos + curr_prefix_len]
             for curr_suffix_len in range(suffix_length_min, suffix_length_max + 1):
@@ -115,6 +117,20 @@ def create_prefix_suffix_dict(gene: Gene,
                 else:
                     result[curr_prefix][curr_suffix] += 1
     return result, prefix_counts_dict
+
+
+def create_gene_prefix_suffix_dict(gene: Gene,
+                                   prefix_length_min,
+                                   prefix_length_max,
+                                   suffix_length_min,
+                                   suffix_length_max):
+
+    return create_prefix_suffix_dict(gene.coding_sequence,
+                                          prefix_length_min,
+                                          prefix_length_max,
+                                          suffix_length_min,
+                                          suffix_length_max,
+                                          gene.codon_start)
 
 
 def compute_hexamer_positions(gene: Gene):
