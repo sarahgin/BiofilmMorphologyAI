@@ -38,7 +38,8 @@ def create_kmers_df(species_df, product_type: str, min_gene_length=0, max_gene_l
 
     return pd.DataFrame(hex_dict_list)
 
-def create_prefix_suffix_agg_df(species_df, product_type: str, min_gene_length=0, max_gene_length=np.inf):
+
+def create_prefix_suffix_agg_df(species_df, product_type='CDS', min_gene_length=0, max_gene_length=np.inf):
     #Step 1: create a dict with hexamers as keys and values
     # are lists of all normalized positions
     next_prefix_suffix_agg_dict = {}
@@ -46,9 +47,11 @@ def create_prefix_suffix_agg_df(species_df, product_type: str, min_gene_length=0
     count = 0
 
     #filter out step
-    species_df = species_df[species_df['PRODUCT_TYPE'] == product_type]
-    species_df = species_df[species_df['DNA_LENGTH'] >= min_gene_length]
-    species_df = species_df[species_df['DNA_LENGTH'] <= max_gene_length]
+    if 'PRODUCT_TYPE' in species_df.columns:
+        species_df = species_df[species_df['PRODUCT_TYPE'] == product_type]
+    if 'DNA_LENGTH' in species_df.columns:
+        species_df = species_df[species_df['DNA_LENGTH'] >= min_gene_length]
+        species_df = species_df[species_df['DNA_LENGTH'] <= max_gene_length]
 
     print('Total number of genes to aggregate: ', len(species_df))
     for index, row in species_df.iterrows(): #for each Gene
