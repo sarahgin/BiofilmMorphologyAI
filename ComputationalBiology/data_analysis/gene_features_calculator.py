@@ -91,7 +91,7 @@ def create_prefix_suffix_dict(seq: str,
                               prefix_length_max,
                               suffix_length_min,
                               suffix_length_max,
-                              codon_start=1):
+                              codon_start=0):
     # seq = gene.coding_sequence
     result = {}
     prefix_counts_dict = {}
