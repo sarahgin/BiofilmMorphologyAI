@@ -7,11 +7,16 @@ import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 import logomaker
 
-# cluster_by_column = 'translated_into_groups'
-cluster_by_column = 'sequences_Helix'
 helix_length = 10
-aa_group_list_logo = ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W',
-                      'Y']
+
+cluster_by_column = 'translated_into_groups'
+aa_group_list_logo = ['B', 'Y']
+
+#cluster_by_column = 'translated_into_groups'
+#aa_group_list_logo = ['P', 'N', 'R', 'O', 'L']
+
+#cluster_by_column = 'sequences_Helix'
+#aa_group_list_logo = ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y']
 alphabet_size = len(aa_group_list_logo)
 
 
