@@ -64,6 +64,28 @@ class AA(Enum):
     TYROSINE = 'Y'
 
 
+aa_to_BY_dict = {AA.ALANINE.value: AA_GROUP.HYDROPHOBIC.value,
+                    AA.CYSTEINE.value: AA_GROUP.HYDROPHILIC.value,
+                    AA.ASPARTATE.value: AA_GROUP.HYDROPHILIC.value,
+                    AA.GLUTAMATE.value: AA_GROUP.HYDROPHILIC.value,
+                    AA.PHENYLALANINE.value: AA_GROUP.HYDROPHOBIC.value,
+                    AA.GLYCINE.value: AA_GROUP.HYDROPHILIC.value,
+                    AA.HISTIDINE.value: AA_GROUP.HYDROPHILIC.value,
+                    AA.ISOLEUCINE.value: AA_GROUP.HYDROPHOBIC.value,
+                    AA.LYSINE.value: AA_GROUP.HYDROPHILIC.value,
+                    AA.LEUCINE.value: AA_GROUP.HYDROPHOBIC.value,
+                    AA.METHIONINE.value: AA_GROUP.HYDROPHOBIC.value,
+                    AA.ASPARGINE.value: AA_GROUP.HYDROPHILIC.value,
+                    AA.PROLINE.value: AA_GROUP.HYDROPHOBIC.value,
+                    AA.GLUTAMINE.value: AA_GROUP.HYDROPHILIC.value,
+                    AA.ARGININE.value: AA_GROUP.HYDROPHILIC.value,
+                    AA.SERINE.value: AA_GROUP.HYDROPHILIC.value,
+                    AA.THREONINE.value: AA_GROUP.HYDROPHILIC.value,
+                    AA.VALINE.value: AA_GROUP.HYDROPHOBIC.value,
+                    AA.TRYPTOPHANE.value: AA_GROUP.HYDROPHOBIC.value,
+                    AA.TYROSINE.value: AA_GROUP.HYDROPHOBIC.value
+                    }
+
 aa_to_group_dict = {AA.ALANINE.value: AA_GROUP.NON_POLAR.value,
                     AA.CYSTEINE.value: AA_GROUP.POLAR.value,
                     AA.ASPARTATE.value: AA_GROUP.NEGATIVE.value,
@@ -96,10 +118,10 @@ group_to_aa_dict = {
     AA_GROUP.POLAR.value: [AA.SERINE.value, AA.THREONINE.value, AA.CYSTEINE.value,
                            AA.ASPARGINE.value, AA.GLUTAMINE.value],
     AA_GROUP.HYDROPHOBIC.value: [AA.ALANINE.value, AA.VALINE.value, AA.ISOLEUCINE.value, AA.LEUCINE.value,
-                                 AA.METHIONINE.value, AA.PHENYLALANINE.value, AA.TYROSINE.value, AA.TRYPTOPHANE.value],
+                                 AA.METHIONINE.value, AA.PHENYLALANINE.value, AA.TYROSINE.value, AA.TRYPTOPHANE.value, AA.PROLINE.value],
     AA_GROUP.HYDROPHILIC.value: [AA.LYSINE.value, AA.ARGININE.value, AA.HISTIDINE.value,
                                  AA.ASPARTATE.value, AA.GLUTAMATE.value,
-                                 AA.SERINE.value, AA.THREONINE.value, AA.ASPARGINE.value, AA.GLUTAMINE.value]
+                                 AA.SERINE.value, AA.THREONINE.value, AA.ASPARGINE.value, AA.GLUTAMINE.value, AA.CYSTEINE.value, AA.GLYCINE.value]
 
 }
 

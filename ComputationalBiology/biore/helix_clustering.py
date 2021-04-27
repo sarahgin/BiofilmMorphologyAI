@@ -9,7 +9,7 @@ import logomaker
 
 helix_length = 10
 
-cluster_by_column = 'translated_into_groups'
+cluster_by_column = 'translated_into_BY'
 aa_group_list_logo = ['B', 'Y']
 
 #cluster_by_column = 'translated_into_groups'
@@ -121,7 +121,7 @@ if __name__ == '__main__':
             scores = pickle.load(file=pickle_file)
     if True:
         # k-means clustering of helix sequences
-        num_clusters = 10
+        num_clusters = 2
         kmeans = KMeans(num_clusters, init='k-means++')
         results = kmeans.fit(scores)
         labels = results.labels_
