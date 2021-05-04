@@ -19,8 +19,8 @@ class GeneralFeatures(Enum):
     PRODUCT_TYPE = 4
     STRAND = 5
     PRODUCT_DESCRIPTION = 6
-    HEXAMER_DICT = 7
-    HEXAMER_NEXT_NUCLEOTIDE = 8
+    #HEXAMER_DICT = 7
+    #HEXAMER_NEXT_NUCLEOTIDE = 8
     # CODON_DICT = 9
     # TODO: add tss?
 
@@ -47,8 +47,7 @@ class KmerFeatures(Enum):
     PREFIX_SUFFIX_DICT = 1
 
 
-features_to_compute = {KmerFeatures.PREFIX_SUFFIX_DICT, GeneralFeatures.GENE_NAME, GeneralFeatures.GENE_ID,
-                       GeneralFeatures.PRODUCT_TYPE, GeneFeatures.DNA_LENGTH}
+features_to_compute = {}
 
 general_features_map = {
     GeneralFeatures.GENE_ID: get_gene_id,
@@ -114,27 +113,28 @@ def create_species_df(spp: Species):
 def create_gene_features_dict(gene: Gene):
     features_dict = {}
     for key in GeneralFeatures:
-        if key in features_to_compute:
+        if key in features_to_compute or len(features_to_compute) == 0:
             func = general_features_map[key]
             features_dict[key.name] = func(gene)
 
     for key in GeneFeatures:
-        if key in features_to_compute:
+        if key in features_to_compute or len(features_to_compute) == 0:
             func = gene_features_map[key]
             features_dict[key.name] = func(gene.coding_sequence)
 
-    for key in KmerFeatures:
-        if key in features_to_compute:
-            func = kmer_features_map[key]
-            features_dict[key.name] = func(gene,
-                                           PREFIX_LENGTH_MIN,
-                                           PREFIX_LENGTH_MAX,
-                                           SUFFIX_LENGTH_MIN,
-                                           SUFFIX_LENGTH_MAX)
+    #TEMPORARILY COMMENTED OUT
+    #for key in KmerFeatures:
+    #    if key in features_to_compute or len(features_to_compute) == 0:
+    #        func = kmer_features_map[key]
+    #        features_dict[key.name] = func(gene,
+    #                                       PREFIX_LENGTH_MIN,
+    #                                       PREFIX_LENGTH_MAX,
+    #                                       SUFFIX_LENGTH_MIN,
+    #                                       SUFFIX_LENGTH_MAX)
 
     if gene.gene_product is not None:
         for key in ProteinFeatures:
-            if key in features_to_compute:
+            if key in features_to_compute or len(features_to_compute) == 0:
                 func = protein_features_map[key]
                 features_dict[key.name] = func(gene.gene_product.translation)
 

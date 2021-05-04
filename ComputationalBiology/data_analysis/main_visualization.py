@@ -3,13 +3,11 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 from pandas import DataFrame
+import re
 
-from ComputationalBiology.bio_general.bio_utils import get_all_kmers
-from ComputationalBiology.data_analysis.all_features_calculator import GeneFeatures, ProteinFeatures, ValidAlphabet, \
-    compute_gc_content, compute_a_content
+from ComputationalBiology.data_analysis.all_features_calculator import GeneFeatures, ProteinFeatures
 from ComputationalBiology.file_utils.io_utils import create_dir_if_not_exists
-from ComputationalBiology.data_analysis.main_parser_features_calc import species_name, FEATURES_DF_FILE, KMERS_DF_FILE, \
-    NEXT_NT_DF_FILE
+from ComputationalBiology.data_analysis.main_parser_features_calc import species_name, FEATURES_DF_FILE
 
 
 def plot_hist_feature(df, feature_name: str, out_file='', show=False):
@@ -32,8 +30,8 @@ def plot_hist_feature(df, feature_name: str, out_file='', show=False):
 
 def plot_all_features_histograms(df: DataFrame, show=False):
     for gene_feature in list(GeneFeatures.__members__.keys()) + list(ProteinFeatures.__members__.keys()):
-        assert (gene_feature in df.columns)  # Assuming that the column exists
         print(gene_feature)
+        assert (gene_feature in df.columns)  # Assuming that the column exists
         out_file = '../../data/data_graphs/features_histograms/{}/{}.png'.format(species_name, gene_feature)
         create_dir_if_not_exists(out_file)
         plot_hist_feature(df, gene_feature, out_file=out_file, show=show)
@@ -51,80 +49,43 @@ def plot_all_features_heatmap(df, show=False):
     create_dir_if_not_exists(out_file)
     fig.savefig(out_file)
 
-
+#FOR POSTER GRAPHS ONLY
 if __name__ == '__main__':
-    print('Loading pickle file: {}...'.format(NEXT_NT_DF_FILE))
-    next_nt_df = pd.read_pickle(NEXT_NT_DF_FILE)
-    next_nt_df["SUM"] = next_nt_df[["A", "C", "G", "T"]].sum(axis=1)
-    next_nt_df["A_PER"] = next_nt_df["A"] / next_nt_df["SUM"] * 100
-    next_nt_df["C_PER"] = next_nt_df["C"] / next_nt_df["SUM"] * 100
-    next_nt_df["G_PER"] = next_nt_df["G"] / next_nt_df["SUM"] * 100
-    next_nt_df["T_PER"] = next_nt_df["T"] / next_nt_df["SUM"] * 100
+    FEATURES_DF_FILE_BS168 = '../../data/data_outputs/features_BS168.pickle'
+    df_all_BS168 = pd.read_pickle(FEATURES_DF_FILE_BS168)
+    df_cds_BS168 = df_all_BS168[df_all_BS168['PRODUCT_TYPE'] == 'CDS']
+    s1 = set(df_cds_BS168['GENE_NAME'])
+    s1_lower = []
+    for name in s1:
+        s1_lower.append(name.lower())
 
-    next_nt_df["MAX_PER"] = next_nt_df[["A_PER", "C_PER", "G_PER", "T_PER"]].max(axis=1)
-    plt.scatter(range(len(next_nt_df["MAX_PER"])), next_nt_df["MAX_PER"])
-    plt.show()
-    exit(0)
+    UNIPROT_FILE = '../../data/data_inputs/bs168_uniprot.tab'
+    df_UP = pd.read_csv(UNIPROT_FILE, sep='\t', header=0)
+    df_UP = df_UP.fillna('')
+    df_UP['isSecreted'] = df_UP['Subcellular location [CC]'].apply(lambda x: re.search('Secreted', x) is not None)
+    df_UP['isExtracellular'] = df_UP['Topological domain'].apply(lambda x: re.search('Extracellular', x) is not None)
 
-    # Load data and prepare df_cds:
-    print('Loading pickle file: {}...'.format(FEATURES_DF_FILE))
-    df_all = pd.read_pickle(FEATURES_DF_FILE)
-    df_cds = df_all[df_all['PRODUCT_TYPE'] == 'CDS']
+    s2 = set(df_UP['Gene names'])
+    s2_lower = []
+    for name in s2:
+        if isinstance(name, str):
+            gene_name = name.lower()
+            gene_name = gene_name.split()[0]
+            s2_lower.append(gene_name)
 
-    # Load kmer df file into df_kmers and create three new columns
-    kmers_dict_list = pd.read_pickle(KMERS_DF_FILE)
-    kmers_df = pd.DataFrame(kmers_dict_list)
-    kmers_df['MEAN'] = kmers_df['RELATIVE_POSITIONS'].apply(lambda x: np.mean(x))
-    kmers_df['VAR'] = kmers_df['RELATIVE_POSITIONS'].apply(lambda x: np.var(x))
-    kmers_df['COUNT'] = kmers_df['RELATIVE_POSITIONS'].apply(lambda x: len(x))
-    kmers_df['GC_CONTENT'] = kmers_df['KMER'].apply(lambda x: compute_gc_content(x))
+    sres = set(s1_lower).intersection(set(s2_lower))
+    print('done')
 
-    kmers_df['A'] = kmers_df['KMER'].apply(lambda x: compute_a_content(x))
+#if __name__ == '__main__':
+#    print('Loading pickle file: {}...'.format(FEATURES_DF_FILE))
+#    df_all = pd.read_pickle(FEATURES_DF_FILE)
+#    df_cds = df_all[df_all['PRODUCT_TYPE'] == 'CDS']
 
-    kmers_df['REL_POS_HIST_100'] = kmers_df['RELATIVE_POSITIONS'] \
-        .apply(lambda x: np.histogram(x, bins=100))
+#    # create features histograms and heatmap
+#    plot_all_features_histograms(df_cds)
+#    plot_all_features_heatmap(df_cds)
 
-    kmers_df['FIRST_BIN_BIAS'] = kmers_df['REL_POS_HIST_100'] \
-        .apply(lambda x: np.divide(x[0][0], np.mean(x[0][1:])))
+#    # scatter plot:
+#    #sns.jointplot(x='MELTING_POINT', y='GC_CONTENT', data=df_cds)
 
-    kmers_df['LAST_BIN_BIAS'] = kmers_df['REL_POS_HIST_100'] \
-        .apply(lambda x: np.divide(x[0][-1], np.mean(x[0][:-1])))
-
-    # compute correlation between FIRST_BIN_BIAS and GC_CONTENT
-    table = kmers_df[['COUNT', 'GC_CONTENT', 'FIRST_BIN_BIAS', 'LAST_BIN_BIAS', 'A']].corr()
-    fig = plt.figure(figsize=(8.0, 5.0))
-    sns.heatmap(table, annot=True)
-    plt.show()
-
-    # top frequent kmers position distribution box plot only
-    kmers_df_sorted = kmers_df.sort_values(by='COUNT', ascending=False)
-    plt.boxplot(kmers_df_sorted.iloc[range(-5, 5)]['RELATIVE_POSITIONS'])
-    plt.show()
-
-    # plot a histogram of all relative positions for most and least frequent kmers
-    for i in range(10):
-        most_frequent_pos_list = kmers_df_sorted.iloc[i]['RELATIVE_POSITIONS']
-        plt.figure(i)
-        plt.hist(most_frequent_pos_list, bins=100)
-        plt.title(kmers_df_sorted.iloc[i]['KMER'] + ' #: ' + str(len(most_frequent_pos_list)))
-        plt.show()
-
-    # boxplots of the three columns
-    # kmers_df.boxplot(column=['MEAN'])
-    # plt.title('MEAN')
-    # plt.show()
-    # kmers_df.boxplot(column=['VAR'])
-    # plt.title('VAR')
-    # plt.show()
-    # kmers_df.boxplot(column=['COUNT'])
-    # plt.title('COUNT')
-    # plt.show()
-
-    # create features histograms and heatmap
-    # plot_all_features_histograms(df_cds)
-    # plot_all_features_heatmap(df_cds)
-
-    # scatter plot:
-    # sns.jointplot(x='MELTING_POINT', y='GC_CONTENT', data=df_cds)
-
-    print('Done main_analysis')
+#    print('Done main_analysis')
