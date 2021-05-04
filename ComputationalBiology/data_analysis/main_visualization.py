@@ -64,7 +64,10 @@ if __name__ == '__main__':
     df_UP = df_UP.fillna('')
     df_UP['isSecreted'] = df_UP['Subcellular location [CC]'].apply(lambda x: re.search('Secreted', x) is not None)
     df_UP['isExtracellular'] = df_UP['Topological domain'].apply(lambda x: re.search('Extracellular', x) is not None)
+    df_UP['singleGeneName'] = df_UP['Gene names'].apply(lambda x: x.lower().split()[0])
 
+
+    # TODO:
     s2 = set(df_UP['Gene names'])
     s2_lower = []
     for name in s2:
