@@ -14,11 +14,11 @@ from ComputationalBiology.data_analysis.all_features_calculator import create_sp
 from ComputationalBiology.data_analysis.kmers_analysis import create_kmers_df, create_prefix_suffix_agg_df
 from ComputationalBiology.file_utils import genbank_parser
 
-#species_name = 'BS3610'
-#species_name = 'BS168'
-species_name = 'AL590842.1_EColi'
-#species_name = 'Bacillus-clausii'
-#species_name = 'UA159'
+# species_name = 'BS3610'
+species_name = 'BS168'
+# species_name = 'AL590842.1_EColi'
+# species_name = 'Bacillus-clausii'
+# species_name = 'UA159'
 
 overrideFeaturesFile = True
 FEATURES_DF_FILE = '../../data/data_outputs/features_' + species_name + '.pickle'

@@ -54,27 +54,27 @@ def plot_all_features_heatmap(df, show=False, suffix=''):
     fig.savefig(out_file)
 
 
-def plot_pca(df_joined):
+def plot_pca(df_joined, target_column):#='is_gene_of_interest'):
 
-    features =\
-        ['GC_CONTENT',
-     'DNA_LENGTH',
-     'HYDROPHOBIC_AA',
-     'HYDROPHILIC_AA',
-     'POLAR_AA',
+    features =[ \
+        # 'GC_CONTENT',
+     # 'DNA_LENGTH',
+     # 'HYDROPHOBIC_AA',
+     # 'HYDROPHILIC_AA',
+     # 'POLAR_AA',
      'AROMATIC_AA',
      'POSITIVE_AA',
-     'NEGATIVE_AA',
+     # 'NEGATIVE_AA',
      'NONPOLAR_AA',
-     'AA_LENGTH',
+     # 'AA_LENGTH',
      'H1',
-     'H2',
-     'H3',
-     'V',
-     'P1',
+     # 'H2',
+     # 'H3',
+     # 'V',
+     # 'P1',
      'P2',
      'SASA',
-     'NCI',
+     # 'NCI',
      'MASS'
      ]
 
@@ -83,7 +83,7 @@ def plot_pca(df_joined):
     x = df_joined.loc[:, features].values
 
     # Separating out the target
-    y = df_joined.loc[:, ['is_gene_of_interest']].values
+    y = df_joined.loc[:, [target_column]].values
 
     # Standardizing the features
     x = StandardScaler().fit_transform(x)
@@ -92,7 +92,7 @@ def plot_pca(df_joined):
     principalComponents = pca.fit_transform(x, )
     principalDf = pd.DataFrame(data=principalComponents, columns=['principal component 1', 'principal component 2'])
 
-    finalDf = pd.concat([principalDf, df_joined[['is_gene_of_interest']]], axis=1)
+    finalDf = pd.concat([principalDf, df_joined[[target_column]]], axis=1)
 
     fig = plt.figure(figsize=(8, 8))
     ax = fig.add_subplot(1, 1, 1)
@@ -100,13 +100,20 @@ def plot_pca(df_joined):
     ax.set_ylabel('Principal Component 2', fontsize=15)
     ax.set_title('2 component PCA', fontsize=20)
     # targets = [False, True]
-    targets = set(finalDf['is_gene_of_interest'].values)
-    colors = ['b', 'r']
-    for target, color in zip(targets, colors):
-        indicesToKeep = finalDf['is_gene_of_interest'] == target
+    # targets = list(set(finalDf[target_column].values))
+
+    # remove the most frequent labels and add to the end
+    from collections import Counter
+    label_counter_sorted = Counter(finalDf[target_column].values).most_common()
+    targets = [x[0] for x in label_counter_sorted]
+    print(Counter(finalDf[target_column].values))
+
+    colors = ['thistle', 'olive', 'skyblue', 'firebrick', 'gold', 'darkred']
+    for target, color, in zip(targets, colors):
+        indicesToKeep = finalDf[target_column] == target
         ax.scatter(finalDf.loc[indicesToKeep, 'principal component 1'],
                    finalDf.loc[indicesToKeep, 'principal component 2'],
-                   c=color, s=50)
+                   s=50, c=color)
     ax.legend(targets)
     ax.grid()
     plt.show()
@@ -152,7 +159,38 @@ if __name__ == '__main__':
     # set all labels to true just in order to have a single color
 
     df_joined['is_gene_of_interest'] = True
-    plot_pca(df_joined)
+
+    # adding new labels from:
+    # http://subtiwiki.uni-goettingen.de/wiki/index.php/Biofilm_formation#Key_genes_and_operons_involved_in_biofilm_formation
+    df_joined['is_gene_of_biofilm'] = 'other'
+
+    dict_biofilm = {
+                    'polysaccharide': ['epsA', 'epsB', 'epsC', 'epsD', 'epsE', 'epsF', 'epsG',
+                                       'epsH', 'epsI', 'epsJ', 'epsK', 'epsL', 'epsM', 'epsN', 'epsO', 'galE'],
+                    'amyloid': ['tapA', 'sipW', 'tasA'],
+                    'regulation': ['SlrR', 'SlrA', 'SinR', 'SinI', 'KinC', 'KinD', 'Spo0A', 'PtkA', 'TkmA', 'PtpZ',
+                     'DegU', 'DegQ', 'YmdB', 'FtsH', 'Veg', 'MstX', 'YugO'],
+                    'formation': ['AmpS', 'FloT', 'LuxS',  'RemA', 'RemB', 'Rny', 'Sfp/1', 'Sfp/2',
+                                  'SpeA', 'SpeD', 'SwrAA', 'YisP', 'YlbF', 'YmcA', 'YvcA', 'YwcC', 'YxaB'],
+                    'pellicle': ['Hag', 'FlgE', 'FliF', 'MotA', 'SigD', 'CheA',
+                     'CheY', 'CheD', 'CheV', 'HemAT']
+
+                    }
+    # # epsA - epsB - epsC - epsD - epsE - epsF - epsG - epsH - epsI - epsJ - epsK - epsL - epsM - epsN - epsO
+    # genes_biofilm = ['galE', 'tapA', 'sipW', 'tasA', 'bslA']
+    dict_biofilm_lower = {}
+    for k in dict_biofilm.keys():
+        dict_biofilm_lower[k] = [x.lower() for x in dict_biofilm[k]]
+    # genes_biofilm = [x.lower() for x in genes_biofilm]
+    # print('len(genes_biofilm):', len(genes_biofilm))
+    count_found = 0
+    for k_group in dict_biofilm_lower.keys():
+        for gene in dict_biofilm_lower[k_group]:
+            count_found += sum(df_joined['GENE_NAME'] == gene)
+            df_joined.loc[df_joined['GENE_NAME'] == gene, ['is_gene_of_biofilm']] = k_group
+    print(count_found)
+    # print(sum(df_joined['is_gene_of_biofilm']))
+    plot_pca(df_joined, target_column='is_gene_of_biofilm') #'is_gene_of_interest')
 
     print('done')
     # sres = set(s1_lower).intersection(set(s2_lower))
