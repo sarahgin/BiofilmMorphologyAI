@@ -15,9 +15,7 @@ from ComputationalBiology.data_analysis.kmers_analysis import create_kmers_df, c
 from ComputationalBiology.file_utils import genbank_parser
 
 # species_name = 'BS3610'
-#species_name = 'UA159'
-species_name = 'UA159_2'
-#species_name = 'BS168'
+species_name = 'BS168'
 # species_name = 'AL590842.1_EColi'
 # species_name = 'Bacillus-clausii'
 
