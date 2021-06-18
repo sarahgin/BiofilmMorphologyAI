@@ -21,7 +21,7 @@ def read_genbank_file(gene_bank_file: str):
 def get_coding_gene_seq(genome_sequence, start, end, strand):
 
     assert(0 <= start < len(genome_sequence))
-    assert(0 <= end < len(genome_sequence))
+    assert(0 < end <= len(genome_sequence))
 
     seq = genome_sequence[start:end]
     if strand == -1:
