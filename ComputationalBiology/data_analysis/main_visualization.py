@@ -120,93 +120,93 @@ def plot_pca(df_joined, target_column):#='is_gene_of_interest'):
     print('done')
 
 
-#FOR POSTER GRAPHS ONLY
-if __name__ == '__main__':
-    # FEATURES_DF_FILE = '../../data/data_outputs/features_BS168.pickle'
-    # FEATURES_DF_FILE
-    df_all_BS168 = pd.read_pickle(FEATURES_DF_FILE)
-    print(FEATURES_DF_FILE)
-    df_cds_BS168 = df_all_BS168[df_all_BS168['PRODUCT_TYPE'] == 'CDS'].copy()
-    # s1 = set(df_cds_BS168['GENE_NAME'])
-    # change to lower in order to join with the uniprot table
-    df_cds_BS168['GENE_NAME'] = df_cds_BS168['GENE_NAME'].apply(lambda x: x.lower())
-
-    use_uniprot = False
-    if use_uniprot:
-        # UNIPROT DF:
-        UNIPROT_FILE = '../../data/data_inputs/bs168_uniprot.tab'
-        df_UP = pd.read_csv(UNIPROT_FILE, sep='\t', header=0)
-        df_UP = df_UP.fillna('')
-        df_UP['isSecreted'] = df_UP['Subcellular location [CC]'].apply(lambda x: re.search('Secreted', x) is not None)
-        df_UP['isExtracellular'] = df_UP['Topological domain'].apply(lambda x: re.search('Extracellular', x) is not None)
-        # Note: we fetched only the 1st name in the list
-        df_UP['GENE_NAME'] = df_UP['Gene names'].apply(lambda x: x.lower().split()[0] if x != '' else 'NA_GENE_NAME_UNIPROT')
-
-        df_joined = pd.merge(df_cds_BS168, df_UP, on="GENE_NAME")
-
-        df_joined['is_gene_of_interest'] = df_joined['isSecreted'] | df_joined['isExtracellular']
-        df_genes_interest = df_joined[df_joined['isSecreted'] | df_joined['isExtracellular']]
-        df_other_genes = df_joined[~df_joined['isSecreted'] & ~df_joined['isExtracellular']]
-    else:
-        df_joined = df_cds_BS168
-        df_joined = df_joined.reset_index()
-
-    # plot_all_features_histograms(df_genes_interest, suffix='_Secreted_Extracellular')
-    # plot_all_features_histograms(df_other_genes, suffix='_Other')
-    # plot_all_features_heatmap(df_genes_interest, suffix='_Secreted_Extracellular')
-    # plot_all_features_heatmap(df_other_genes, suffix='_Other')
-
-    # set all labels to true just in order to have a single color
-
-    df_joined['is_gene_of_interest'] = True
-
-    # adding new labels from:
-    # http://subtiwiki.uni-goettingen.de/wiki/index.php/Biofilm_formation#Key_genes_and_operons_involved_in_biofilm_formation
-    df_joined['is_gene_of_biofilm'] = 'other'
-
-    dict_biofilm = {
-                    'polysaccharide': ['epsA', 'epsB', 'epsC', 'epsD', 'epsE', 'epsF', 'epsG',
-                                       'epsH', 'epsI', 'epsJ', 'epsK', 'epsL', 'epsM', 'epsN', 'epsO', 'galE'],
-                    'amyloid': ['tapA', 'sipW', 'tasA'],
-                    'regulation': ['SlrR', 'SlrA', 'SinR', 'SinI', 'KinC', 'KinD', 'Spo0A', 'PtkA', 'TkmA', 'PtpZ',
-                     'DegU', 'DegQ', 'YmdB', 'FtsH', 'Veg', 'MstX', 'YugO'],
-                    'formation': ['AmpS', 'FloT', 'LuxS',  'RemA', 'RemB', 'Rny', 'Sfp/1', 'Sfp/2',
-                                  'SpeA', 'SpeD', 'SwrAA', 'YisP', 'YlbF', 'YmcA', 'YvcA', 'YwcC', 'YxaB'],
-                    'pellicle': ['Hag', 'FlgE', 'FliF', 'MotA', 'SigD', 'CheA',
-                     'CheY', 'CheD', 'CheV', 'HemAT']
-
-                    }
-    # # epsA - epsB - epsC - epsD - epsE - epsF - epsG - epsH - epsI - epsJ - epsK - epsL - epsM - epsN - epsO
-    # genes_biofilm = ['galE', 'tapA', 'sipW', 'tasA', 'bslA']
-    dict_biofilm_lower = {}
-    for k in dict_biofilm.keys():
-        dict_biofilm_lower[k] = [x.lower() for x in dict_biofilm[k]]
-    # genes_biofilm = [x.lower() for x in genes_biofilm]
-    # print('len(genes_biofilm):', len(genes_biofilm))
-    count_found = 0
-    for k_group in dict_biofilm_lower.keys():
-        for gene in dict_biofilm_lower[k_group]:
-            count_found += sum(df_joined['GENE_NAME'] == gene)
-            df_joined.loc[df_joined['GENE_NAME'] == gene, ['is_gene_of_biofilm']] = k_group
-    print(count_found)
-    # print(sum(df_joined['is_gene_of_biofilm']))
-    plot_pca(df_joined, target_column='is_gene_of_biofilm') #'is_gene_of_interest')
-
-    print('done')
-    # sres = set(s1_lower).intersection(set(s2_lower))
-    # print('done')
+# #FOR POSTER GRAPHS ONLY
+# if __name__ == '__main__':
+#     # FEATURES_DF_FILE = '../../data/data_outputs/features_BS168.pickle'
+#     # FEATURES_DF_FILE
+#     df_all_BS168 = pd.read_pickle(FEATURES_DF_FILE)
+#     print(FEATURES_DF_FILE)
+#     df_cds_BS168 = df_all_BS168[df_all_BS168['PRODUCT_TYPE'] == 'CDS'].copy()
+#     # s1 = set(df_cds_BS168['GENE_NAME'])
+#     # change to lower in order to join with the uniprot table
+#     df_cds_BS168['GENE_NAME'] = df_cds_BS168['GENE_NAME'].apply(lambda x: x.lower())
+#
+#     use_uniprot = False
+#     if use_uniprot:
+#         # UNIPROT DF:
+#         UNIPROT_FILE = '../../data/data_inputs/bs168_uniprot.tab'
+#         df_UP = pd.read_csv(UNIPROT_FILE, sep='\t', header=0)
+#         df_UP = df_UP.fillna('')
+#         df_UP['isSecreted'] = df_UP['Subcellular location [CC]'].apply(lambda x: re.search('Secreted', x) is not None)
+#         df_UP['isExtracellular'] = df_UP['Topological domain'].apply(lambda x: re.search('Extracellular', x) is not None)
+#         # Note: we fetched only the 1st name in the list
+#         df_UP['GENE_NAME'] = df_UP['Gene names'].apply(lambda x: x.lower().split()[0] if x != '' else 'NA_GENE_NAME_UNIPROT')
+#
+#         df_joined = pd.merge(df_cds_BS168, df_UP, on="GENE_NAME")
+#
+#         df_joined['is_gene_of_interest'] = df_joined['isSecreted'] | df_joined['isExtracellular']
+#         df_genes_interest = df_joined[df_joined['isSecreted'] | df_joined['isExtracellular']]
+#         df_other_genes = df_joined[~df_joined['isSecreted'] & ~df_joined['isExtracellular']]
+#     else:
+#         df_joined = df_cds_BS168
+#         df_joined = df_joined.reset_index()
+#
+#     # plot_all_features_histograms(df_genes_interest, suffix='_Secreted_Extracellular')
+#     # plot_all_features_histograms(df_other_genes, suffix='_Other')
+#     # plot_all_features_heatmap(df_genes_interest, suffix='_Secreted_Extracellular')
+#     # plot_all_features_heatmap(df_other_genes, suffix='_Other')
+#
+#     # set all labels to true just in order to have a single color
+#
+#     df_joined['is_gene_of_interest'] = True
+#
+#     # adding new labels from:
+#     # http://subtiwiki.uni-goettingen.de/wiki/index.php/Biofilm_formation#Key_genes_and_operons_involved_in_biofilm_formation
+#     df_joined['is_gene_of_biofilm'] = 'other'
+#
+#     dict_biofilm = {
+#                     'polysaccharide': ['epsA', 'epsB', 'epsC', 'epsD', 'epsE', 'epsF', 'epsG',
+#                                        'epsH', 'epsI', 'epsJ', 'epsK', 'epsL', 'epsM', 'epsN', 'epsO', 'galE'],
+#                     'amyloid': ['tapA', 'sipW', 'tasA'],
+#                     'regulation': ['SlrR', 'SlrA', 'SinR', 'SinI', 'KinC', 'KinD', 'Spo0A', 'PtkA', 'TkmA', 'PtpZ',
+#                      'DegU', 'DegQ', 'YmdB', 'FtsH', 'Veg', 'MstX', 'YugO'],
+#                     'formation': ['AmpS', 'FloT', 'LuxS',  'RemA', 'RemB', 'Rny', 'Sfp/1', 'Sfp/2',
+#                                   'SpeA', 'SpeD', 'SwrAA', 'YisP', 'YlbF', 'YmcA', 'YvcA', 'YwcC', 'YxaB'],
+#                     'pellicle': ['Hag', 'FlgE', 'FliF', 'MotA', 'SigD', 'CheA',
+#                      'CheY', 'CheD', 'CheV', 'HemAT']
+#
+#                     }
+#     # # epsA - epsB - epsC - epsD - epsE - epsF - epsG - epsH - epsI - epsJ - epsK - epsL - epsM - epsN - epsO
+#     # genes_biofilm = ['galE', 'tapA', 'sipW', 'tasA', 'bslA']
+#     dict_biofilm_lower = {}
+#     for k in dict_biofilm.keys():
+#         dict_biofilm_lower[k] = [x.lower() for x in dict_biofilm[k]]
+#     # genes_biofilm = [x.lower() for x in genes_biofilm]
+#     # print('len(genes_biofilm):', len(genes_biofilm))
+#     count_found = 0
+#     for k_group in dict_biofilm_lower.keys():
+#         for gene in dict_biofilm_lower[k_group]:
+#             count_found += sum(df_joined['GENE_NAME'] == gene)
+#             df_joined.loc[df_joined['GENE_NAME'] == gene, ['is_gene_of_biofilm']] = k_group
+#     print(count_found)
+#     # print(sum(df_joined['is_gene_of_biofilm']))
+#     plot_pca(df_joined, target_column='is_gene_of_biofilm') #'is_gene_of_interest')
+#
+#     print('done')
+#     # sres = set(s1_lower).intersection(set(s2_lower))
+#     # print('done')
 
 # ORIGINAL MAIN:
-#if __name__ == '__main__':
-#    print('Loading pickle file: {}...'.format(FEATURES_DF_FILE))
-#    df_all = pd.read_pickle(FEATURES_DF_FILE)
-#    df_cds = df_all[df_all['PRODUCT_TYPE'] == 'CDS']
+if __name__ == '__main__':
+   print('Loading pickle file: {}...'.format(FEATURES_DF_FILE))
+   df_all = pd.read_pickle(FEATURES_DF_FILE)
+   df_cds = df_all[df_all['PRODUCT_TYPE'] == 'CDS']
 
-#    # create features histograms and heatmap
-#    plot_all_features_histograms(df_cds)
-#    plot_all_features_heatmap(df_cds)
+   # create features histograms and heatmap
+   plot_all_features_histograms(df_cds)
+   plot_all_features_heatmap(df_cds)
 
-#    # scatter plot:
-#    #sns.jointplot(x='MELTING_POINT', y='GC_CONTENT', data=df_cds)
+   # scatter plot:
+   #sns.jointplot(x='MELTING_POINT', y='GC_CONTENT', data=df_cds)
 
-#    print('Done main_analysis')
+   print('Done main_analysis')

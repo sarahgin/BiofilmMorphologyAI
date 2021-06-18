@@ -19,10 +19,10 @@ from ComputationalBiology.file_utils import genbank_parser
 # species_name = 'bacillus_subtilis'
 # species_name = 'escherichia_coli'
 # species_name = 'staph_aureus'
-# species_name = 'strep_mitis'
+species_name = 'strep_mitis'
 # species_name = 'strep_mutans'
 # species_name = 'strep_salivarius'
-species_name = 'strep_sanguinis'
+# species_name = 'strep_sanguinis'
 
 overrideSpeciesParserFile = True
 SPECIES_PARSER_FILE = '../../data/data_outputs/species_' + species_name + '.pickle'
