@@ -5,6 +5,7 @@ import numpy as np
 from pandas import DataFrame
 import re
 
+from ComputationalBiology.bio_general.bio_macros import species_names
 from ComputationalBiology.data_analysis.all_features_calculator import GeneFeatures, ProteinFeatures
 from ComputationalBiology.file_utils.io_utils import create_dir_if_not_exists
 from ComputationalBiology.data_analysis.main_parser_features_calc import species_name, FEATURES_DF_FILE
@@ -120,6 +121,75 @@ def plot_pca(df_joined, target_column):#='is_gene_of_interest'):
     print('done')
 
 
+# plot for each pair of species subplot of all features
+def plot_feature_many_species():
+    # create all pairs of species
+    rows = 4
+    cols = 5
+    feature_idx = 0
+    is_done = False
+
+    all_features = list(GeneFeatures.__members__.keys()) + list(ProteinFeatures.__members__.keys())
+    for i in range(len(species_names)):
+        species1 = species_names[i]
+        df1 = pd.read_pickle('../../data/data_outputs/features_' + species1 + '.pickle')
+        df1 = df1[df1['PRODUCT_TYPE'] == 'CDS']
+
+        for j in range(i+1, len(species_names)):
+            # plt.figure(figsize=(200, 200))
+            is_done = False
+            feature_idx = 0
+            species2 = species_names[j]
+
+            df2 = pd.read_pickle('../../data/data_outputs/features_' + species2 + '.pickle')
+            df2 = df2[df2['PRODUCT_TYPE'] == 'CDS']
+
+            print('Currently analyzing: ', species1, species2)
+            # for each feature
+            # for gene_feature in list(GeneFeatures.__members__.keys()) + list(ProteinFeatures.__members__.keys()):
+
+            fig, axs = plt.subplots(rows, cols)
+            fig.set_size_inches(20, 20, forward=True)
+            fig.suptitle('{}({})-{}({})'.format(species1, len(df1), species2, len(df2)))
+
+            for r in range(rows):
+                if is_done:
+                    break
+
+                for c in range(cols):
+                    print('feature_idx=', feature_idx, ' out of:', len(all_features)-1)
+                    gene_feature = all_features[feature_idx]
+                    # axs[r, c].plot(x, y)
+                    col1 = df1[gene_feature]
+                    col2 = df2[gene_feature]
+
+                    col1[~col1.isnull()].plot.hist(bins=100, ax=axs[r, c], alpha=0.5)
+                    col2[~col2.isnull()].plot.hist(bins=100, ax=axs[r, c], color='red', alpha=0.5)
+                    # col1[~col1.isnull()].plot(ax=axs[r, c])
+                    # col2[~col2.isnull()].plot(ax=axs[r, c], color='red')
+
+                    axs[r, c].set_title(gene_feature)
+                    feature_idx += 1
+                    if feature_idx == len(all_features) - 1:
+                        is_done = True
+                        break
+            for ax in axs.flat:
+                ax.set(xlabel='Counts', ylabel='Values')
+
+            # Hide x labels and tick labels for top plots and y ticks for right plots.
+            for ax in axs.flat:
+                ax.label_outer()
+            # plt.show()
+            out_file = '../../data/data_graphs/poster_histograms/{}_{}.png'.format(species1, species2)
+            create_dir_if_not_exists(out_file)
+            fig.savefig(out_file)
+#
+#     # plt.figure
+#     # for each file in  pickle dir
+#     # plt.subplot()
+
+
+
 # #FOR POSTER GRAPHS ONLY
 # if __name__ == '__main__':
 #     # FEATURES_DF_FILE = '../../data/data_outputs/features_BS168.pickle'
@@ -196,17 +266,20 @@ def plot_pca(df_joined, target_column):#='is_gene_of_interest'):
 #     # sres = set(s1_lower).intersection(set(s2_lower))
 #     # print('done')
 
-# ORIGINAL MAIN:
+# # ORIGINAL MAIN:
+# if __name__ == '__main__':
+#    print('Loading pickle file: {}...'.format(FEATURES_DF_FILE))
+#    df_all = pd.read_pickle(FEATURES_DF_FILE)
+#    df_cds = df_all[df_all['PRODUCT_TYPE'] == 'CDS']
+#
+#    # create features histograms and heatmap
+#    plot_all_features_histograms(df_cds)
+#    plot_all_features_heatmap(df_cds)
+#
+#    # scatter plot:
+#    #sns.jointplot(x='MELTING_POINT', y='GC_CONTENT', data=df_cds)
+#
+#    print('Done main_analysis')
+
 if __name__ == '__main__':
-   print('Loading pickle file: {}...'.format(FEATURES_DF_FILE))
-   df_all = pd.read_pickle(FEATURES_DF_FILE)
-   df_cds = df_all[df_all['PRODUCT_TYPE'] == 'CDS']
-
-   # create features histograms and heatmap
-   plot_all_features_histograms(df_cds)
-   plot_all_features_heatmap(df_cds)
-
-   # scatter plot:
-   #sns.jointplot(x='MELTING_POINT', y='GC_CONTENT', data=df_cds)
-
-   print('Done main_analysis')
+    plot_feature_many_species()
