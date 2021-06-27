@@ -28,3 +28,6 @@ def get_strand(gene: Gene):
 def get_product_description(gene: Gene):
     return gene.gene_product.description if gene.gene_product is not None else None
 
+
+def get_is_pseudo(gene: Gene):
+    return gene.gene_product.is_pseudo if gene.gene_product is not None else None

@@ -19,6 +19,7 @@ class GeneralFeatures(Enum):
     PRODUCT_TYPE = 4
     STRAND = 5
     PRODUCT_DESCRIPTION = 6
+    IS_PSEUDO = 7
     #HEXAMER_DICT = 7
     #HEXAMER_NEXT_NUCLEOTIDE = 8
     # CODON_DICT = 9
@@ -29,7 +30,6 @@ class GeneralFeatures(Enum):
 class GeneFeatures(Enum):
     GC_CONTENT = 1
     DNA_LENGTH = 2
-
 
 # features of the protein sequence
 class ProteinFeatures(Enum):
@@ -66,12 +66,12 @@ general_features_map = {
     GeneralFeatures.PRODUCT_TYPE: get_product_type,
     GeneralFeatures.STRAND: get_strand,
     GeneralFeatures.PRODUCT_DESCRIPTION: get_product_description,
+    GeneralFeatures.IS_PSEUDO: get_is_pseudo,
 }
 
 gene_features_map = {
     GeneFeatures.GC_CONTENT: compute_gc_content,
     GeneFeatures.DNA_LENGTH: compute_gene_length
-
 }
 
 protein_features_map = {

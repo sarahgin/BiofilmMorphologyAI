@@ -133,7 +133,7 @@ def plot_feature_many_species():
     for i in range(len(species_names)):
         species1 = species_names[i]
         df1 = pd.read_pickle('../../data/data_outputs/features_' + species1 + '.pickle')
-        df1 = df1[df1['PRODUCT_TYPE'] == 'CDS']
+        df1 = df1[df1['PRODUCT_TYPE'] == 'CDS' & df1['IS_PSEUDO'] == False]
 
         for j in range(i+1, len(species_names)):
             # plt.figure(figsize=(200, 200))
