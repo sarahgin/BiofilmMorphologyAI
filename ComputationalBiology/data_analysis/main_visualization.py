@@ -133,7 +133,7 @@ def plot_feature_many_species():
     for i in range(len(species_names)):
         species1 = species_names[i]
         df1 = pd.read_pickle('../../data/data_outputs/features_' + species1 + '.pickle')
-        df1 = df1[df1['PRODUCT_TYPE'] == 'CDS' & df1['IS_PSEUDO'] == False]
+        df1 = df1[(df1['PRODUCT_TYPE'] == 'CDS') & (df1['IS_PSEUDO'] == False)]
 
         for j in range(i+1, len(species_names)):
             # plt.figure(figsize=(200, 200))
@@ -142,7 +142,7 @@ def plot_feature_many_species():
             species2 = species_names[j]
 
             df2 = pd.read_pickle('../../data/data_outputs/features_' + species2 + '.pickle')
-            df2 = df2[df2['PRODUCT_TYPE'] == 'CDS']
+            df2 = df2[(df2['PRODUCT_TYPE'] == 'CDS') & (df2['IS_PSEUDO'] == False)]
 
             print('Currently analyzing: ', species1, species2)
             # for each feature
@@ -165,8 +165,6 @@ def plot_feature_many_species():
 
                     col1[~col1.isnull()].plot.hist(bins=100, ax=axs[r, c], alpha=0.5)
                     col2[~col2.isnull()].plot.hist(bins=100, ax=axs[r, c], color='red', alpha=0.5)
-                    # col1[~col1.isnull()].plot(ax=axs[r, c])
-                    # col2[~col2.isnull()].plot(ax=axs[r, c], color='red')
 
                     axs[r, c].set_title(gene_feature)
                     feature_idx += 1
