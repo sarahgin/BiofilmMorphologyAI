@@ -136,6 +136,18 @@ def compute_MASS(amino_acid_sequence: str):
     return compute_avg_protein_chemical_feature(amino_acid_sequence, 'MASS')
 
 
+def compute_PKA_COOH(amino_acid_sequence: str):
+    return compute_avg_protein_chemical_feature(amino_acid_sequence, 'PKA_COOH')
+
+
+def compute_PKA_NH(amino_acid_sequence: str):
+    return compute_avg_protein_chemical_feature(amino_acid_sequence, 'PKA_NH')
+
+
+def compute_PI(amino_acid_sequence: str):
+    return compute_avg_protein_chemical_feature(amino_acid_sequence, 'PI')
+
+
 def compute_avg_protein_chemical_feature(amino_acid_sequence: str, chemical_feature_name: str):
     s = 0
     for aa in amino_acid_sequence:

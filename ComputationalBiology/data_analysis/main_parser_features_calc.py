@@ -14,15 +14,16 @@ from ComputationalBiology.data_analysis.all_features_calculator import create_sp
 from ComputationalBiology.data_analysis.kmers_analysis import create_kmers_df, create_prefix_suffix_agg_df
 from ComputationalBiology.file_utils import genbank_parser
 
-# species_name = 'actinomyces_israelii'
-# species_name = 'bacillus_clausii'
-# species_name = 'bacillus_subtilis'
-# species_name = 'escherichia_coli'
-#species_name = 'staph_aureus'
+#species_name = 'actinomyces_israelii'
+#species_name = 'bacillus_clausii'
+#species_name = 'bacillus_subtilis'
+#species_name = 'escherichia_coli'
+##species_name = 'staph_aureus'
 #species_name = 'strep_mitis'
-# species_name = 'strep_mutans'
-# species_name = 'strep_salivarius'
+#species_name = 'strep_mutans'
+##species_name = 'strep_salivarius'
 species_name = 'strep_sanguinis'
+##species_name = 'helicobacter_pylori'
 
 overrideSpeciesParserFile = True
 SPECIES_PARSER_FILE = '../../data/data_outputs/species_' + species_name + '.pickle'

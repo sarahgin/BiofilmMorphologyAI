@@ -51,7 +51,10 @@ class ProteinFeatures(Enum):
     SASA = 15
     NCI = 16
     MASS = 17
-
+    #pH-related
+    PKA_COOH = 18
+    PKA_NH = 19,
+    PI = 20
 
 class KmerFeatures(Enum):
     PREFIX_SUFFIX_DICT = 1
@@ -92,7 +95,10 @@ protein_features_map = {
     ProteinFeatures.P2: compute_P2,
     ProteinFeatures.SASA: compute_SASA,
     ProteinFeatures.NCI: compute_NCI,
-    ProteinFeatures.MASS: compute_MASS
+    ProteinFeatures.MASS: compute_MASS,
+    ProteinFeatures.PKA_COOH: compute_PKA_COOH,
+    ProteinFeatures.PKA_NH: compute_PKA_NH,
+    ProteinFeatures.PI: compute_PI
 }
 
 kmer_features_map = {

@@ -124,7 +124,7 @@ def plot_pca(df_joined, target_column):#='is_gene_of_interest'):
 # plot for each pair of species subplot of all features
 def plot_feature_many_species():
     # create all pairs of species
-    rows = 4
+    rows = 5
     cols = 5
     feature_idx = 0
     is_done = False
@@ -163,8 +163,8 @@ def plot_feature_many_species():
                     col1 = df1[gene_feature]
                     col2 = df2[gene_feature]
 
-                    col1[~col1.isnull()].plot.hist(bins=100, ax=axs[r, c], alpha=0.5)
-                    col2[~col2.isnull()].plot.hist(bins=100, ax=axs[r, c], color='red', alpha=0.5)
+                    col1[~col1.isnull()].plot.hist(bins=100, ax=axs[r, c], alpha=0.5, density=True)
+                    col2[~col2.isnull()].plot.hist(bins=100, ax=axs[r, c], color='red', alpha=0.5, density=True)
 
                     axs[r, c].set_title(gene_feature)
                     feature_idx += 1
