@@ -14,6 +14,27 @@ from sklearn.decomposition import PCA
 # compute PCA on df_joined
 from sklearn.preprocessing import StandardScaler
 
+dict_gene_functions = {
+            'polysaccharide': ['epsA', 'epsB', 'epsC', 'epsD', 'epsE', 'epsF', 'epsG',
+                               'epsH', 'epsI', 'epsJ', 'epsK', 'epsL', 'epsM', 'epsN', 'epsO', 'galE'],
+            'amyloid': ['tapA', 'sipW', 'tasA'],
+            'regulation': ['SlrR', 'SlrA', 'SinR', 'SinI', 'KinC', 'KinD', 'Spo0A', 'PtkA', 'TkmA', 'PtpZ',
+                           'DegU', 'DegQ', 'YmdB', 'FtsH', 'Veg', 'MstX', 'YugO'],
+            'formation': ['AmpS', 'FloT', 'LuxS', 'RemA', 'RemB', 'Rny', 'Sfp/1', 'Sfp/2',
+                          'SpeA', 'SpeD', 'SwrAA', 'YisP', 'YlbF', 'YmcA', 'YvcA', 'YwcC', 'YxaB'],
+            'pellicle': ['Hag', 'FlgE', 'FliF', 'MotA', 'SigD', 'CheA',
+                         'CheY', 'CheD', 'CheV', 'HemAT'],
+            'secreted': ['abn2', 'abnA', 'amyE', 'aprE', 'artP', 'bdbA', 'bglC', 'blyA', 'bpr', 'bslA', 'csn',
+                         'cwlO', 'cwlQ', 'dacA', 'dacC', 'dacF', 'efeB', 'epeX', 'epr', 'fecC', 'feuA', 'fhuD',
+                         'flgB', 'flgC', 'flgE', 'flgK', 'flgM', 'flhO', 'flhP', 'fliD', 'fpbQ', 'ganB', 'ggt',
+                         'glpQ', 'gmuG', 'hag', 'lip', 'lipB', 'ltaS', 'lytD', 'melE', 'metQ', 'mpr', 'nprB',
+                         'nprE', 'oppA', 'pbpA', 'pbpB', 'pbpC', 'pbpX', 'pel', 'pelB', 'pelC', 'penP', 'pgdS',
+                         'phoA', 'phoB', 'phoD', 'phy', 'rbsB', 'sacB', 'sacC', 'sivA', 'sivC', 'sunA', 'tagT',
+                         'tasA', 'vpr', 'wapA', 'wprA', 'xepA', 'xkdG', 'xkdK', 'xkdM', 'xlyA', 'xlyB', 'xynA',
+                         'xynC', 'xynD', 'yacD', 'ybdN', 'ybdO', 'ybfO', 'ybxI', 'ydaJ', 'ydhF', 'ydjM', 'ydjN',
+                         'yfiY', 'yfkN', 'yhcR', 'yjcM', 'yjfA', 'yoaJ', 'yoaW', 'yocH', 'yolA', 'yolB', 'yqiH',
+                         'yqxI', 'yrpD', 'yurI', 'yvgO', 'ywaD', 'ywoF', 'yxaL', 'yxeB', 'yxkC', 'zinT']
+        }
 
 def plot_hist_feature(df, feature_name: str, out_file='', show=False):
     # filtering out non valid values
@@ -62,7 +83,7 @@ def plot_pca(df_labeled, target_column, sp_name, features_of_interest=[]):
         features = features_of_interest
 
     # Separating out the features
-    df_labeled = df_labeled.dropna(0) # NOTE: in BS3610 we had 58 genes of NAN in some of the features
+    df_labeled = df_labeled.dropna(0)  # NOTE: in BS3610 we had 58 genes of NAN in some of the features
     x = df_labeled.loc[:, features].values
 
     # Separating out the target
@@ -104,35 +125,59 @@ def plot_pca(df_labeled, target_column, sp_name, features_of_interest=[]):
     create_dir_if_not_exists(out_file)
     fig.savefig(out_file)
 
+
 # plot for each pair of species subplot of all features
 def plot_histograms_pairwise_species():
     # create all pairs of species
-    rows = 5
-    cols = 5
+    rows = 2
+    cols = 10
     feature_idx = 0
     is_done = False
 
-    all_features = list(GeneFeatures.__members__.keys()) + list(ProteinFeatures.__members__.keys())
+    #all_features = list(GeneFeatures.__members__.keys()) + list(ProteinFeatures.__members__.keys())
+    all_features = [
+        'GC_CONTENT',
+        'HYDROPHOBIC_AA',
+        'NEGATIVE_AA',
+        'NONPOLAR_AA',
+        'MASS',
+        'SASA',
+        'P2',
+        'V',
+        'PI',
+        'H1']
     for i in range(len(species_names)):
         species1 = species_names[i]
-        df1 = pd.read_pickle('../../data/data_outputs/features_' + species1 + '.pickle')
-        df1 = df1[(df1['PRODUCT_TYPE'] == 'CDS') & (df1['IS_PSEUDO'] == False)]
+        goi_list = [item for sublist in list(dict_gene_functions.values()) for item in sublist]
 
-        for j in range(i+1, len(species_names)):
+        df1 = pd.read_pickle('../../data/data_outputs/features_' + species1 + '.pickle')
+        df1['GENE_NAME'] = df1['GENE_NAME'].apply(lambda x: x.lower())
+        df1 = df1[(df1['PRODUCT_TYPE'] == 'CDS') & (df1['IS_PSEUDO'] == False)]
+        df1 = mark_genes_of_interest(df1, goi_list)
+        #df1 = df1[df1['is_gene_of_interest'] == True]
+
+        print('df1 len: ', len(df1))
+        for j in range(i + 1, len(species_names)):
             # plt.figure(figsize=(200, 200))
             is_done = False
             feature_idx = 0
             species2 = species_names[j]
 
             df2 = pd.read_pickle('../../data/data_outputs/features_' + species2 + '.pickle')
+            df2['GENE_NAME'] = df2['GENE_NAME'].apply(lambda x: x.lower())
             df2 = df2[(df2['PRODUCT_TYPE'] == 'CDS') & (df2['IS_PSEUDO'] == False)]
-
+            df2 = mark_genes_of_interest(df2, goi_list)
+            #df2 = df2[df2['is_gene_of_interest'] == True]
+            print('df2 len: ', len(df2))
             print('Currently analyzing: ', species1, species2)
             # for each feature
             # for gene_feature in list(GeneFeatures.__members__.keys()) + list(ProteinFeatures.__members__.keys()):
 
             fig, axs = plt.subplots(rows, cols)
-            fig.set_size_inches(20, 20, forward=True)
+            fig.set_size_inches(60, 10, forward=True)
+
+            plt.rc('font', size=22)
+
             fig.suptitle('{}({})-{}({})'.format(species1, len(df1), species2, len(df2)))
 
             for r in range(rows):
@@ -140,8 +185,8 @@ def plot_histograms_pairwise_species():
                     break
 
                 for c in range(cols):
-                    print('feature_idx=', feature_idx, ' out of:', len(all_features)-1)
                     gene_feature = all_features[feature_idx]
+                    print('feature=', gene_feature, ' feature_idx=', feature_idx, ' out of:', len(all_features) - 1)
                     # axs[r, c].plot(x, y)
                     col1 = df1[gene_feature]
                     col2 = df2[gene_feature]
@@ -151,7 +196,7 @@ def plot_histograms_pairwise_species():
 
                     axs[r, c].set_title(gene_feature)
                     feature_idx += 1
-                    if feature_idx == len(all_features) - 1:
+                    if feature_idx == len(all_features):
                         is_done = True
                         break
             for ax in axs.flat:
@@ -164,13 +209,15 @@ def plot_histograms_pairwise_species():
             out_file = '../../data/data_graphs/poster_histograms/{}_{}.png'.format(species1, species2)
             create_dir_if_not_exists(out_file)
             fig.savefig(out_file)
+
+
 #
 #     # plt.figure
 #     # for each file in  pickle dir
 #     # plt.subplot()
 
 # #FOR POSTER GRAPHS ONLY
-def  plot_pca_one_species(df_species, species_name, add_function_labels=False, features_of_interest=[]):
+def plot_pca_one_species(df_species, species_name, add_function_labels=False, features_of_interest=[]):
     df_cds = df_species[df_species['PRODUCT_TYPE'] == 'CDS'].copy()
 
     # change to lower in order to join with the uniprot table
@@ -183,9 +230,11 @@ def  plot_pca_one_species(df_species, species_name, add_function_labels=False, f
         df_UP = pd.read_csv(UNIPROT_FILE, sep='\t', header=0)
         df_UP = df_UP.fillna('')
         df_UP['isSecreted'] = df_UP['Subcellular location [CC]'].apply(lambda x: re.search('Secreted', x) is not None)
-        df_UP['isExtracellular'] = df_UP['Topological domain'].apply(lambda x: re.search('Extracellular', x) is not None)
+        df_UP['isExtracellular'] = df_UP['Topological domain'].apply(
+            lambda x: re.search('Extracellular', x) is not None)
         # Note: we fetched only the 1st name in the list
-        df_UP['GENE_NAME'] = df_UP['Gene names'].apply(lambda x: x.lower().split()[0] if x != '' else 'NA_GENE_NAME_UNIPROT')
+        df_UP['GENE_NAME'] = df_UP['Gene names'].apply(
+            lambda x: x.lower().split()[0] if x != '' else 'NA_GENE_NAME_UNIPROT')
 
         df_joined = pd.merge(df_cds, df_UP, on="GENE_NAME")
 
@@ -203,35 +252,14 @@ def  plot_pca_one_species(df_species, species_name, add_function_labels=False, f
 
     # set all labels to true just in order to have a single color
     if not add_function_labels:
-        df_joined['is_gene_of_interest'] = True # for one coloring only
+        df_joined['is_gene_of_interest'] = True  # for one coloring only
 
     # adding new labels from:
     # http://subtiwiki.uni-goettingen.de/wiki/index.php/Biofilm_formation#Key_genes_and_operons_involved_in_biofilm_formation
     else:
         df_joined['is_gene_of_interest'] = 'other'
 
-        dict_gene_functions = {
-            'polysaccharide': ['epsA', 'epsB', 'epsC', 'epsD', 'epsE', 'epsF', 'epsG',
-                               'epsH', 'epsI', 'epsJ', 'epsK', 'epsL', 'epsM', 'epsN', 'epsO', 'galE'],
-            'amyloid': ['tapA', 'sipW', 'tasA'],
-            'regulation': ['SlrR', 'SlrA', 'SinR', 'SinI', 'KinC', 'KinD', 'Spo0A', 'PtkA', 'TkmA', 'PtpZ',
-                           'DegU', 'DegQ', 'YmdB', 'FtsH', 'Veg', 'MstX', 'YugO'],
-            'formation': ['AmpS', 'FloT', 'LuxS',  'RemA', 'RemB', 'Rny', 'Sfp/1', 'Sfp/2',
-                          'SpeA', 'SpeD', 'SwrAA', 'YisP', 'YlbF', 'YmcA', 'YvcA', 'YwcC', 'YxaB'],
-            'pellicle': ['Hag', 'FlgE', 'FliF', 'MotA', 'SigD', 'CheA',
-                         'CheY', 'CheD', 'CheV', 'HemAT'],
-            'secreted': ['abn2','abnA','amyE','aprE','artP','bdbA','bglC','blyA','bpr','bslA','csn',
-                         'cwlO','cwlQ','dacA','dacC','dacF','efeB','epeX','epr','fecC','feuA','fhuD',
-                         'flgB','flgC','flgE','flgK','flgM','flhO','flhP','fliD','fpbQ','ganB','ggt',
-                         'glpQ','gmuG','hag','lip','lipB','ltaS','lytD','melE','metQ','mpr','nprB',
-                         'nprE','oppA','pbpA','pbpB','pbpC','pbpX','pel','pelB','pelC','penP','pgdS',
-                         'phoA','phoB','phoD','phy','rbsB','sacB','sacC','sivA','sivC','sunA','tagT',
-                         'tasA','vpr','wapA','wprA','xepA','xkdG','xkdK','xkdM','xlyA','xlyB','xynA',
-                         'xynC','xynD','yacD','ybdN','ybdO','ybfO','ybxI','ydaJ','ydhF','ydjM','ydjN',
-                         'yfiY','yfkN','yhcR','yjcM','yjfA','yoaJ','yoaW','yocH','yolA','yolB','yqiH',
-                         'yqxI','yrpD','yurI','yvgO','ywaD','ywoF','yxaL','yxeB','yxkC','zinT']
-            # TODO: add secreted
-        }
+
         # epsA - epsB - epsC - epsD - epsE - epsF - epsG - epsH - epsI - epsJ - epsK - epsL - epsM - epsN - epsO
         # genes_biofilm = ['galE', 'tapA', 'sipW', 'tasA', 'bslA']
         dict_biofilm_lower = {}
@@ -253,6 +281,13 @@ def  plot_pca_one_species(df_species, species_name, add_function_labels=False, f
     # sres = set(s1_lower).intersection(set(s2_lower))
 
 
+def mark_genes_of_interest(df, genes_of_interest):
+    df['is_gene_of_interest'] = False
+    for gene in genes_of_interest:
+        df.loc[df['GENE_NAME'] == gene.lower(), ['is_gene_of_interest']] = True
+    return df
+
+
 # # ORIGINAL MAIN:
 # if __name__ == '__main__':
 #    print('Loading pickle file: {}...'.format(FEATURES_DF_FILE))
@@ -272,8 +307,8 @@ def  plot_pca_one_species(df_species, species_name, add_function_labels=False, f
 # last main:
 if __name__ == '__main__':
     # plot the features for all pairs of species - PART A of poster
-    # plot_histograms_pairwise_species()
-
+    plot_histograms_pairwise_species()
+    exit(0)
     df_mega = pd.DataFrame()
 
     # plotting PCA for all species
@@ -283,7 +318,6 @@ if __name__ == '__main__':
         df_species = pd.read_pickle(FEATURES_DF_FILE)
         plot_pca_one_species(df_species=df_species, species_name=species_names[i], add_function_labels=True,
                              features_of_interest=[])
-
 
         # concatenate the dataframes to create a "mega-species"
         # Stack the DataFrames on top of each other
