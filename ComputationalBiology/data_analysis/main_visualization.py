@@ -129,7 +129,7 @@ def plot_pca(df_labeled, target_column, sp_name, features_of_interest=[]):
 # plot for each pair of species subplot of all features
 def plot_histograms_pairwise_species():
     # create all pairs of species
-    rows = 2
+    rows = 1
     cols = 10
     feature_idx = 0
     is_done = False
@@ -176,7 +176,7 @@ def plot_histograms_pairwise_species():
             fig, axs = plt.subplots(rows, cols)
             fig.set_size_inches(60, 10, forward=True)
 
-            plt.rc('font', size=22)
+            plt.rc('font', size=7)
 
             fig.suptitle('{}({})-{}({})'.format(species1, len(df1), species2, len(df2)))
 
@@ -191,10 +191,16 @@ def plot_histograms_pairwise_species():
                     col1 = df1[gene_feature]
                     col2 = df2[gene_feature]
 
-                    col1[~col1.isnull()].plot.hist(bins=100, ax=axs[r, c], alpha=0.5, density=True)
-                    col2[~col2.isnull()].plot.hist(bins=100, ax=axs[r, c], color='red', alpha=0.5, density=True)
+                    if rows == 1:
+                        # specific code for plotting all of the subplots horizontally
+                        col1[~col1.isnull()].plot.hist(bins=100, ax=axs[c], alpha=0.5, density=True)
+                        col2[~col2.isnull()].plot.hist(bins=100, ax=axs[c], color='red', alpha=0.5, density=True)
+                        axs[c].set_title(gene_feature)
+                    else:
+                        col1[~col1.isnull()].plot.hist(bins=100, ax=axs[r, c], alpha=0.5, density=True)
+                        col2[~col2.isnull()].plot.hist(bins=100, ax=axs[r, c], color='red', alpha=0.5, density=True)
+                        axs[r, c].set_title(gene_feature)
 
-                    axs[r, c].set_title(gene_feature)
                     feature_idx += 1
                     if feature_idx == len(all_features):
                         is_done = True
@@ -209,6 +215,7 @@ def plot_histograms_pairwise_species():
             out_file = '../../data/data_graphs/poster_histograms/{}_{}.png'.format(species1, species2)
             create_dir_if_not_exists(out_file)
             fig.savefig(out_file)
+            plt.show()
 
 
 #
