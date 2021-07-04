@@ -174,10 +174,9 @@ def plot_histograms_pairwise_species():
             # for gene_feature in list(GeneFeatures.__members__.keys()) + list(ProteinFeatures.__members__.keys()):
 
             fig, axs = plt.subplots(rows, cols)
-            fig.set_size_inches(60, 10, forward=True)
+            fig.set_size_inches(60, 7, forward=True)
 
-            plt.rc('font', size=7)
-
+            plt.rc('font', size=20)
             fig.suptitle('{}({})-{}({})'.format(species1, len(df1), species2, len(df2)))
 
             for r in range(rows):
@@ -206,7 +205,11 @@ def plot_histograms_pairwise_species():
                         is_done = True
                         break
             for ax in axs.flat:
-                ax.set(xlabel='Counts', ylabel='Values')
+                # ax.set(xlabel='Counts', ylabel='Values')
+                ax.set_xlabel('Counts', fontsize=22)
+                ax.set_ylabel('Values', fontsize=22)
+                ax.tick_params(axis='both', which='major', labelsize=22)
+                ax.set(autoscale_on=True)
 
             # Hide x labels and tick labels for top plots and y ticks for right plots.
             for ax in axs.flat:
@@ -214,8 +217,8 @@ def plot_histograms_pairwise_species():
             # plt.show()
             out_file = '../../data/data_graphs/poster_histograms/{}_{}.png'.format(species1, species2)
             create_dir_if_not_exists(out_file)
-            fig.savefig(out_file)
-            plt.show()
+            fig.savefig(out_file, dpi=300)
+            # plt.show()
 
 
 #
