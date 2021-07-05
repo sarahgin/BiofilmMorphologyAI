@@ -154,7 +154,7 @@ def plot_histograms_pairwise_species():
         df1['GENE_NAME'] = df1['GENE_NAME'].apply(lambda x: x.lower())
         df1 = df1[(df1['PRODUCT_TYPE'] == 'CDS') & (df1['IS_PSEUDO'] == False)]
         df1 = mark_genes_of_interest(df1, goi_list)
-        #df1 = df1[df1['is_gene_of_interest'] == True]
+        df1 = df1[df1['is_gene_of_interest'] == True]
 
         print('df1 len: ', len(df1))
         for j in range(i + 1, len(species_names)):
@@ -167,14 +167,14 @@ def plot_histograms_pairwise_species():
             df2['GENE_NAME'] = df2['GENE_NAME'].apply(lambda x: x.lower())
             df2 = df2[(df2['PRODUCT_TYPE'] == 'CDS') & (df2['IS_PSEUDO'] == False)]
             df2 = mark_genes_of_interest(df2, goi_list)
-            #df2 = df2[df2['is_gene_of_interest'] == True]
+            df2 = df2[df2['is_gene_of_interest'] == True]
             print('df2 len: ', len(df2))
             print('Currently analyzing: ', species1, species2)
             # for each feature
             # for gene_feature in list(GeneFeatures.__members__.keys()) + list(ProteinFeatures.__members__.keys()):
 
             fig, axs = plt.subplots(rows, cols)
-            fig.set_size_inches(60, 7, forward=True)
+            fig.set_size_inches(60, 4, forward=True)
 
             plt.rc('font', size=20)
             fig.suptitle('{}({})-{}({})'.format(species1, len(df1), species2, len(df2)))
@@ -205,10 +205,10 @@ def plot_histograms_pairwise_species():
                         is_done = True
                         break
             for ax in axs.flat:
-                ax.set_xlabel('Counts', fontsize=22)
-                ax.set_ylabel('Values', fontsize=22)
+                ax.set_ylabel('Counts', fontsize=22)
+                # ax.set_xlabel('Values', fontsize=22)
                 ax.tick_params(axis='both', which='major', labelsize=22)
-                ax.set(autoscale_on=True)
+                # ax.set(autoscale_on=True)
 
             # Hide x labels and tick labels for top plots and y ticks for right plots.
             for ax in axs.flat:
@@ -218,6 +218,7 @@ def plot_histograms_pairwise_species():
             create_dir_if_not_exists(out_file)
             fig.savefig(out_file, dpi=300)
             # plt.show()
+
 
 
 #
