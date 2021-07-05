@@ -132,7 +132,9 @@ def plot_pca(df_labeled, target_column, sp_name, features_of_interest=[]):
     # colors = ['#e6b0aa','#d98880', '#f0b27a', '#f7dc6f', '#7dcea0', '#85C1E9', '#c39bd3']
     # colors = ['#ffe082', '#ffab91', '#f48fb1', '#b39ddb', '#90caf9', '#81c784','#78909C']
     # colors=['#bbdefb','#dcedc8', '#fff9c4', '#ffe0b2', '#f8bbd0', '#d1c4e9',  '#AB47BC']
-    colors = ['#bbdefb', '#3f51b5', '#9c27b0', '#f44336', '#ff9800', '#ffeb3b', '#8bc34a']
+    # colors = ['#bbdefb', '#3f51b5', '#9c27b0', '#f44336', '#ff9800', '#ffeb3b', '#8bc34a']
+    colors = ['#bbdefb', '#5c6bc0','#ab47bc','#ef5350','#ffa726','#ffca28','#d4e157']
+
 
     # assert(len(targets) == len(colors))
     for i, (target, color) in enumerate(zip(targets, colors)):
