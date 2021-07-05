@@ -63,20 +63,29 @@ def plot_all_features_histograms(df: DataFrame, show=False, suffix=''):
         plot_hist_feature(df, gene_feature, out_file=out_file, show=show)
 
 
-def plot_all_features_heatmap(df, show=False, suffix=''):
+def plot_all_features_heatmap(df, species_name, show=False):
     # plot heatmap of correlations
     df = df.replace(to_replace='None', value=np.nan).dropna()
     table = df.corr()
-    fig = plt.figure(figsize=(8.0, 5.0))
-    sns.heatmap(table, annot=True)
+    fig = plt.figure()
+    fig.set_size_inches(30, 30, forward=True)
+    plt.rc('font', size=25)
+    sns.heatmap(table, annot=False)
     if show:
         plt.show()
-    out_file = '../../data/data_graphs/features_correlations/{}/{}.png'.format(species_name + suffix, 'corr')
+    out_file = '../../data/data_graphs/features_correlations/{}.png'.format(species_name)
     create_dir_if_not_exists(out_file)
     fig.savefig(out_file)
 
 
 def plot_pca(df_labeled, target_column, sp_name, features_of_interest=[]):
+    features_of_interest = ['NONPOLAR_AA',
+                            'AROMATIC_AA',
+                            'H1',
+                            'MASS',
+                            'P2',
+                            'POSITIVE_AA',
+                            'SASA']
     if len(features_of_interest) == 0:
         features = list(GeneFeatures.__members__.keys()) + list(ProteinFeatures.__members__.keys())
     else:
@@ -98,6 +107,7 @@ def plot_pca(df_labeled, target_column, sp_name, features_of_interest=[]):
 
     finalDf = pd.concat([principalDf, df_labeled[[target_column]]], axis=1)
 
+
     fig = plt.figure(figsize=(8, 8))
     ax = fig.add_subplot(1, 1, 1)
     ax.set_xlabel('Principal Component 1', fontsize=15)
@@ -117,12 +127,13 @@ def plot_pca(df_labeled, target_column, sp_name, features_of_interest=[]):
         indicesToKeep = finalDf[target_column] == target
         ax.scatter(finalDf.loc[indicesToKeep, 'principal component 1'],
                    finalDf.loc[indicesToKeep, 'principal component 2'],
-                   s=50, c=color)
+                   s=50, c=color, alpha=0.3)
     ax.legend(targets)
     ax.grid()
 
     out_file = '../../data/data_graphs/poster_pcas/{}.png'.format(sp_name)
     create_dir_if_not_exists(out_file)
+    plt.title('{}: {:.0f}%'.format(sp_name, 100*sum(pca.explained_variance_ratio_)))
     fig.savefig(out_file)
 
 
@@ -317,22 +328,27 @@ def mark_genes_of_interest(df, genes_of_interest):
 # last main:
 if __name__ == '__main__':
     # plot the features for all pairs of species - PART A of poster
-    plot_histograms_pairwise_species()
-    exit(0)
+    #plot_histograms_pairwise_species()
+    #exit(0)
+
     df_mega = pd.DataFrame()
 
     # plotting PCA for all species
     for i in range(len(species_names)):
-        print('working on: {}'.format(species_names[i]))
-        FEATURES_DF_FILE = '../../data/data_outputs/features_{}.pickle'.format(species_names[i])
+        species_name = species_names[i]
+        print('working on: {}'.format(species_name))
+        FEATURES_DF_FILE = '../../data/data_outputs/features_{}.pickle'.format(species_name)
         df_species = pd.read_pickle(FEATURES_DF_FILE)
-        plot_pca_one_species(df_species=df_species, species_name=species_names[i], add_function_labels=True,
-                             features_of_interest=[])
+
+        #plot_all_features_heatmap(df_species, species_name)
+
+        #plot_pca_one_species(df_species=df_species, species_name=species_names[i], add_function_labels=True,
+        #                     features_of_interest=[])
 
         # concatenate the dataframes to create a "mega-species"
         # Stack the DataFrames on top of each other
         df_mega = pd.concat([df_mega, df_species], axis=0)
 
-    print(len(df_mega))
+    #print(len(df_mega))
     plot_pca_one_species(df_species=df_mega, species_name='mega_species', add_function_labels=True,
-                         features_of_interest=[])
+                        features_of_interest=[])
