@@ -93,6 +93,7 @@ def plot_pca(df_labeled, target_column, sp_name, features_of_interest=[]):
 
     # Separating out the features
     df_labeled = df_labeled.dropna(0)  # NOTE: in BS3610 we had 58 genes of NAN in some of the features
+
     x = df_labeled.loc[:, features].values
 
     # Separating out the target
@@ -105,8 +106,11 @@ def plot_pca(df_labeled, target_column, sp_name, features_of_interest=[]):
     principalComponents = pca.fit_transform(x, )
     principalDf = pd.DataFrame(data=principalComponents, columns=['principal component 1', 'principal component 2'])
 
+    print(len(principalDf))
+    print(len(df_labeled))
     finalDf = pd.concat([principalDf, df_labeled[[target_column]]], axis=1)
-
+    print(len(finalDf))
+    finalDf = finalDf.dropna(0)
 
     fig = plt.figure(figsize=(8, 8))
     ax = fig.add_subplot(1, 1, 1)
@@ -122,12 +126,21 @@ def plot_pca(df_labeled, target_column, sp_name, features_of_interest=[]):
     targets = [x[0] for x in label_counter_sorted]
     print(Counter(finalDf[target_column].values))
 
-    colors = ['thistle', 'olive', 'skyblue', 'firebrick', 'gold', 'darkred']
-    for target, color, in zip(targets, colors):
+    # colors = ['thistle', 'olive', 'skyblue', 'firebrick', 'gold', 'darkred', 'red']
+    #colors = ['lightsteelblue', 'limegreen', 'mediumpurple', 'lightcoral', 'orchid', 'tomato', 'brown']
+    # colors=['#85C1E9', '#BB8FCE', '#F1948A', '#F0B27A', '#F7DC6F', '#A9DFBF', '#AEB6BF']
+    # colors = ['#e6b0aa','#d98880', '#f0b27a', '#f7dc6f', '#7dcea0', '#85C1E9', '#c39bd3']
+    # colors = ['#ffe082', '#ffab91', '#f48fb1', '#b39ddb', '#90caf9', '#81c784','#78909C']
+    # colors=['#bbdefb','#dcedc8', '#fff9c4', '#ffe0b2', '#f8bbd0', '#d1c4e9',  '#AB47BC']
+    colors = ['#bbdefb', '#3f51b5', '#9c27b0', '#f44336', '#ff9800', '#ffeb3b', '#8bc34a']
+
+    # assert(len(targets) == len(colors))
+    for i, (target, color) in enumerate(zip(targets, colors)):
+        alpha = 0.3 if i == 0 else 0.8
         indicesToKeep = finalDf[target_column] == target
         ax.scatter(finalDf.loc[indicesToKeep, 'principal component 1'],
                    finalDf.loc[indicesToKeep, 'principal component 2'],
-                   s=50, c=color, alpha=0.3)
+                   s=50, c=color, alpha=alpha)
     ax.legend(targets)
     ax.grid()
 
@@ -136,6 +149,29 @@ def plot_pca(df_labeled, target_column, sp_name, features_of_interest=[]):
     plt.title('{}: {:.0f}%'.format(sp_name, 100*sum(pca.explained_variance_ratio_)))
     fig.savefig(out_file)
 
+
+    # another trial with seaborn
+    import seaborn as sns
+    sns.set(style='whitegrid')
+
+
+    # Set your custom color palette
+    # sns.set_palette(sns.color_palette('pastel'))
+    # # sns.set_palette(sns.color_palette(colors))
+    #
+    # sns.lmplot(x="principal component 1", y="principal component 2",
+    #            data=finalDf,
+    #            fit_reg=False,
+    #            hue='is_gene_of_interest',  # color by cluster
+    #            legend=True,
+    #            scatter_kws={"s": 50, 'alpha': 0.5})  # specify the point size
+    # plt.show()
+
+    # g = sns.scatterplot(x="principal component 1", y="principal component 2", hue="is_gene_of_interest",
+    #                     data=finalDf, palette='colorblind',
+    #                     legend='full')
+    # # g.set(xscale="log")
+    # plt.show()
 
 # plot for each pair of species subplot of all features
 def plot_histograms_pairwise_species():
@@ -342,8 +378,8 @@ if __name__ == '__main__':
 
         #plot_all_features_heatmap(df_species, species_name)
 
-        #plot_pca_one_species(df_species=df_species, species_name=species_names[i], add_function_labels=True,
-        #                     features_of_interest=[])
+        plot_pca_one_species(df_species=df_species, species_name=species_names[i], add_function_labels=True,
+                            features_of_interest=[])
 
         # concatenate the dataframes to create a "mega-species"
         # Stack the DataFrames on top of each other
