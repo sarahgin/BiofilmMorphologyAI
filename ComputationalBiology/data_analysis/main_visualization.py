@@ -205,7 +205,6 @@ def plot_histograms_pairwise_species():
                         is_done = True
                         break
             for ax in axs.flat:
-                # ax.set(xlabel='Counts', ylabel='Values')
                 ax.set_xlabel('Counts', fontsize=22)
                 ax.set_ylabel('Values', fontsize=22)
                 ax.tick_params(axis='both', which='major', labelsize=22)
