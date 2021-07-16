@@ -20,7 +20,7 @@ dict_gene_functions = {
             'amyloid': ['tapA', 'sipW', 'tasA'],
             'regulation': ['SlrR', 'SlrA', 'SinR', 'SinI', 'KinC', 'KinD', 'Spo0A', 'PtkA', 'TkmA', 'PtpZ',
                            'DegU', 'DegQ', 'YmdB', 'FtsH', 'Veg', 'MstX', 'YugO'],
-            'formation': ['AmpS', 'FloT', 'LuxS', 'RemA', 'RemB', 'Rny', 'Sfp/1', 'Sfp/2',
+            'biofilm formation': ['AmpS', 'FloT', 'LuxS', 'RemA', 'RemB', 'Rny', 'Sfp/1', 'Sfp/2',
                           'SpeA', 'SpeD', 'SwrAA', 'YisP', 'YlbF', 'YmcA', 'YvcA', 'YwcC', 'YxaB'],
             'pellicle': ['Hag', 'FlgE', 'FliF', 'MotA', 'SigD', 'CheA',
                          'CheY', 'CheD', 'CheV', 'HemAT'],
@@ -69,8 +69,9 @@ def plot_all_features_heatmap(df, species_name, show=False):
     table = df.corr()
     fig = plt.figure()
     fig.set_size_inches(30, 30, forward=True)
-    plt.rc('font', size=25)
+    plt.rc('font', size=15)
     sns.heatmap(table, annot=False)
+
     if show:
         plt.show()
     out_file = '../../data/data_graphs/features_correlations/{}.png'.format(species_name)
@@ -114,9 +115,9 @@ def plot_pca(df_labeled, target_column, sp_name, features_of_interest=[]):
 
     fig = plt.figure(figsize=(8, 8))
     ax = fig.add_subplot(1, 1, 1)
-    ax.set_xlabel('Principal Component 1', fontsize=15)
-    ax.set_ylabel('Principal Component 2', fontsize=15)
-    ax.set_title(sp_name, fontsize=20)
+    ax.set_xlabel('PC1', fontsize=16)
+    ax.set_ylabel('PC2', fontsize=16)
+    ax.set_title(sp_name, fontsize=18)
     # targets = [False, True]
     # targets = list(set(finalDf[target_column].values))
 
@@ -126,15 +127,7 @@ def plot_pca(df_labeled, target_column, sp_name, features_of_interest=[]):
     targets = [x[0] for x in label_counter_sorted]
     print(Counter(finalDf[target_column].values))
 
-    # colors = ['thistle', 'olive', 'skyblue', 'firebrick', 'gold', 'darkred', 'red']
-    #colors = ['lightsteelblue', 'limegreen', 'mediumpurple', 'lightcoral', 'orchid', 'tomato', 'brown']
-    # colors=['#85C1E9', '#BB8FCE', '#F1948A', '#F0B27A', '#F7DC6F', '#A9DFBF', '#AEB6BF']
-    # colors = ['#e6b0aa','#d98880', '#f0b27a', '#f7dc6f', '#7dcea0', '#85C1E9', '#c39bd3']
-    # colors = ['#ffe082', '#ffab91', '#f48fb1', '#b39ddb', '#90caf9', '#81c784','#78909C']
-    # colors=['#bbdefb','#dcedc8', '#fff9c4', '#ffe0b2', '#f8bbd0', '#d1c4e9',  '#AB47BC']
-    # colors = ['#bbdefb', '#3f51b5', '#9c27b0', '#f44336', '#ff9800', '#ffeb3b', '#8bc34a']
     colors = ['#bbdefb', '#5c6bc0','#ab47bc','#ef5350','#ffa726','#ffca28','#d4e157']
-
 
     # assert(len(targets) == len(colors))
     for i, (target, color) in enumerate(zip(targets, colors)):
@@ -143,31 +136,41 @@ def plot_pca(df_labeled, target_column, sp_name, features_of_interest=[]):
         ax.scatter(finalDf.loc[indicesToKeep, 'principal component 1'],
                    finalDf.loc[indicesToKeep, 'principal component 2'],
                    s=50, c=color, alpha=alpha)
-    ax.legend(targets)
-    ax.grid()
+    # ax.legend(targets, fontsize=15, loc=1)
+    ax.tick_params(axis='both', which='major', labelsize=13)
+    right_side = ax.spines["right"]
+    right_side.set_visible(False)
+
+    top_side = ax.spines["top"]
+    top_side.set_visible(False)
 
     out_file = '../../data/data_graphs/poster_pcas/{}.png'.format(sp_name)
     create_dir_if_not_exists(out_file)
-    plt.title('{}: {:.0f}%'.format(sp_name, 100*sum(pca.explained_variance_ratio_)))
+    if sp_name == 'bacillus_subtilis':
+        plt.title('{}\n({:.0f}% explained variance)'.format("Bacillus subtilis", 100*sum(pca.explained_variance_ratio_)), fontsize=25)
+    elif sp_name == 'mega_species':
+        plt.title('{}\n({:.0f}% explained variance)'.format("'Mega' Species", 100 * sum(pca.explained_variance_ratio_)), fontsize=25)
+    else:
+        plt.title('{}\n({:.0f}% explained variance)'.format(sp_name, 100 * sum(pca.explained_variance_ratio_)), fontsize=25)
+    plt.grid(False)
     fig.savefig(out_file)
 
 
     # another trial with seaborn
     import seaborn as sns
-    sns.set(style='whitegrid')
-
+    sns.set(style='white')
 
     # Set your custom color palette
     # sns.set_palette(sns.color_palette('pastel'))
-    # # sns.set_palette(sns.color_palette(colors))
-    #
-    # sns.lmplot(x="principal component 1", y="principal component 2",
-    #            data=finalDf,
-    #            fit_reg=False,
-    #            hue='is_gene_of_interest',  # color by cluster
-    #            legend=True,
-    #            scatter_kws={"s": 50, 'alpha': 0.5})  # specify the point size
-    # plt.show()
+    sns.set_palette(sns.color_palette(colors))
+
+    sns.lmplot(x="principal component 1", y="principal component 2",
+               data=finalDf,
+               fit_reg=False,
+               hue='is_gene_of_interest',  # color by cluster
+               legend=True,
+               scatter_kws={"s": 50, 'alpha': 0.5})  # specify the point size
+    plt.show()
 
     # g = sns.scatterplot(x="principal component 1", y="principal component 2", hue="is_gene_of_interest",
     #                     data=finalDf, palette='colorblind',
@@ -370,7 +373,7 @@ if __name__ == '__main__':
     #exit(0)
 
     df_mega = pd.DataFrame()
-
+    to_plot_pca = True
     # plotting PCA for all species
     for i in range(len(species_names)):
         species_name = species_names[i]
@@ -378,15 +381,17 @@ if __name__ == '__main__':
         FEATURES_DF_FILE = '../../data/data_outputs/features_{}.pickle'.format(species_name)
         df_species = pd.read_pickle(FEATURES_DF_FILE)
 
-        #plot_all_features_heatmap(df_species, species_name)
+        plot_all_features_heatmap(df_species, species_name)
 
-        plot_pca_one_species(df_species=df_species, species_name=species_names[i], add_function_labels=True,
-                            features_of_interest=[])
+        if to_plot_pca:
+            plot_pca_one_species(df_species=df_species, species_name=species_names[i], add_function_labels=True,
+                                features_of_interest=[])
 
-        # concatenate the dataframes to create a "mega-species"
-        # Stack the DataFrames on top of each other
-        df_mega = pd.concat([df_mega, df_species], axis=0)
+            # concatenate the dataframes to create a "mega-species"
+            # Stack the DataFrames on top of each other
+            df_mega = pd.concat([df_mega, df_species], axis=0)
 
     #print(len(df_mega))
-    plot_pca_one_species(df_species=df_mega, species_name='mega_species', add_function_labels=True,
-                        features_of_interest=[])
+    if to_plot_pca:
+        plot_pca_one_species(df_species=df_mega, species_name='mega_species', add_function_labels=True,
+                            features_of_interest=[])
