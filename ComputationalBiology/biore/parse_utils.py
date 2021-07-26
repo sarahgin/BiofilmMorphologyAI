@@ -88,8 +88,7 @@ def plot_cumsum(df_counter, len_index, colors):
 
 
 if __name__ == '__main__':
-    # parsing file to create all helices:
-
+    # parsing file to create all input data:
     file_path = 'data/human1.tab'
     df = parse_file(file_path)
 
@@ -100,14 +99,20 @@ if __name__ == '__main__':
 
     plt.figure()
     legend_str = []
-    min_len = 17
-    max_len = 26
+    min_len = 18
+    max_len = 25
     colors = np.linspace(0, 1, max_len-min_len)
+
+    out_file_aa = open('datanew//top_20_subseqs.txt', 'w')
+    out_file_5gr = open('datanew//top_20_5group_subseqs.txt', 'w')
+    out_file_BY = open('datanew//top_20_BY_subseqs.txt', 'w')
+
 
     for j, chosen_subseq_len in enumerate(range(min_len, max_len)):
         print('Analyzing len: ', str(chosen_subseq_len))
         df_transmem = df_transmembrane[df_transmembrane['subseq_len'] == chosen_subseq_len].copy()
         # Note: there are about 20K subseqs of length: 19, 20, 22, 23 and 36K of 21 bases.
+
         print('num of subseqs of length {}: {} '.format(chosen_subseq_len, len(df_transmem)))
 
         # remove sequences with invalid amino acids
@@ -115,6 +120,7 @@ if __name__ == '__main__':
             lambda seq: 'X' not in seq).copy()
 
         df_transmem = df_transmem[df_transmem['is_valid_seq']].copy()
+        n_total_unique = len(df_transmem)
         print('num of valid subseqs of length {}: {} '.format(chosen_subseq_len, len(df_transmem)))
 
         df_transmem['translated_into_groups'] = df_transmem['seq_Transmembrane'].apply(lambda x: aa_into_group(x))
@@ -133,6 +139,24 @@ if __name__ == '__main__':
         # df_counter_5group = find_S_by_column(df_transmem, 'translated_into_groups')
 
         df_counter_all = find_S_by_column(df_transmem, 'seq_Transmembrane')
+
+        df_counter_all_sorted = df_counter_all.sort_values(by='subseq_len', ascending=False)
+        df_counter_all_sorted['subseq_len'].head(20).plot.bar()
+        for s in df_counter_all_sorted['subseq_len'].head(20).index:
+            out_file_aa.write(">\n")           # fasta header
+            out_file_aa.write(s + "\n")        # sequence
+
+            out_file_5gr.write(">\n")
+            out_file_5gr.write(aa_into_group(s) + "\n")
+
+            out_file_BY.write(">\n")
+            out_file_BY.write(aa_into_BY(s) + "\n")
+
+
+        top_20_coverage = df_counter_all_sorted['subseq_len'].head(20).sum() / n_total_unique * 100
+        print('top 20 coverage: ', top_20_coverage)
+        # plt.show()
+
         plot_cumsum(df_counter_all, j, colors)
 
         # print the top 10- most abundant sequences of current length
@@ -142,6 +166,10 @@ if __name__ == '__main__':
 
         # plt.legend(['BY', '5 groups', 'original seq'])
         legend_str.append(str(chosen_subseq_len)) # + str(len(df_transmem)))
+
+    out_file_aa.close()
+    out_file_5gr.close()
+    out_file_BY.close()
     plt.legend(legend_str)
     plt.ylabel('Percentage covered')
     plt.xlabel('Number of unique values')
