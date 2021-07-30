@@ -80,11 +80,11 @@ def find_S_by_column(df: pd.DataFrame, col_name: str):
     return df_counter
 
 
-def plot_cumsum(df_counter, len_index, colors):
+def plot_cumsum(df_counter, color, figHandle):
     max_count = df_counter['sequence'].nlargest(len(df_counter))
     percent_values = max_count.values / sum(max_count) * 100
     y_cumsum = np.cumsum(percent_values)
-    plt.plot(y_cumsum, 'o', color=(colors[len_index], 0, 0))
+    plt.plot(y_cumsum, 'o', color=(color, 0, 0), figure=figHandle)
 
 
 def get_all_substrings(sequence, min_len):
@@ -93,104 +93,120 @@ def get_all_substrings(sequence, min_len):
 
 if __name__ == '__main__':
     # parsing file to create all input data:
-    organism = 'human'
-    #organism = 'mouse'
-    print('Organism: ', organism)
-    file_path = 'data/' + organism + '1.tab'
-    df = parse_file(file_path)
+    organisms = ['human1', 'mouse1', 'bsubtilis']
+    organismsColors = ['r', 'b', 'g']
+    sharedFig = plt.figure()
+    cusumFig = plt.figure()
+    for o, organism in enumerate(organisms):
+        print('Organism: ', organism)
+        file_path = 'data/' + organism + '.tab'
+        df = parse_file(file_path)
 
-    print('num of genes in raw data: ', len(df))
+        print('num of genes in raw data: ', len(df))
 
-    df_transmembrane = create_subseq_df(df=df, col_name='Transmembrane', subseq_type='TRANSMEM').copy()
-    df_transmembrane['sequence'] = df_transmembrane['seq_Transmembrane']
+        df_transmembrane = create_subseq_df(df=df, col_name='Transmembrane', subseq_type='TRANSMEM').copy()
+        df_transmembrane['sequence'] = df_transmembrane['seq_Transmembrane']
 
-    plt.figure()
-    legend_str = []
-    min_len = 21
-    max_len = 22
-    num_of_sequences = 1000
-    colors = np.linspace(0, 1, max_len-min_len)
-
-    out_file_aa = open('data//top_subseqs.txt', 'w')
-    out_file_5gr = open('data//top_5group_subseqs.txt', 'w')
-    out_file_BY = open('data//top_BY_subseqs.txt', 'w')
-
-    for j, chosen_subseq_len in enumerate(range(min_len, max_len)):
-        print('Analyzing len: ', str(chosen_subseq_len))
-        df_transmem = df_transmembrane[df_transmembrane['subseq_len'] == chosen_subseq_len].copy()
-        # Note: there are about 20K subseqs of length: 19, 20, 22, 23 and 36K of 21 bases.
-
-        print('num of subseqs of length {}: {} '.format(chosen_subseq_len, len(df_transmem)))
-
-        # remove sequences with invalid amino acids
-        df_transmem['is_valid_seq'] = df_transmem['seq_Transmembrane'].apply(
-            lambda seq: 'X' not in seq).copy()
-
-        df_transmem = df_transmem[df_transmem['is_valid_seq']].copy()
-        n_total_unique = len(df_transmem)
-        print('num of valid subseqs of length {}: {} '.format(chosen_subseq_len, len(df_transmem)))
-
-        df_transmem['translated_into_groups'] = df_transmem['seq_Transmembrane'].apply(lambda x: aa_into_group(x))
-        df_transmem['translated_into_BY'] = df_transmem['seq_Transmembrane'].apply(lambda x: aa_into_BY(x))
-
-        df_transmem = df_transmem.sort_values(by='translated_into_BY')
-        df_transmem['translated_into_BY'].unique()
-        # df_transmembrane_len19.to_csv('data/transmembrane.csv', header=True, index=False)
-
-        print('num unique subseqs:', len(df_transmem['seq_Transmembrane'].unique()))
-        print('num unique 5-groups:', len(df_transmem['translated_into_groups'].unique()))
-        print('num unique BY:', len(df_transmem['translated_into_BY'].unique()))
+        if False: #For each length, the total number of subsequences at that length
+            df_transmembrane['subseq_len'].plot.hist(bins=np.arange(1, 50),
+                                                     alpha=0.5,
+                                                     figure=sharedFig,
+                                                     label=organism)
+            plt.legend()
 
 
-        # df_counter_BY = find_S_by_column(df_transmem, 'translated_into_BY')
-        # df_counter_5group = find_S_by_column(df_transmem, 'translated_into_groups')
+        legend_str = []
+        min_len = 18
+        max_len = 25
+        num_of_sequences = 1000
+        colors = np.linspace(0, 1, max_len-min_len)
 
-        df_counter_all = find_S_by_column(df_transmem, 'seq_Transmembrane')
+        out_file_aa = open('data//top_subseqs_' + organism + '.txt', 'w')
+        out_file_5gr = open('data//top_5group_subseqs_' + organism + '.txt', 'w')
+        out_file_BY = open('data//top_BY_subseqs_' + organism + '.txt', 'w')
 
-        df_counter_all_sorted = df_counter_all.sort_values(by='subseq_len', ascending=False)
+        for j, chosen_subseq_len in enumerate(range(min_len, max_len)):
+            if chosen_subseq_len != 21:
+                continue
 
-        #bar plot to show top coverage sequences and the number they cover
-        #df_counter_all_sorted['subseq_len'].head(num_of_sequences).plot.bar()
+            print('Analyzing len: ', str(chosen_subseq_len))
+            df_transmem = df_transmembrane[df_transmembrane['subseq_len'] == chosen_subseq_len].copy()
+            # Note: there are about 20K subseqs of length: 19, 20, 22, 23 and 36K of 21 bases.
 
-        plot_cumsum(df_counter_all_sorted, j, colors=[1,0,0])
+            print('num of subseqs of length {}: {} '.format(chosen_subseq_len, len(df_transmem)))
 
-        for TM_sequence_index, s in enumerate(df_counter_all_sorted['subseq_len'].head(num_of_sequences).index):
-            all_substrings = get_all_substrings(s, min_len)
-            assert(len(all_substrings) == 1)
-            for TM_subsequence_index, subs in enumerate(all_substrings):
-                out_file_aa.write(">" + organism + "_" + subs + "_"
-                                  + str(TM_sequence_index)
-                                  + "[" + str(TM_subsequence_index) + "]"
-                                  + "\n")           # fasta header
-                out_file_aa.write(subs + "\n")        # sequence
+            # remove sequences with invalid amino acids
+            df_transmem['is_valid_seq'] = df_transmem['seq_Transmembrane'].apply(
+                lambda seq: 'X' not in seq).copy()
 
-                out_file_5gr.write(">\n")
-                out_file_5gr.write(aa_into_group(subs) + "\n")
+            df_transmem = df_transmem[df_transmem['is_valid_seq']].copy()
+            n_total_unique = len(df_transmem)
+            if n_total_unique == 0:
+                continue
+            print('num of valid subseqs of length {}: {} '.format(chosen_subseq_len, len(df_transmem)))
 
-                out_file_BY.write(">\n")
-                out_file_BY.write(aa_into_BY(subs) + "\n")
+            df_transmem['translated_into_groups'] = df_transmem['seq_Transmembrane'].apply(lambda x: aa_into_group(x))
+            df_transmem['translated_into_BY'] = df_transmem['seq_Transmembrane'].apply(lambda x: aa_into_BY(x))
 
-        top_X_coverage = df_counter_all_sorted['subseq_len'].head(num_of_sequences).sum() / n_total_unique * 100
-        print('top ', str(num_of_sequences), ' coverage: ', top_X_coverage)
+            df_transmem = df_transmem.sort_values(by='translated_into_BY')
+            df_transmem['translated_into_BY'].unique()
 
-        # print the top 10- most abundant sequences of current length
-        max_count = df_counter_all['sequence'].nlargest(num_of_sequences)
-        #print(max_count.index.tolist())
+            print('num unique subseqs:', len(df_transmem['seq_Transmembrane'].unique()))
+            print('num unique 5-groups:', len(df_transmem['translated_into_groups'].unique()))
+            print('num unique BY:', len(df_transmem['translated_into_BY'].unique()))
 
-        print('----Finished current length: ', str(chosen_subseq_len), '-----')
 
-        # plt.legend(['BY', '5 groups', 'original seq'])
-        legend_str.append(str(chosen_subseq_len)) # + str(len(df_transmem)))
+            # df_counter_BY = find_S_by_column(df_transmem, 'translated_into_BY')
+            # df_counter_5group = find_S_by_column(df_transmem, 'translated_into_groups')
 
-    out_file_aa.close()
-    out_file_5gr.close()
-    out_file_BY.close()
-    plt.legend(legend_str)
-    plt.ylabel('Percentage covered')
-    plt.xlabel('Number of unique values')
-    plt.grid()
+            df_counter_all = find_S_by_column(df_transmem, 'seq_Transmembrane')
+
+            df_counter_all_sorted = df_counter_all.sort_values(by='subseq_len', ascending=False)
+
+
+            if False: #bar plot to show top 1 sequence coverage (the number it covers)
+                barX = "[" + str(chosen_subseq_len) + "] "
+                barY = df_counter_all_sorted['subseq_len'].head(1).values[0]
+                plt.bar(barX, barY*100/n_total_unique, figure=sharedFig, color=organismsColors[o], alpha=0.5)
+
+
+            if True: #elbow plot
+                plot_cumsum(df_counter_all_sorted, colors[j], cusumFig)
+                plt.title(organism)
+
+            for TM_sequence_index, s in enumerate(df_counter_all_sorted['subseq_len'].head(num_of_sequences).index):
+                all_substrings = get_all_substrings(s, min_len)
+                #assert(len(all_substrings) == 1)
+                for TM_subsequence_index, subs in enumerate(all_substrings):
+                    out_file_aa.write(">" + organism + "_" + subs + "_"
+                                      + str(TM_sequence_index)
+                                      + "[" + str(TM_subsequence_index) + "]"
+                                      + "\n")           # fasta header
+                    out_file_aa.write(subs + "\n")        # sequence
+
+                    out_file_5gr.write(">\n")
+                    out_file_5gr.write(aa_into_group(subs) + "\n")
+
+                    out_file_BY.write(">\n")
+                    out_file_BY.write(aa_into_BY(subs) + "\n")
+
+            top_X_coverage = df_counter_all_sorted['subseq_len'].head(num_of_sequences).sum() / n_total_unique * 100
+            print('top ', str(num_of_sequences), ' coverage: ', top_X_coverage)
+
+            # print the top 10- most abundant sequences of current length
+            max_count = df_counter_all['sequence'].nlargest(num_of_sequences)
+            #print(max_count.index.tolist())
+
+            print('----Finished current length: ', str(chosen_subseq_len), '-----')
+
+            # plt.legend(['BY', '5 groups', 'original seq'])
+            legend_str.append(str(chosen_subseq_len)) # + str(len(df_transmem)))
+
+        out_file_aa.close()
+        out_file_5gr.close()
+        out_file_BY.close()
+
     plt.show()
-
     print('done')
 
 
