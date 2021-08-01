@@ -141,7 +141,7 @@ if __name__ == '__main__':
         legend_str = []
         min_len = 21
         max_len = 22
-        num_of_sequences = 2000
+        num_of_sequences = 1500
         colors = np.linspace(0, 1, max_len - min_len)
 
         out_file_aa = open('data//' + organism + '//top_subseqs_' + organism + '.txt', 'w')
@@ -193,10 +193,10 @@ if __name__ == '__main__':
                 all_substrings = get_all_substrings(s, min_len)
                 # assert(len(all_substrings) == 1)
                 for TM_subsequence_index, subs in enumerate(all_substrings):
-                    # out_file_aa.write(">" + organism + "_" + subs + "_"
-                    #                  + str(TM_sequence_index)
-                    #                  + "[" + str(TM_subsequence_index) + "]"
-                    #                  + "\n")           # fasta header
+                    out_file_aa.write(">" + organism + "_" + subs + "_"
+                                      + str(TM_sequence_index)
+                                      + "[" + str(TM_subsequence_index) + "]"
+                                      + "\n")           # fasta header
                     out_file_aa.write(subs + "\n")
 
             top_X_coverage = df_counter_all_sorted['subseq_len'].head(num_of_sequences).sum() / n_total_unique * 100
