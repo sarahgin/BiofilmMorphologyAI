@@ -1,5 +1,3 @@
-# goal: get human1.tab -->  fetch all helix
-# save in dataframe
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -7,6 +5,7 @@ import re
 from matplotlib_venn import venn2, venn3
 
 from ComputationalBiology.biore.biore_utils import aa_into_group, aa_into_BY
+from ComputationalBiology.biore.visualize_utils import create_logo
 
 
 def parse_file(file_path):
@@ -78,7 +77,7 @@ def find_S_by_column(df: pd.DataFrame, col_name: str):
     print('col_name={}: {} was found: {} ({:.2}%),out of {} valid seqs'
           .format(col_name, max_value, max_count, 100 * max_count / total_seqs_non_unique, total_seqs_non_unique))
     # df_counter['sequence'].plot.hist(bins=2500)
-    assert sum(df_transmem[col_name] == max_value) == max_count  # sainty check
+    assert sum(df[col_name] == max_value) == max_count  # sainty check
     return df_counter
 
 
@@ -114,8 +113,7 @@ def generate_venns():
     plt.show()
 
 
-if __name__ == '__main__':
-    #generate_venns()
+def organisms_analysis():
     # parsing file to create all input data:
     organisms = ['human1', 'mouse1', 'bsubtilis']
     organismsColors = ['r', 'b', 'g']
@@ -141,7 +139,7 @@ if __name__ == '__main__':
         legend_str = []
         min_len = 21
         max_len = 22
-        num_of_sequences = 1500
+        num_of_sequences = 3000
         colors = np.linspace(0, 1, max_len - min_len)
 
         out_file_aa = open('data//' + organism + '//top_subseqs_' + organism + '.txt', 'w')
@@ -214,28 +212,28 @@ if __name__ == '__main__':
     plt.show()
     print('done')
 
-# if __name__ == '__main__':
-#
-#     if False:
-#         file_path = 'data/human1.tab'
-#         df = parse_file(file_path)
-#
-#         df_all_helices = motif_sequences_to_file(df=df, col_name='Helix', type='HELIX')
-#
-#         df_all_helices.to_csv('data/all_helix.csv', header=True, sep='\t', index=False)
-#
-#     #read helix data:
-#     print('reading...')
-#     df2 = pd.read_csv('data/all_helix.csv')
-#     df2['helix_len'] = df2['sequences_Helix'].apply(lambda x: len(x))
-#     df2.describe()
-#
-#     # get only 10-mers
-#     df3 = df2.copy()
-#     df3 = df3[df3['helix_len'] == 10]
-#     df3['sequences_Helix'].to_csv('data/helix_10.csv', header=True, sep='\t', index=False)
-#
-#     df3['translated_into_groups'] = df2['sequences_Helix'].apply(lambda x: aa_into_group(x))
-#     df3['translated_into_BY'] = df2['sequences_Helix'].apply(lambda x: aa_into_BY(x))
-#     df3.to_csv('data/helix_10_groups.csv', header=True, index=False)
-#     print('done!')
+def parse_IEDB_excel():
+    filename = 'data//human1//IEDB_80p_alg2_3K.csv'
+    df = pd.read_csv(filename)
+    df = df[(df['Peptide Number'] != 'Consensus') &
+            (df['Peptide Number'] != 'Singleton')]
+    df['Major cluster number'] = df['Cluster.Sub-Cluster Number'].apply(lambda x: np.floor(x))
+
+    for cluster_num in set(df['Major cluster number'].values):
+        print(cluster_num)
+        current_df = df[df['Major cluster number'] == cluster_num].copy()
+        current_lst = current_df['Peptide'].values
+        if len(current_lst) < 10:
+            continue
+        logo = create_logo(current_lst)
+        logo.fig.savefig('./data/cluster_' +
+                         str(cluster_num) + '_' +
+                         str(len(current_lst)) + '.png')
+        plt.close()
+
+    print('done')
+
+if __name__ == '__main__':
+    #generate_venns()
+    #organisms_analysis()
+    parse_IEDB_excel()
