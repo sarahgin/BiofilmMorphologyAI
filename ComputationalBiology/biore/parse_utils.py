@@ -7,7 +7,7 @@ from matplotlib_venn import venn2, venn3
 from ComputationalBiology.biore.biore_utils import aa_into_group, aa_into_BY
 from ComputationalBiology.biore.visualize_utils import create_logo
 
-
+pd.set_option('display.max_columns', None)
 def parse_file(file_path):
     """
     The function parses the given tab-separated file and returns a dataframe object
@@ -85,8 +85,10 @@ def plot_cumsum(df_counter, color, figHandle):
     max_count = df_counter['sequence'].nlargest(len(df_counter))
     percent_values = max_count.values / sum(max_count) * 100
     y_cumsum = np.cumsum(percent_values)
-    plt.plot(y_cumsum, 'o', color=(color, 0, 0), figure=figHandle)
-
+    #plt.plot(y_cumsum, 'o', color=(color, 0, 0), figure=figHandle)
+    plt.plot(y_cumsum, 'o', figure=figHandle)
+    plt.xlabel('Count')
+    plt.ylabel('Cumulative percentage covered of total subsequences')
 
 def get_all_substrings(sequence, min_len):
     res = [sequence[i: j] for i in range(len(sequence)) for j in range(i + 1, len(sequence) + 1) if
@@ -117,14 +119,22 @@ def organisms_analysis():
     # parsing file to create all input data:
     organisms = ['human1', 'mouse1', 'bsubtilis']
     organismsColors = ['r', 'b', 'g']
-    sharedFig = plt.figure()
+    #sharedFig = plt.figure()
     cusumFig = plt.figure()
     for o, organism in enumerate(organisms):
         print('Organism: ', organism)
         file_path = 'data/' + organism + '.tab'
         df = parse_file(file_path)
 
-        print('num of genes in raw data: ', len(df))
+        reviewedDF = df[df['Status']=='reviewed']
+        unreviewedDF = df[df['Status'] == 'unreviewed']
+        assert (len(df) == len(reviewedDF) + len(unreviewedDF))
+        df = reviewedDF
+
+        print('num of genes in raw data: ', len(df),
+              ' Reviewed: ', len(reviewedDF),
+              'Unreviewed: ', len(unreviewedDF))
+
 
         df_transmembrane = create_subseq_df(df=df, col_name='Transmembrane', subseq_type='TRANSMEM').copy()
         df_transmembrane['sequence'] = df_transmembrane['seq_Transmembrane']
@@ -213,23 +223,42 @@ def organisms_analysis():
     print('done')
 
 def parse_IEDB_excel():
-    filename = 'data//human1//IEDB_80p_alg2_3K.csv'
+    filename = 'data//human1//IEDB_70p_alg2_3K.csv'
     df = pd.read_csv(filename)
+
+    df_non_consensus = df[df['Peptide Number'] != 'Consensus']
+    print('Total sequences: ', len(df_non_consensus))
+
+    df_singletons = df[df['Peptide Number'] == 'Singleton']
+    print('Total singletons: ', len(df_singletons))
+
+    df_concensus = df[df['Peptide Number'] == 'Consensus']
+    print('Total consensus sequences: ', len(df_concensus))
+
     df = df[(df['Peptide Number'] != 'Consensus') &
             (df['Peptide Number'] != 'Singleton')]
-    df['Major cluster number'] = df['Cluster.Sub-Cluster Number'].apply(lambda x: np.floor(x))
 
-    for cluster_num in set(df['Major cluster number'].values):
-        print(cluster_num)
-        current_df = df[df['Major cluster number'] == cluster_num].copy()
+    #df['Major cluster number'] = df['Cluster Number']
+    #df['Major cluster number'] = df['Cluster.Sub-Cluster Number']
+    df['Major cluster number'] = df['Cluster.Sub-Cluster Number'].apply(lambda x: np.floor(x))
+    cluster_counts = []
+    for cluster_id in set(df['Major cluster number'].values):
+        print(cluster_id)
+        current_df = df[df['Major cluster number'] == cluster_id].copy()
         current_lst = current_df['Peptide'].values
-        if len(current_lst) < 10:
-            continue
-        logo = create_logo(current_lst)
-        logo.fig.savefig('./data/cluster_' +
-                         str(cluster_num) + '_' +
-                         str(len(current_lst)) + '.png')
-        plt.close()
+        cluster_counts.append(len(current_lst))
+
+        #if len(current_lst) < 10:
+        #    continue
+        #logo = create_logo(current_lst)
+        #logo.fig.savefig('./data/cluster_' +
+        #                str(cluster_num) + '_' +
+        #                 str(len(current_lst)) + '.png')
+        #plt.close()
+
+    #cumsum of clusters
+    plt.plot(np.cumsum(cluster_counts))
+    plt.show()
 
     print('done')
 
