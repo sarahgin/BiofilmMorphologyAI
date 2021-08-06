@@ -20,7 +20,7 @@ for seq_record in SeqIO.parse(fasta_file, "fasta"):
     # print(len(seq_record))
     sequences.append(str(seq_record.seq))
 
-
+print('num of seqs: ', len(sequences))
 
 # sequences = [
 # 'ADHAMKCAIROSURBANDJVUGLOBALIZATIONANDURBANFANTASIESPLA',
