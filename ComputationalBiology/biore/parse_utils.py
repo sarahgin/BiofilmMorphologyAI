@@ -3,11 +3,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import re
 from matplotlib_venn import venn2, venn3
+import itertools
 
 from ComputationalBiology.biore.biore_utils import aa_into_group, aa_into_BY
 from ComputationalBiology.biore.visualize_utils import create_logo
 
 pd.set_option('display.max_columns', None)
+
+
 def parse_file(file_path):
     """
     The function parses the given tab-separated file and returns a dataframe object
@@ -85,10 +88,11 @@ def plot_cumsum(df_counter, color, figHandle):
     max_count = df_counter['sequence'].nlargest(len(df_counter))
     percent_values = max_count.values / sum(max_count) * 100
     y_cumsum = np.cumsum(percent_values)
-    #plt.plot(y_cumsum, 'o', color=(color, 0, 0), figure=figHandle)
+    # plt.plot(y_cumsum, 'o', color=(color, 0, 0), figure=figHandle)
     plt.plot(y_cumsum, 'o', figure=figHandle)
     plt.xlabel('Count')
     plt.ylabel('Cumulative percentage covered of total subsequences')
+
 
 def get_all_substrings(sequence, min_len):
     res = [sequence[i: j] for i in range(len(sequence)) for j in range(i + 1, len(sequence) + 1) if
@@ -119,14 +123,13 @@ def organisms_analysis():
     # parsing file to create all input data:
     organisms = ['human1', 'mouse1', 'bsubtilis']
     organismsColors = ['r', 'b', 'g']
-    #sharedFig = plt.figure()
-    cusumFig = plt.figure()
+    fig = plt.figure()
     for o, organism in enumerate(organisms):
         print('Organism: ', organism)
         file_path = 'data/' + organism + '.tab'
         df = parse_file(file_path)
 
-        reviewedDF = df[df['Status']=='reviewed']
+        reviewedDF = df[df['Status'] == 'reviewed']
         unreviewedDF = df[df['Status'] == 'unreviewed']
         assert (len(df) == len(reviewedDF) + len(unreviewedDF))
         df = reviewedDF
@@ -135,21 +138,20 @@ def organisms_analysis():
               ' Reviewed: ', len(reviewedDF),
               'Unreviewed: ', len(unreviewedDF))
 
-
         df_transmembrane = create_subseq_df(df=df, col_name='Transmembrane', subseq_type='TRANSMEM').copy()
         df_transmembrane['sequence'] = df_transmembrane['seq_Transmembrane']
 
         if False:  # For each length, the total number of subsequences at that length
             df_transmembrane['subseq_len'].plot.hist(bins=np.arange(1, 50),
                                                      alpha=0.5,
-                                                     figure=sharedFig,
+                                                     figure=fig,
                                                      label=organism)
             plt.legend()
 
         legend_str = []
         min_len = 21
         max_len = 22
-        num_of_sequences = 3000
+        num_of_sequences = 15000
         colors = np.linspace(0, 1, max_len - min_len)
 
         out_file_aa = open('data//' + organism + '//top_subseqs_' + organism + '.txt', 'w')
@@ -181,8 +183,8 @@ def organisms_analysis():
             df_transmem['translated_into_BY'].unique()
 
             print('num unique subseqs:', len(df_transmem['seq_Transmembrane'].unique()))
-            #print('num unique 5-groups:', len(df_transmem['translated_into_groups'].unique()))
-            #print('num unique BY:', len(df_transmem['translated_into_BY'].unique()))
+            # print('num unique 5-groups:', len(df_transmem['translated_into_groups'].unique()))
+            # print('num unique BY:', len(df_transmem['translated_into_BY'].unique()))
 
             df_counter_all = find_S_by_column(df_transmem, 'seq_Transmembrane')
 
@@ -191,10 +193,10 @@ def organisms_analysis():
             if False:  # bar plot to show top 1 sequence coverage (the number it covers)
                 barX = "[" + str(chosen_subseq_len) + "] "
                 barY = df_counter_all_sorted['subseq_len'].head(1).values[0]
-                plt.bar(barX, barY * 100 / n_total_unique, figure=sharedFig, color=organismsColors[o], alpha=0.5)
+                plt.bar(barX, barY * 100 / n_total_unique, figure=fig, color=organismsColors[o], alpha=0.5)
 
             if False:  # elbow plot
-                plot_cumsum(df_counter_all_sorted, colors[j], cusumFig)
+                plot_cumsum(df_counter_all_sorted, colors[j], fig)
                 plt.title(organism)
 
             for TM_sequence_index, s in enumerate(df_counter_all_sorted['subseq_len'].head(num_of_sequences).index):
@@ -204,14 +206,14 @@ def organisms_analysis():
                     out_file_aa.write(">" + organism + "_" + subs + "_"
                                       + str(TM_sequence_index)
                                       + "[" + str(TM_subsequence_index) + "]"
-                                      + "\n")           # fasta header
+                                      + "\n")  # fasta header
                     out_file_aa.write(subs + "\n")
 
-            top_X_coverage = df_counter_all_sorted['subseq_len'].head(num_of_sequences).sum() / n_total_unique * 100
-            print('top ', str(num_of_sequences), ' coverage: ', top_X_coverage)
+            # top_X_coverage = df_counter_all_sorted['subseq_len'].head(num_of_sequences).sum() / n_total_unique * 100
+            # print('top ', str(num_of_sequences), ' coverage: ', top_X_coverage)
 
             # print the top 10- most abundant sequences of current length
-            max_count = df_counter_all['sequence'].nlargest(num_of_sequences)
+            # max_count = df_counter_all['sequence'].nlargest(num_of_sequences)
             # print(max_count.index.tolist())
 
             print('----Finished current length: ', str(chosen_subseq_len), '-----')
@@ -222,47 +224,68 @@ def organisms_analysis():
     plt.show()
     print('done')
 
+
 def parse_IEDB_excel():
-    filename = 'data//human1//IEDB_70p_alg2_3K.csv'
-    df = pd.read_csv(filename)
+    filenames = ['data//human1//human1.0.csv',
+                 'data//human1//human1.1.csv',
+                 'data//human1//human1.2.csv',
+                 'data//human1//human1.3.csv',
+                 'data//human1//human1.4.csv']
+    consensus_filename = 'data//human1//consensus.txt'
+    #consensus_file = open(consensus_filename, 'w')
 
-    df_non_consensus = df[df['Peptide Number'] != 'Consensus']
-    print('Total sequences: ', len(df_non_consensus))
+    for filename in filenames:
+        print(filename + '...')
+        df = pd.read_csv(filename)
+        df_original = df.copy()
+        #metadata printouts
+        df_non_consensus = df[df['Peptide Number'] != 'Consensus']
+        print('Total sequences: ', len(df_non_consensus))
 
-    df_singletons = df[df['Peptide Number'] == 'Singleton']
-    print('Total singletons: ', len(df_singletons))
+        df_singletons = df[df['Peptide Number'] == 'Singleton']
+        print('Total singletons: ', len(df_singletons))
 
-    df_concensus = df[df['Peptide Number'] == 'Consensus']
-    print('Total consensus sequences: ', len(df_concensus))
+        df_concensus = df[df['Peptide Number'] == 'Consensus']
+        print('Total consensus sequences: ', len(df_concensus))
 
-    df = df[(df['Peptide Number'] != 'Consensus') &
-            (df['Peptide Number'] != 'Singleton')]
+        #only sequences remain
+        df = df[(df['Peptide Number'] != 'Consensus') &
+                (df['Peptide Number'] != 'Singleton')]
 
-    #df['Major cluster number'] = df['Cluster Number']
-    #df['Major cluster number'] = df['Cluster.Sub-Cluster Number']
-    df['Major cluster number'] = df['Cluster.Sub-Cluster Number'].apply(lambda x: np.floor(x))
-    cluster_counts = []
-    for cluster_id in set(df['Major cluster number'].values):
-        print(cluster_id)
-        current_df = df[df['Major cluster number'] == cluster_id].copy()
-        current_lst = current_df['Peptide'].values
-        cluster_counts.append(len(current_lst))
-
-        #if len(current_lst) < 10:
-        #    continue
-        #logo = create_logo(current_lst)
-        #logo.fig.savefig('./data/cluster_' +
-        #                str(cluster_num) + '_' +
-        #                 str(len(current_lst)) + '.png')
-        #plt.close()
-
-    #cumsum of clusters
-    plt.plot(np.cumsum(cluster_counts))
-    plt.show()
+        #for each cluster get the consensus string and write
+        for cluster_id in set(df['Cluster.Sub-Cluster Number'].values):
+            current_df = df[df['Cluster.Sub-Cluster Number'] == cluster_id].copy()
+            cluster_sequences = current_df['Peptide'].values
+            concensus_df = df_original[(df_original['Peptide Number'] == 'Consensus') &
+                                       (df_original['Cluster.Sub-Cluster Number'] == cluster_id)]
+            for i in range(len(concensus_df)):
+                concensus_str = concensus_df['Alignment'].iloc[i]
+                print(str(cluster_id), ' ', len(cluster_sequences))
+                #consensus_file.write(concensus_str + "\n")
+        print('---------------------------------------------')
+    #consensus_file.close()
 
     print('done')
 
+
+def splitFile3K():
+    arr = [0, 6000, 12000, 18000, 24000, 29938]
+    for k in range(len(arr) - 1):
+        start = arr[k]
+        stop = arr[k + 1]
+        print('start: ', str(start), ' stop: ', str(stop))
+        filename = 'data//' + 'human1' + '//top_subseqs_' + 'human1' + '.txt'
+        out_filename = filename + '.' + str(k)
+        f = open(filename, 'r')
+        of = open(out_filename, 'w')
+        for line in itertools.islice(f, start, stop):
+            of.write(line)
+        f.close()
+        of.close()
+
+
 if __name__ == '__main__':
-    #generate_venns()
-    #organisms_analysis()
+    # generate_venns()
+    # organisms_analysis()
     parse_IEDB_excel()
+    # splitFile3K()
