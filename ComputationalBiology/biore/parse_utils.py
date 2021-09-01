@@ -121,8 +121,11 @@ def generate_venns():
 
 def organisms_analysis():
     # parsing file to create all input data:
-    organisms = ['human1', 'mouse1', 'bsubtilis']
-    organismsColors = ['r', 'b', 'g']
+    #organisms = ['human1', 'mouse1', 'bsubtilis']
+    #organismsColors = ['r', 'b', 'g']
+    organisms = ['human1']
+    organismsColors = ['r']
+
     fig = plt.figure()
     for o, organism in enumerate(organisms):
         print('Organism: ', organism)
@@ -195,7 +198,7 @@ def organisms_analysis():
                 barY = df_counter_all_sorted['subseq_len'].head(1).values[0]
                 plt.bar(barX, barY * 100 / n_total_unique, figure=fig, color=organismsColors[o], alpha=0.5)
 
-            if False:  # elbow plot
+            if True:  # elbow plot
                 plot_cumsum(df_counter_all_sorted, colors[j], fig)
                 plt.title(organism)
 
@@ -231,14 +234,11 @@ def parse_IEDB_excel():
                  'data//human1//human1.2.csv',
                  'data//human1//human1.3.csv',
                  'data//human1//human1.4.csv']
-    consensus_filename = 'data//human1//consensus.txt'
-    #consensus_file = open(consensus_filename, 'w')
 
     for filename in filenames:
         print(filename + '...')
-        df = pd.read_csv(filename)
-        df_original = df.copy()
-        #metadata printouts
+        df = pd.read_csv(filename, dtype=str)
+
         df_non_consensus = df[df['Peptide Number'] != 'Consensus']
         print('Total sequences: ', len(df_non_consensus))
 
@@ -252,19 +252,27 @@ def parse_IEDB_excel():
         df = df[(df['Peptide Number'] != 'Consensus') &
                 (df['Peptide Number'] != 'Singleton')]
 
+        clusters_dict = {'sequence': [], 'num_sequences': []}
         #for each cluster get the consensus string and write
         for cluster_id in set(df['Cluster.Sub-Cluster Number'].values):
             current_df = df[df['Cluster.Sub-Cluster Number'] == cluster_id].copy()
             cluster_sequences = current_df['Peptide'].values
-            concensus_df = df_original[(df_original['Peptide Number'] == 'Consensus') &
-                                       (df_original['Cluster.Sub-Cluster Number'] == cluster_id)]
-            for i in range(len(concensus_df)):
-                concensus_str = concensus_df['Alignment'].iloc[i]
-                print(str(cluster_id), ' ', len(cluster_sequences))
-                #consensus_file.write(concensus_str + "\n")
-        print('---------------------------------------------')
-    #consensus_file.close()
+            cluster_consensus = df_concensus[df_concensus['Cluster.Sub-Cluster Number'] == cluster_id]['Alignment'].values
+            print(cluster_id, '[', cluster_consensus, ']', '#seqs: ', len(cluster_sequences))
+            #adding a new entry to dictionary
+            clusters_dict['sequence'].append(cluster_consensus)
+            clusters_dict['num_sequences'].append(len(cluster_sequences))
 
+        df_elbow = pd.DataFrame.from_dict(clusters_dict)
+        #copied from plot_cumsum
+        max_count = df_elbow['num_sequences'].nlargest(len(df_elbow))
+        percent_values = max_count.values / sum(max_count) * 100
+        y_cumsum = np.cumsum(percent_values)
+
+        plt.plot(y_cumsum, 'o')
+        plt.xlabel('Count')
+        plt.ylabel('Cumulative percentage covered of total subsequences')
+        plt.show()
     print('done')
 
 
@@ -285,7 +293,16 @@ def splitFile3K():
 
 
 if __name__ == '__main__':
-    # generate_venns()
-    # organisms_analysis()
+    #STEP 1 - generate all sequences of length 21
+    #organisms_analysis()
+
+    #STEP 2 - split 15K into 5x3K
+    #splitFile3K()
+
+    #STEP 3 - run IEDB 5 times (http://tools.iedb.org/cluster/)
+
+    #STEP 4 - parse IEDB results csv files
     parse_IEDB_excel()
-    # splitFile3K()
+
+
+    # generate_venns()
