@@ -84,15 +84,16 @@ def find_S_by_column(df: pd.DataFrame, col_name: str):
     return df_counter
 
 
-def plot_cumsum(df_counter, color, figHandle):
-    max_count = df_counter['sequence'].nlargest(len(df_counter))
+def plot_cumsum(df_counter, color, figHandle, columm_name, to_show=False):
+    max_count = df_counter[columm_name].nlargest(len(df_counter))
     percent_values = max_count.values / sum(max_count) * 100
     y_cumsum = np.cumsum(percent_values)
     # plt.plot(y_cumsum, 'o', color=(color, 0, 0), figure=figHandle)
     plt.plot(y_cumsum, 'o', figure=figHandle)
     plt.xlabel('Count')
     plt.ylabel('Cumulative percentage covered of total subsequences')
-
+    if to_show:
+        plt.show()
 
 def get_all_substrings(sequence, min_len):
     res = [sequence[i: j] for i in range(len(sequence)) for j in range(i + 1, len(sequence) + 1) if
@@ -199,7 +200,7 @@ def organisms_analysis():
                 plt.bar(barX, barY * 100 / n_total_unique, figure=fig, color=organismsColors[o], alpha=0.5)
 
             if True:  # elbow plot
-                plot_cumsum(df_counter_all_sorted, colors[j], fig)
+                plot_cumsum(df_counter_all_sorted, colors[j], fig, columm_name='sequence')
                 plt.title(organism)
 
             for TM_sequence_index, s in enumerate(df_counter_all_sorted['subseq_len'].head(num_of_sequences).index):
@@ -234,7 +235,9 @@ def parse_IEDB_excel():
                  'data//human1//human1.2.csv',
                  'data//human1//human1.3.csv',
                  'data//human1//human1.4.csv']
-
+    num=0
+    total_consensus = 0
+    merged_dict = {}  # will contain consensus as keys and matching values as the list of sequences
     for filename in filenames:
         print(filename + '...')
         df = pd.read_csv(filename, dtype=str)
@@ -247,6 +250,7 @@ def parse_IEDB_excel():
 
         df_concensus = df[df['Peptide Number'] == 'Consensus']
         print('Total consensus sequences: ', len(df_concensus))
+        total_consensus += len(df_concensus)
 
         #only sequences remain
         df = df[(df['Peptide Number'] != 'Consensus') &
@@ -258,23 +262,36 @@ def parse_IEDB_excel():
             current_df = df[df['Cluster.Sub-Cluster Number'] == cluster_id].copy()
             cluster_sequences = current_df['Peptide'].values
             cluster_consensus = df_concensus[df_concensus['Cluster.Sub-Cluster Number'] == cluster_id]['Alignment'].values
-            print(cluster_id, '[', cluster_consensus, ']', '#seqs: ', len(cluster_sequences))
+            # print(cluster_id, '[', cluster_consensus, ']', '#seqs: ', len(cluster_sequences))
             #adding a new entry to dictionary
-            clusters_dict['sequence'].append(cluster_consensus)
-            clusters_dict['num_sequences'].append(len(cluster_sequences))
+            clusters_dict['sequence'].append(cluster_consensus) # TODO: remove
+            clusters_dict['num_sequences'].append(len(cluster_sequences))  # TODO: remove
 
-        df_elbow = pd.DataFrame.from_dict(clusters_dict)
-        #copied from plot_cumsum
-        max_count = df_elbow['num_sequences'].nlargest(len(df_elbow))
-        percent_values = max_count.values / sum(max_count) * 100
-        y_cumsum = np.cumsum(percent_values)
+            # adding a new entry to mergerd_dict
+            assert len(cluster_consensus) == 1
+            cluster_consensus_seq = cluster_consensus[0]
+            if cluster_consensus_seq not in merged_dict.keys():
+                merged_dict[cluster_consensus_seq] = list(cluster_sequences)
+            else: # i.e. this consensus exists already
+                num += 1
+                merged_dict[cluster_consensus_seq].append(list(cluster_sequences))
 
-        plt.plot(y_cumsum, 'o')
-        plt.xlabel('Count')
-        plt.ylabel('Cumulative percentage covered of total subsequences')
-        plt.show()
+        df_elbow = pd.DataFrame.from_dict(clusters_dict)  # TODO: remove
+        fig = plt.figure()
+        plot_cumsum(df_elbow, 'r', fig, columm_name='num_sequences', to_show=False)
+
+    print('num of consensus over merged data: {} vs. num of total sequences (based on single filee): {}'.
+          format(len(merged_dict), total_consensus))
+
+    # convert to a list of dictionaries
+    data = []
+    for k in merged_dict:
+        data.append({'concensus': k, 'sub_seqs':merged_dict[k]})
+    df_merged = pd.DataFrame(data)
+    df_merged['num_seqs'] = df_merged['sub_seqs'].apply(lambda x: len(x))
+    fig = plt.figure()
+    plot_cumsum(df_merged, 'r', fig, columm_name='num_seqs', to_show=True)
     print('done')
-
 
 def splitFile3K():
     arr = [0, 6000, 12000, 18000, 24000, 29938]
