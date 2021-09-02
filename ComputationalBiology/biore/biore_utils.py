@@ -1,6 +1,6 @@
 from ComputationalBiology.biore.biore_macros import AA_GROUP, group_to_aa_dict, aa_group_list, aa_to_group_dict, \
     aa_to_BY_dict
-import re
+from scipy.spatial import distance
 
 
 def translate(original_str: str):
@@ -36,14 +36,20 @@ def aa_into_group(seq):
         res += aa_to_group_dict[c]
     return res
 
+
 def aa_into_BY(seq):
     res = ''
     for c in seq:
         res += aa_to_BY_dict[c]
     return res
 
+
 def group_into_aa(seq):
     res = ''
     for c in seq:
         res += group_to_aa_dict[c]
     return res
+
+
+def get_hamming(seq1, seq2):
+    return distance.hamming(list(seq1), list(seq2))
