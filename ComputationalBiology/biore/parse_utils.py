@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import re
+
+from Bio import Phylo
 from matplotlib_venn import venn2, venn3
 import itertools
 import scipy
@@ -232,55 +234,136 @@ def parse_IEDB_excel():
           format(len(merged_dict), total_consensus))
 
     #create df_merged: concensus_str, [list of subseqs], #subseqs, #X in concensus
-    data = []
-    for concensus_str in merged_dict:
-        data.append({'concensus': concensus_str, 'subseqs':merged_dict[concensus_str]})
-    df_merged = pd.DataFrame(data)
-    df_merged['num_seqs'] = df_merged['subseqs'].apply(lambda x: len(x))
-    df_merged['num_X'] = df_merged['concensus'].apply(lambda x: x.count('X'))
-    df_merged['len_concensus'] = df_merged['concensus'].apply(lambda x: len(x))
+    df_merged = create_df_from_dict(merged_dict)
 
     return df_merged, pd.concat(singletons_merged)
 
 
+def create_df_from_dict(data_dict):
+    # data_dict: key is sequence, value is the list of covered sequence(s)
+    data = []
+    for concensus_str in data_dict:
+        data.append({'concensus': concensus_str, 'subseqs':data_dict[concensus_str]})
+    df_res = pd.DataFrame(data)
+    df_res['num_seqs'] = df_res['subseqs'].apply(lambda x: len(x))
+    df_res['num_X'] = df_res['concensus'].apply(lambda x: x.count('X'))
+    df_res['len_concensus'] = df_res['concensus'].apply(lambda x: len(x))
+    return df_res
+
+
+def add_singeltons_to_df_merged(df_merged, df_singletons_merged):
+    # create a temp df from df_singletons_merged in order to concatenate the two dfs
+
+    keys = df_singletons_merged['Alignment'].values
+    # values = [[k] for k in keys]
+    # singletons_dict = dict(zip(keys, values))
+
+    singletons_dict = dict((key, [key]) for key in keys)
+
+    df_temp = create_df_from_dict(singletons_dict)
+    return pd.concat([df_merged, df_temp])
+
+
+def fill_missing_seqs(df_human, df_human_merged):
+    # df_human is the original data where each unique sequence could appear more tan once,
+    # in df_human_merged each sequence apeared once only
+    # Goal: fill the remaining once such that the total covered sequences will be sum(df_human['subseq_len'])
+
+    # for each sequence in df_human that appears n > 1 times:
+    # find its cluster
+    # add it n-1 times
+    # TODO
+    return 0
+
+
+def create_lower_triang_distance_matrix(sequences: list):
+    dist_matrix = np.zeros((len(sequences), len(sequences)))
+    for i in range(0, len(sequences)):
+        c1 = sequences[i]
+        if i % 50 == 0:
+            print(i)
+
+        for j in range(i+1, len(sequences)):
+            c2 = sequences[j]
+
+            # TODO: use a "smarter" distance matrix for peptide comparison (e.g. our 5-groups or BLOSUM62)
+            dist_matrix[j][i] = get_hamming(c1, c2)
+
+    return dist_matrix
+
+
+def create_triangle_distance_matrix(matrix):
+    res = []
+    temp = np.tril(dist_matrix).tolist()
+
+    for i in range(len(temp)):
+        res.append(temp[i][0:i+1])
+
+    return res
+
+
+
 if __name__ == '__main__':
+
     #STEP 1 - generate all sequences of length 21
-    #dfs = organisms_analysis('human1')
-    #for l in range(len(dfs)):
-    #    fig = plt.figure()
-    #    plot_cumsum(dfs[l], 'r', fig, columm_name='sequence', to_show=False)
-        #plt.show()
+    dfs = organisms_analysis('human1')
+    df_human = dfs[0]
+    for l in range(len(dfs)):
+        fig = plt.figure()
+        plot_cumsum(dfs[l], 'r', fig, columm_name='sequence', to_show=False)
 
     #STEP 2 - split 15K into 5x3K
-    #splitFile3K()
-
     #STEP 3 - run IEDB 5 times (http://tools.iedb.org/cluster/)
-
     #STEP 4 - parse IEDB results csv files
     df_merged, df_singletons_merged = parse_IEDB_excel()
-    fig = plt.figure()
-    plot_cumsum(df_merged, 'r', fig, columm_name='num_seqs', to_show=False)
+    # TODO: fill_missing_seqs
+
+    # STEP 5 - add singletons to the df
+    df_merged_with_singletons = add_singeltons_to_df_merged(df_merged, df_singletons_merged)
+    plot_cumsum(df_merged_with_singletons, 'r', fig, columm_name='num_seqs', to_show=False)
     plt.show()
+    # assert (sum(d1['subseq_len']) == sum(df_merged_with_singletons['num_seqs'])) % assertion after running fill_missing_seqs
 
-    #heatmap for hamming distance between concensuses (length 21 only)
+    # Create distance matrix for all 15333 sequences
 
-    #STEP 6 - go over all singletons, for each find best concensus
-    all_singletons = df_singletons_merged['Peptide'].values
-    all_concensuses = df_merged[df_merged['len_concensus']==21]['concensus'].values
+    # dist_matrix = create_lower_triang_distance_matrix(list(df_human.index.values))
+    # all_concensuses =list(df_merged[df_merged['len_concensus'] == 21]['concensus'].values)
+    all_sequences = list(df_human.index.values)
+    dist_matrix = create_lower_triang_distance_matrix(all_sequences)
+    dist_lists = create_triangle_distance_matrix(dist_matrix)
 
-    M = np.zeros((len(all_concensuses), len(all_concensuses)))
-    for i, c1 in enumerate(all_concensuses):
-        for j, c2 in enumerate(all_concensuses):
-            M[i][j] = get_hamming(c1, c2)
-
-    M_file = './M.pickle'
+    M_file = './dist_lists.pickle'
     with open(M_file, 'wb') as pickle_file:
-        pickle.dump(M, file=pickle_file)
+        pickle.dump(dist_lists, file=pickle_file)
 
     with open(M_file, 'rb') as pickle_file:
-        M2 = pickle.load(file=pickle_file)
+        dist_lists = pickle.load(file=pickle_file)
 
-    assert(np.all(np.equal(M, M2)))
+    # Create a tree
+    import Bio
+    from Bio.Phylo.TreeConstruction import DistanceTreeConstructor, DistanceMatrix
+    constructor = DistanceTreeConstructor()
+    print('Constructing tree using UPGMA')
+    tree = constructor.upgma(DistanceMatrix(names=all_sequences, matrix=dist_lists))
+
+    tree_file = './tree.pickle'
+    with open(tree_file, 'wb') as pickle_file:
+        pickle.dump(tree, file=pickle_file)
+
+    # with open(tree_file, 'rb') as pickle_file:
+    #     tree2 = pickle.load(file=pickle_file)
+
+    Bio.Phylo.draw(tree)
+    print('done')
+
+    # M2[M2 >= 0.5] = 1
+    # M2[M2 < 0.5] = 0
+    # import seaborn as sns
+    # sns.heatmap(M2)
+    # plt.show()
+
+
+    # assert(np.all(np.equal(M, M2)))
     print('done')
 
 
