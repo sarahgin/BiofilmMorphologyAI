@@ -79,11 +79,54 @@ def get_positional_probability_matrix(sequences, seq_len, alphabet):
 def get_entropy_vector(df_probability_matrix):
     df_probability_matrix['entropy_value'] = \
         df_probability_matrix.apply(lambda row: entropy(row, base=2), axis=1)
-    return list(df_probability_matrix['entropy_value'].values)
+    return df_probability_matrix['entropy_value'].values
+
+#TODO: fix code duplication
+def create_regex_all_or_none(df_probability_matrix):
+    regex = ''
+    for pos in range(0, len(df_probability_matrix)):
+        relevant_aa = df_probability_matrix.columns[df_probability_matrix.iloc[pos] != 0]
+        if len(relevant_aa) == 1:
+            regex += relevant_aa[0]
+        else: #more than one amino acid found at position
+            regex += '.'
+    return regex
+
+def create_regex_or(df_probability_matrix):
+    regex = ''
+    for pos in range(0, len(df_probability_matrix)):
+        relevant_aa = df_probability_matrix.columns[df_probability_matrix.iloc[pos] != 0]
+        if len(relevant_aa) == 1:
+            regex += relevant_aa[0]
+        else: #more than one amino acid found at position
+            regex += '('
+            regex += '|'.join(relevant_aa)
+            regex += ')'
+
+    return regex
 
 if __name__ == '__main__':
-    sequences = ['ATGC', 'AATT', 'ATGG', 'ATGA']
-    m = get_positional_probability_matrix(sequences, 4, ValidAlphabet.NT)
+    #sequences = ['ATGC', 'AATT', 'ATGG', 'ATGA']
+
+    sequences = ['QLYFFSSLVCTECVLLASMAY',
+    'QLYFFHFLGSTECFLYTVMSY',
+    'QMYFFFFFGVAECFLLATMAY',
+    'QMFFFLFFGATECCLLAAMAY',
+    'QMFFFVFLGAAECFLLSSMAY',
+    'QMFFFVTLGSTDCFLLAIMAY',
+    'QLYFFHFLGSTQCFLYTLMAY',
+    'QLYFFLGLGCTECVLLAVMAY',
+    'QMYFFFFFGAAECCLLATMAY',
+    'QIYFFHSLGATECYLLTAMAY',
+    'QLYFFIALACTECVLLAVMAY',
+    'QLYFFIALMCTECVLLAAMAY',
+    'QLYFFVFLGATECFLLAFMAY',
+    'QLFIFTFLGATECFLLAAMAY']
+
+
+    m = get_positional_probability_matrix(sequences, 21, ValidAlphabet.AA)
     print(m)
+    reg = create_regex_all_or_none(m)
+    print(reg)
     v = get_entropy_vector(m)
     print(v)

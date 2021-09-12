@@ -11,7 +11,8 @@ from scipy.spatial import distance
 import pickle
 import seaborn as sns
 
-from ComputationalBiology.biore.biore_utils import aa_into_group, aa_into_BY, get_hamming, get_entropy_vector, get_positional_probability_matrix
+from ComputationalBiology.biore.biore_utils import aa_into_group, aa_into_BY, get_hamming, get_entropy_vector, \
+    get_positional_probability_matrix, create_regex_all_or_none, create_regex_or
 from ComputationalBiology.biore.biore_macros import ValidAlphabet
 from ComputationalBiology.biore.visualize_utils import create_logo
 
@@ -319,11 +320,19 @@ if __name__ == '__main__':
     #STEP 4 - parse IEDB results csv files
     df_concensuses_merged, df_singletons_merged = parse_IEDB_excel()
 
-    df_concensuses_merged = df_concensuses_merged.head(50)
+    #df_concensuses_merged = df_concensuses_merged.head(10)
     #for each concensus (total 966) compute probability matrix
-    df_concensuses_merged['entropy_vector'] = \
+    df_concensuses_merged['regex_all_or_none'] = \
         df_concensuses_merged['subseqs'].apply(lambda x:
-                                               get_entropy_vector(get_positional_probability_matrix(x, 21, ValidAlphabet.AA)))
+                                               create_regex_all_or_none(get_positional_probability_matrix(x, 21, ValidAlphabet.AA)))
+
+    df_concensuses_merged['regex_or'] = \
+        df_concensuses_merged['subseqs'].apply(lambda x:
+                                               create_regex_or(
+                                                   get_positional_probability_matrix(x, 21, ValidAlphabet.AA)))
+
+
+
 
     table = np.array(list(df_concensuses_merged['entropy_vector'].values))
     #show heatmap
