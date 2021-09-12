@@ -320,20 +320,20 @@ if __name__ == '__main__':
     #STEP 4 - parse IEDB results csv files
     df_concensuses_merged, df_singletons_merged = parse_IEDB_excel()
 
-    #df_concensuses_merged = df_concensuses_merged.head(10)
+    # df_concensuses_merged = df_concensuses_merged.head(100)
     #for each concensus (total 966) compute probability matrix
-    df_concensuses_merged['regex_all_or_none'] = \
+
+    df_concensuses_merged['prob_matrix'] = \
         df_concensuses_merged['subseqs'].apply(lambda x:
-                                               create_regex_all_or_none(get_positional_probability_matrix(x, 21, ValidAlphabet.AA)))
+                                              get_positional_probability_matrix(x, 21, ValidAlphabet.AA))
+
+    df_concensuses_merged['regex_all_or_none'] = \
+        df_concensuses_merged['prob_matrix'].apply(lambda x: create_regex_all_or_none(x))
 
     df_concensuses_merged['regex_or'] = \
-        df_concensuses_merged['subseqs'].apply(lambda x:
-                                               create_regex_or(
-                                                   get_positional_probability_matrix(x, 21, ValidAlphabet.AA)))
+        df_concensuses_merged['prob_matrix'].apply(lambda x: create_regex_or(x))
 
-
-
-
+    df_concensuses_merged.to_pickle('df_concensuses_merged_{}.pickle'.format(len(df_concensuses_merged)))
     table = np.array(list(df_concensuses_merged['entropy_vector'].values))
     #show heatmap
     fig = plt.figure()
