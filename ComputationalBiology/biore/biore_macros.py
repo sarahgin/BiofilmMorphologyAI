@@ -40,6 +40,11 @@ class AA_GROUP(Enum):
 
 aa_group_list = ['P', 'N', 'R', 'O', 'L', 'B', 'Y']
 
+class NT(Enum):
+    ADENINE = 'A'
+    CYTOSINE = 'C'
+    GUANINE = 'G'
+    THYMINE = 'T'
 
 class AA(Enum):
     ALANINE = 'A'

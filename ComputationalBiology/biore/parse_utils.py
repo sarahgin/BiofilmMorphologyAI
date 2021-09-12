@@ -9,8 +9,10 @@ import itertools
 import scipy
 from scipy.spatial import distance
 import pickle
+import seaborn as sns
 
-from ComputationalBiology.biore.biore_utils import aa_into_group, aa_into_BY, get_hamming
+from ComputationalBiology.biore.biore_utils import aa_into_group, aa_into_BY, get_hamming, get_entropy_vector, get_positional_probability_matrix
+from ComputationalBiology.biore.biore_macros import ValidAlphabet
 from ComputationalBiology.biore.visualize_utils import create_logo
 
 pd.set_option('display.max_columns', None)
@@ -315,56 +317,24 @@ if __name__ == '__main__':
     #STEP 2 - split 15K into 5x3K
     #STEP 3 - run IEDB 5 times (http://tools.iedb.org/cluster/)
     #STEP 4 - parse IEDB results csv files
-    df_merged, df_singletons_merged = parse_IEDB_excel()
-    # TODO: fill_missing_seqs
+    df_concensuses_merged, df_singletons_merged = parse_IEDB_excel()
+
+    df_concensuses_merged = df_concensuses_merged.head(50)
+    #for each concensus (total 966) compute probability matrix
+    df_concensuses_merged['entropy_vector'] = \
+        df_concensuses_merged['subseqs'].apply(lambda x:
+                                               get_entropy_vector(get_positional_probability_matrix(x, 21, ValidAlphabet.AA)))
+
+    table = np.array(list(df_concensuses_merged['entropy_vector'].values))
+    #show heatmap
+    fig = plt.figure()
+    fig.set_size_inches(30, 30, forward=True)
+    plt.rc('font', size=15)
+    sns.heatmap(table, annot=False)
 
     # STEP 5 - add singletons to the df
-    df_merged_with_singletons = add_singeltons_to_df_merged(df_merged, df_singletons_merged)
+    df_merged_with_singletons = add_singeltons_to_df_merged(df_concensuses_merged, df_singletons_merged)
     plot_cumsum(df_merged_with_singletons, 'r', fig, columm_name='num_seqs', to_show=False)
     plt.show()
-    # assert (sum(d1['subseq_len']) == sum(df_merged_with_singletons['num_seqs'])) % assertion after running fill_missing_seqs
 
-    # Create distance matrix for all 15333 sequences
-
-    # dist_matrix = create_lower_triang_distance_matrix(list(df_human.index.values))
-    # all_concensuses =list(df_merged[df_merged['len_concensus'] == 21]['concensus'].values)
-    all_sequences = list(df_human.index.values)
-    dist_matrix = create_lower_triang_distance_matrix(all_sequences)
-    dist_lists = create_triangle_distance_matrix(dist_matrix)
-
-    M_file = './dist_lists.pickle'
-    with open(M_file, 'wb') as pickle_file:
-        pickle.dump(dist_lists, file=pickle_file)
-
-    with open(M_file, 'rb') as pickle_file:
-        dist_lists = pickle.load(file=pickle_file)
-
-    # Create a tree
-    import Bio
-    from Bio.Phylo.TreeConstruction import DistanceTreeConstructor, DistanceMatrix
-    constructor = DistanceTreeConstructor()
-    print('Constructing tree using UPGMA')
-    tree = constructor.upgma(DistanceMatrix(names=all_sequences, matrix=dist_lists))
-
-    tree_file = './tree.pickle'
-    with open(tree_file, 'wb') as pickle_file:
-        pickle.dump(tree, file=pickle_file)
-
-    # with open(tree_file, 'rb') as pickle_file:
-    #     tree2 = pickle.load(file=pickle_file)
-
-    Bio.Phylo.draw(tree)
     print('done')
-
-    # M2[M2 >= 0.5] = 1
-    # M2[M2 < 0.5] = 0
-    # import seaborn as sns
-    # sns.heatmap(M2)
-    # plt.show()
-
-
-    # assert(np.all(np.equal(M, M2)))
-    print('done')
-
-
-    # generate_venns()
