@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import re
+import regex
 
 from Bio import Phylo
 from matplotlib_venn import venn2, venn3
@@ -10,9 +10,9 @@ import scipy
 from scipy.spatial import distance
 import pickle
 import seaborn as sns
+import pickle5 as pickle5
 
-from ComputationalBiology.biore.biore_utils import aa_into_group, aa_into_BY, get_hamming, get_entropy_vector, \
-    get_positional_probability_matrix, create_regex_all_or_none, create_regex_or
+from ComputationalBiology.biore.biore_utils import *
 from ComputationalBiology.biore.biore_macros import ValidAlphabet
 from ComputationalBiology.biore.visualize_utils import create_logo
 
@@ -37,7 +37,7 @@ def get_subsequences(motif_info: str, sequence: str, prefix_type: str):
     """
     res = []
     # find all matches of (HELIX (\d+)..(\d+))# TODO: make general fo beta
-    all_matches = re.findall(prefix_type + ' (\d+)\\.\\.(\d+)', motif_info)
+    all_matches = regex.findall(prefix_type + ' (\d+)\\.\\.(\d+)', motif_info)
     assert (all_matches is not None)
 
     # go over the matches
@@ -80,7 +80,7 @@ def create_subseq_df(df: pd.DataFrame, col_name: str, subseq_type: str):
 
 def find_S_by_column(df: pd.DataFrame, col_name: str):
     df_counter = df.groupby(col_name).count()
-    df_counter['sequence'] = df_counter['Protein names'] #since sequence column is now index
+    df_counter['sequence'] = df_counter['Protein names']  # since sequence column is now index
     assert (len(df[col_name].unique() == len(df_counter)))
 
     max_count = df_counter['sequence'].max()
@@ -98,13 +98,14 @@ def plot_cumsum(df_counter, color, figHandle, columm_name, to_show=False):
     percent_values = max_count.values / sum(max_count) * 100
     y_cumsum = np.cumsum(percent_values)
 
-    x_cumsum = np.arange(1, len(df_counter)+1)/len(df_counter)
+    x_cumsum = np.arange(1, len(df_counter) + 1) / len(df_counter)
 
     plt.plot(x_cumsum, y_cumsum, 'o', figure=figHandle)
     plt.xlabel('Percentage of sequences')
     plt.ylabel('Cumulative percentage covered by sequences')
     if to_show:
         plt.show()
+
 
 def get_all_substrings(sequence, min_len):
     res = [sequence[i: j] for i in range(len(sequence)) for j in range(i + 1, len(sequence) + 1) if
@@ -137,8 +138,8 @@ def organisms_analysis(organism: str):
     file_path = 'data/' + organism + '.tab'
     df = parse_file(file_path)
 
-    #split into reviewed vs. unreviewed
-    #leave 'reviewed' only
+    # split into reviewed vs. unreviewed
+    # leave 'reviewed' only
     reviewedDF = df[df['Status'] == 'reviewed']
     unreviewedDF = df[df['Status'] == 'unreviewed']
     assert (len(df) == len(reviewedDF) + len(unreviewedDF))
@@ -147,7 +148,7 @@ def organisms_analysis(organism: str):
           ' Reviewed: ', len(reviewedDF),
           'Unreviewed: ', len(unreviewedDF))
 
-    #create df with onlu transmembrane
+    # create df with onlu transmembrane
     df_transmembrane = create_subseq_df(df=df, col_name='Transmembrane', subseq_type='TRANSMEM').copy()
     df_transmembrane = df_transmembrane.rename(columns={"seq_Transmembrane": "sequence"})
 
@@ -162,7 +163,7 @@ def organisms_analysis(organism: str):
     max_len = 22
 
     for j, chosen_subseq_len in enumerate(range(min_len, max_len)):
-        #if chosen_subseq_len != 21:
+        # if chosen_subseq_len != 21:
         #    continue
 
         print('Analyzing len: ', str(chosen_subseq_len))
@@ -180,7 +181,7 @@ def organisms_analysis(organism: str):
         print('num of valid subseqs of length {}: {} '.format(chosen_subseq_len, len(df_curr_length)))
         print('num unique subseqs:', len(df_curr_length['sequence'].unique()))
 
-        #organize and sort by unique sequences
+        # organize and sort by unique sequences
         df_counter_all = find_S_by_column(df_curr_length, 'sequence')
         df_counter_all_sorted = df_counter_all.sort_values(by='subseq_len', ascending=False)
 
@@ -215,28 +216,29 @@ def parse_IEDB_excel():
         print('Total consensus sequences: ', len(df_concensus))
         total_consensus += len(df_concensus)
 
-        #only sequences remain
+        # only sequences remain
         df = df[(df['Peptide Number'] != 'Consensus') &
                 (df['Peptide Number'] != 'Singleton')]
 
-        #for each cluster get the consensus string and write
+        # for each cluster get the consensus string and write
         for cluster_id in set(df['Cluster.Sub-Cluster Number'].values):
             current_df = df[df['Cluster.Sub-Cluster Number'] == cluster_id].copy()
             cluster_sequences = current_df['Peptide'].values
-            cluster_consensus = df_concensus[df_concensus['Cluster.Sub-Cluster Number'] == cluster_id]['Alignment'].values
+            cluster_consensus = df_concensus[df_concensus['Cluster.Sub-Cluster Number'] == cluster_id][
+                'Alignment'].values
 
             # adding a new entry to merged_dict (all 4 files)
             assert len(cluster_consensus) == 1
             cluster_consensus_seq = cluster_consensus[0]
             if cluster_consensus_seq not in merged_dict.keys():
                 merged_dict[cluster_consensus_seq] = list(cluster_sequences)
-            else: # i.e. this consensus exists already
+            else:  # i.e. this consensus exists already
                 merged_dict[cluster_consensus_seq].append(list(cluster_sequences))
 
     print('All files: len of df_merged: {} vs. len of df_concensus: {}'.
           format(len(merged_dict), total_consensus))
 
-    #create df_merged: concensus_str, [list of subseqs], #subseqs, #X in concensus
+    # create df_merged: concensus_str, [list of subseqs], #subseqs, #X in concensus
     df_merged = create_df_from_dict(merged_dict)
 
     return df_merged, pd.concat(singletons_merged)
@@ -246,7 +248,7 @@ def create_df_from_dict(data_dict):
     # data_dict: key is sequence, value is the list of covered sequence(s)
     data = []
     for concensus_str in data_dict:
-        data.append({'concensus': concensus_str, 'subseqs':data_dict[concensus_str]})
+        data.append({'concensus': concensus_str, 'subseqs': data_dict[concensus_str]})
     df_res = pd.DataFrame(data)
     df_res['num_seqs'] = df_res['subseqs'].apply(lambda x: len(x))
     df_res['num_X'] = df_res['concensus'].apply(lambda x: x.count('X'))
@@ -286,7 +288,7 @@ def create_lower_triang_distance_matrix(sequences: list):
         if i % 50 == 0:
             print(i)
 
-        for j in range(i+1, len(sequences)):
+        for j in range(i + 1, len(sequences)):
             c2 = sequences[j]
 
             # TODO: use a "smarter" distance matrix for peptide comparison (e.g. our 5-groups or BLOSUM62)
@@ -295,47 +297,102 @@ def create_lower_triang_distance_matrix(sequences: list):
     return dist_matrix
 
 
-def create_triangle_distance_matrix(matrix):
+def get_matches_vector(singletons, patterns, max_dots, isTranslate):
     res = []
-    temp = np.tril(dist_matrix).tolist()
-
-    for i in range(len(temp)):
-        res.append(temp[i][0:i+1])
-
+    for c, singleton_str in enumerate(singletons):
+        if isTranslate:
+            singleton_str = aa_into_group(singleton_str)
+        is_match = False
+        for p, pattern in enumerate(patterns):
+            if pattern.count('.') >= max_dots:
+                continue
+            if isTranslate:
+                pattern = aa_into_group_ignore_dots(pattern)
+            match = regex.match(pattern, singleton_str)
+            if match is not None:
+                is_match = True
+                break
+        if not is_match:
+            res.append(0)
+        else:
+            res.append(1)
     return res
 
+def append_singletons_to_clusters(df_singletons,
+                                  df_concensuses,
+                                  patterns, max_dots, isTranslate):
+    if isTranslate:
+        #df_singletons['Alignment'] = df_singletons['Alignment'].apply(lambda x: aa_into_group(x))
+        patterns = [aa_into_group_ignore_dots(x) for x in patterns]
+    df_singletons['match_found'] = False
+    for p, pattern in enumerate(patterns):
+        #if pattern.count('.') >= max_dots:
+        #    continue
+        df_singletons['match_found'] = \
+            df_singletons['match_found'] | \
+            df_singletons['Alignment'].apply(lambda x: regex.match(pattern, x) is not None)
+    return df_singletons['match_found'].values
+
+
+def fix_patterns(patterns_strs, chosen_length):
+    res = set()
+    for p in patterns_strs:
+        match = regex.findall(r'[A-Z.]{' + str(chosen_length) + '}', p, overlapped=True)
+        if len(match) > 0:
+            for m in match:
+                if m.count('..') == 0: #ignore regexes with consecutive dots
+                    res.add(m)
+    print('#patterns for length: ', str(chosen_length), ' is ', len(res))
+    return res
 
 
 if __name__ == '__main__':
 
-    #STEP 1 - generate all sequences of length 21
+    # STEP 1 - generate all sequences of length 21
     dfs = organisms_analysis('human1')
     df_human = dfs[0]
     for l in range(len(dfs)):
         fig = plt.figure()
         plot_cumsum(dfs[l], 'r', fig, columm_name='sequence', to_show=False)
 
-    #STEP 2 - split 15K into 5x3K
-    #STEP 3 - run IEDB 5 times (http://tools.iedb.org/cluster/)
-    #STEP 4 - parse IEDB results csv files
+    # STEP 2 - split 15K into 5x3K
+    # STEP 3 - run IEDB 5 times (http://tools.iedb.org/cluster/)
+    # STEP 4 - parse IEDB results csv files
     df_concensuses_merged, df_singletons_merged = parse_IEDB_excel()
 
-    # df_concensuses_merged = df_concensuses_merged.head(100)
-    #for each concensus (total 966) compute probability matrix
+    # for each concensus (total 966) compute probability matrix
+    # df_concensuses_merged['prob_matrix'] = \
+    #    df_concensuses_merged['subseqs'].apply(lambda x: get_positional_probability_matrix(x, 21, ValidAlphabet.AA))
+    # df_concensuses_merged['regex_all_or_none'] = \
+    #    df_concensuses_merged['prob_matrix'].apply(lambda x: create_regex_all_or_none(x))
+    # df_concensuses_merged['regex_or'] = \
+    #    df_concensuses_merged['prob_matrix'].apply(lambda x: create_regex_or(x))
+    # df_concensuses_merged.to_pickle('df_concensuses_merged_{}.pickle'.format(len(df_concensuses_merged)))
 
-    df_concensuses_merged['prob_matrix'] = \
-        df_concensuses_merged['subseqs'].apply(lambda x:
-                                              get_positional_probability_matrix(x, 21, ValidAlphabet.AA))
+    df_concensuses_merged = pd.read_csv('df_concensuses_merged_966.csv', index_col=0)
 
-    df_concensuses_merged['regex_all_or_none'] = \
-        df_concensuses_merged['prob_matrix'].apply(lambda x: create_regex_all_or_none(x))
+    # for each singleton, compute two lists of regex indices that match
+    regex_list = df_concensuses_merged['regex_all_or_none'].values
+    #regex_list = df_concensuses_merged['regex_or'].values
 
-    df_concensuses_merged['regex_or'] = \
-        df_concensuses_merged['prob_matrix'].apply(lambda x: create_regex_or(x))
+    patterns = []
+    fig = plt.figure()
+    for l in range(10, 20):
+        print('l: ', l)
+        f = fix_patterns(regex_list, l)
+        patterns.extend(f)
 
-    df_concensuses_merged.to_pickle('df_concensuses_merged_{}.pickle'.format(len(df_concensuses_merged)))
+    v = append_singletons_to_clusters(df_singletons_merged,
+                                          df_concensuses_merged,
+                                          patterns, -1, False)
+    #print(m, ':', sum(v))
+    plt.plot(np.cumsum(v))
+    plt.show()
+
+
+
     table = np.array(list(df_concensuses_merged['entropy_vector'].values))
-    #show heatmap
+    # show heatmap
     fig = plt.figure()
     fig.set_size_inches(30, 30, forward=True)
     plt.rc('font', size=15)

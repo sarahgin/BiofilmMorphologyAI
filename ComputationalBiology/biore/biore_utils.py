@@ -38,6 +38,15 @@ def aa_into_group(seq):
         res += aa_to_group_dict[c]
     return res
 
+def aa_into_group_ignore_dots(seq):
+    res = ''
+    for c in seq:
+        if c == '.':
+            res += '.'
+        else:
+            res += group_into_aa_or(aa_to_group_dict[c])
+    return res
+
 
 def aa_into_BY(seq):
     res = ''
