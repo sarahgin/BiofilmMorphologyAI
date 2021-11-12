@@ -1,9 +1,10 @@
 from ComputationalBiology.biore.biore_macros import AA_GROUP, group_to_aa_dict, aa_group_list, aa_to_group_dict, \
-    aa_to_BY_dict, AA, NT, ValidAlphabet
+    aa_to_BY_dict, AA, NT, ValidAlphabet, aa_to_hydrophobicity_group_dict
 from scipy.spatial import distance
 import pandas as pd
 import numpy as np
 from scipy.stats import entropy
+
 
 def translate(original_str: str):
     res = ''
@@ -37,6 +38,14 @@ def aa_into_group(seq):
     for c in seq:
         res += aa_to_group_dict[c]
     return res
+
+
+def aa_into_hydrophobicity_group(seq):
+    res = ''
+    for c in seq:
+        res += aa_to_hydrophobicity_group_dict[c]
+    return res
+
 
 def aa_into_group_ignore_dots(seq):
     res = ''
