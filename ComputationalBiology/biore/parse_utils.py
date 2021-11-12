@@ -10,8 +10,9 @@ import scipy
 from scipy.spatial import distance
 import pickle
 import seaborn as sns
-import pickle5 as pickle5
 
+from ComputationalBiology.bio_general.bio_macros import chem_df
+from ComputationalBiology.bio_general.feature_utils import translate_chemical_feature
 from ComputationalBiology.biore.biore_utils import *
 from ComputationalBiology.biore.biore_macros import ValidAlphabet
 from ComputationalBiology.biore.visualize_utils import create_logo
@@ -131,40 +132,50 @@ def generate_venns():
           set_labels=('Human', 'Mouse'))
     plt.show()
 
-
-def organisms_analysis(organism: str):
+import os
+def organisms_analysis(organism: str, region_type: str):
     dfs = []
 
     file_path = 'data/' + organism + '.tab'
+    assert (os.path.exists(file_path))
     df = parse_file(file_path)
 
     # split into reviewed vs. unreviewed
     # leave 'reviewed' only
-    reviewedDF = df[df['Status'] == 'reviewed']
-    unreviewedDF = df[df['Status'] == 'unreviewed']
-    assert (len(df) == len(reviewedDF) + len(unreviewedDF))
-    df = reviewedDF
-    print('num of genes in raw data: ', len(df),
-          ' Reviewed: ', len(reviewedDF),
-          'Unreviewed: ', len(unreviewedDF))
+    reviewd_only = False
+    if reviewd_only:
+        reviewedDF = df[df['Status'] == 'reviewed']
+        unreviewedDF = df[df['Status'] == 'unreviewed']
+        assert (len(df) == len(reviewedDF) + len(unreviewedDF))
+        df = reviewedDF
+        print('num of genes in raw data: ', len(df),
+              ' Reviewed: ', len(reviewedDF),
+              'Unreviewed: ', len(unreviewedDF))
 
-    # create df with onlu transmembrane
-    df_transmembrane = create_subseq_df(df=df, col_name='Transmembrane', subseq_type='TRANSMEM').copy()
-    df_transmembrane = df_transmembrane.rename(columns={"seq_Transmembrane": "sequence"})
+    # create df with only region of interest:
+    if region_type == 'TRANSMEM':
+        df_transmembrane = create_subseq_df(df=df, col_name='Transmembrane', subseq_type='TRANSMEM').copy()
+        df_transmembrane = df_transmembrane.rename(columns={"seq_Transmembrane": "sequence"})
+    elif region_type == 'ALPHA_HELIX':
+        df_transmembrane = create_subseq_df(df=df, col_name='Helix', subseq_type='HELIX').copy()
+        df_transmembrane = df_transmembrane.rename(columns={"seq_Helix": "sequence"})
+    elif region_type == 'BETA':
+        df_transmembrane = create_subseq_df(df=df, col_name='Beta strand', subseq_type='STRAND').copy()
+        df_transmembrane = df_transmembrane.rename(columns={"seq_Beta strand": "sequence"})
+    else:
+        print('ERROR: invalid region_type, got {}'.format(region_type))
 
     if False:  # For each length, the total number of subsequences at that length
         df_transmembrane['subseq_len'].plot.hist(bins=np.arange(1, 50),
                                                  alpha=0.5,
-                                                 figure=fig,
                                                  label=organism)
-        plt.legend()
 
-    min_len = 21
-    max_len = 22
+    min_len = min(set(df_transmembrane['subseq_len'].values))
+    max_len = max(set(df_transmembrane['subseq_len'].values))
 
     for j, chosen_subseq_len in enumerate(range(min_len, max_len)):
-        # if chosen_subseq_len != 21:
-        #    continue
+        if chosen_subseq_len != 21:
+           continue
 
         print('Analyzing len: ', str(chosen_subseq_len))
         df_curr_length = df_transmembrane[df_transmembrane['subseq_len'] == chosen_subseq_len].copy()
@@ -318,20 +329,6 @@ def get_matches_vector(singletons, patterns, max_dots, isTranslate):
             res.append(1)
     return res
 
-def append_singletons_to_clusters(df_singletons,
-                                  df_concensuses,
-                                  patterns, max_dots, isTranslate):
-    if isTranslate:
-        #df_singletons['Alignment'] = df_singletons['Alignment'].apply(lambda x: aa_into_group(x))
-        patterns = [aa_into_group_ignore_dots(x) for x in patterns]
-    df_singletons['match_found'] = False
-    for p, pattern in enumerate(patterns):
-        #if pattern.count('.') >= max_dots:
-        #    continue
-        df_singletons['match_found'] = \
-            df_singletons['match_found'] | \
-            df_singletons['Alignment'].apply(lambda x: regex.match(pattern, x) is not None)
-    return df_singletons['match_found'].values
 
 
 def fix_patterns(patterns_strs, chosen_length):
@@ -346,61 +343,48 @@ def fix_patterns(patterns_strs, chosen_length):
     return res
 
 
+
+
 if __name__ == '__main__':
 
     # STEP 1 - generate all sequences of length 21
-    dfs = organisms_analysis('human1')
-    df_human = dfs[0]
-    for l in range(len(dfs)):
-        fig = plt.figure()
-        plot_cumsum(dfs[l], 'r', fig, columm_name='sequence', to_show=False)
+    # dfs = organisms_analysis('human1')
+    organisms = ['strmu', 'strsobrinus', 'human1']
+    # create transmembrane sequence only:
+    region_type = 'TRANSMEM'
 
-    # STEP 2 - split 15K into 5x3K
-    # STEP 3 - run IEDB 5 times (http://tools.iedb.org/cluster/)
-    # STEP 4 - parse IEDB results csv files
-    df_concensuses_merged, df_singletons_merged = parse_IEDB_excel()
+    # Create a list of dataframes, one for each length
+    for organism in organisms:
+        dfs = organisms_analysis(organism, region_type=region_type)
 
-    # for each concensus (total 966) compute probability matrix
-    # df_concensuses_merged['prob_matrix'] = \
-    #    df_concensuses_merged['subseqs'].apply(lambda x: get_positional_probability_matrix(x, 21, ValidAlphabet.AA))
-    # df_concensuses_merged['regex_all_or_none'] = \
-    #    df_concensuses_merged['prob_matrix'].apply(lambda x: create_regex_all_or_none(x))
-    # df_concensuses_merged['regex_or'] = \
-    #    df_concensuses_merged['prob_matrix'].apply(lambda x: create_regex_or(x))
-    # df_concensuses_merged.to_pickle('df_concensuses_merged_{}.pickle'.format(len(df_concensuses_merged)))
-
-    df_concensuses_merged = pd.read_csv('df_concensuses_merged_966.csv', index_col=0)
-
-    # for each singleton, compute two lists of regex indices that match
-    regex_list = df_concensuses_merged['regex_all_or_none'].values
-    #regex_list = df_concensuses_merged['regex_or'].values
-
-    patterns = []
-    fig = plt.figure()
-    for l in range(10, 20):
-        print('l: ', l)
-        f = fix_patterns(regex_list, l)
-        patterns.extend(f)
-
-    v = append_singletons_to_clusters(df_singletons_merged,
-                                          df_concensuses_merged,
-                                          patterns, -1, False)
-    #print(m, ':', sum(v))
-    plt.plot(np.cumsum(v))
-    plt.show()
+        # the following code create a figure per length:
+        # df_first = dfs[0]
+        # for l in range(len(dfs)):
+        #     fig = plt.figure()
+        #     plot_cumsum(dfs[l], 'r', fig, columm_name='sequence', to_show=False)
 
 
+    # For a specific length, compute mega-file with all feature-translations
+    # note: choose length 21 (depends on the previous code)
+    df_21 = dfs[0]
 
-    table = np.array(list(df_concensuses_merged['entropy_vector'].values))
-    # show heatmap
-    fig = plt.figure()
-    fig.set_size_inches(30, 30, forward=True)
-    plt.rc('font', size=15)
-    sns.heatmap(table, annot=False)
+    # Create a new dataframe for length 21.
+    working_df = pd.DataFrame()
+    working_df['original_seq'] = df_21.index
 
-    # STEP 5 - add singletons to the df
-    df_merged_with_singletons = add_singeltons_to_df_merged(df_concensuses_merged, df_singletons_merged)
-    plot_cumsum(df_merged_with_singletons, 'r', fig, columm_name='num_seqs', to_show=False)
-    plt.show()
+    # start applying computation of all types of translations:
+    working_df['five_groups'] = working_df['original_seq'].apply(lambda x: aa_into_group(x))
+    working_df['hydrophob_groups'] = working_df['original_seq'].apply(lambda x: aa_into_hydrophobicity_group(x))
 
+    # generate mapping of 5 groups for chemical features
+    for feature_name in chem_df.columns:
+        working_df[feature_name] = working_df['original_seq'].apply(
+            lambda x: translate_chemical_feature(x, feature_name))
+    fname = 'data/{}_{}_mega'.format(organism, region_type)
+
+    working_df.to_csv(fname + '.txt', '\t', index=False)
+    working_df.to_pickle(fname + '.pickle')
     print('done')
+
+
+
