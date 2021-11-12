@@ -330,21 +330,6 @@ def get_matches_vector(singletons, patterns, max_dots, isTranslate):
     return res
 
 
-
-def fix_patterns(patterns_strs, chosen_length):
-    res = set()
-    for p in patterns_strs:
-        match = regex.findall(r'[A-Z.]{' + str(chosen_length) + '}', p, overlapped=True)
-        if len(match) > 0:
-            for m in match:
-                if m.count('..') == 0: #ignore regexes with consecutive dots
-                    res.add(m)
-    print('#patterns for length: ', str(chosen_length), ' is ', len(res))
-    return res
-
-
-
-
 if __name__ == '__main__':
 
     # STEP 1 - generate all sequences of length 21
