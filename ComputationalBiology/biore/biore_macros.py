@@ -38,6 +38,13 @@ class AA_GROUP(Enum):
     HYDROPHILIC = 'Y'
 
 
+class HYDROPHOBICITY_AA_GROUP(Enum):
+    VERY_HYDROPHOBIC = 'P'
+    HYDROPHOBIC = 'N'
+    NEUTRAL = 'R'
+    HYDROPHILIC = 'Q'
+
+
 aa_group_list = ['P', 'N', 'R', 'O', 'L', 'B', 'Y']
 
 class NT(Enum):
@@ -113,6 +120,29 @@ aa_to_group_dict = {AA.ALANINE.value: AA_GROUP.NON_POLAR.value,
                     AA.TYROSINE.value: AA_GROUP.AROMATIC.value
                     }
 
+aa_to_hydrophobicity_group_dict = {
+                    AA.ALANINE.value: HYDROPHOBICITY_AA_GROUP.HYDROPHOBIC.value,
+                    AA.CYSTEINE.value: HYDROPHOBICITY_AA_GROUP.HYDROPHOBIC.value,
+                    AA.ASPARTATE.value: HYDROPHOBICITY_AA_GROUP.NEUTRAL.value,
+                    AA.GLUTAMATE.value: HYDROPHOBICITY_AA_GROUP.NEUTRAL.value,
+                    AA.PHENYLALANINE.value: HYDROPHOBICITY_AA_GROUP.VERY_HYDROPHOBIC.value,
+                    AA.GLYCINE.value: HYDROPHOBICITY_AA_GROUP.NEUTRAL.value,
+                    AA.HISTIDINE.value: HYDROPHOBICITY_AA_GROUP.HYDROPHILIC.value,
+                    AA.ISOLEUCINE.value: HYDROPHOBICITY_AA_GROUP.VERY_HYDROPHOBIC.value,
+                    AA.LYSINE.value: HYDROPHOBICITY_AA_GROUP.HYDROPHILIC.value,
+                    AA.LEUCINE.value: HYDROPHOBICITY_AA_GROUP.VERY_HYDROPHOBIC.value,
+                    AA.METHIONINE.value: HYDROPHOBICITY_AA_GROUP.VERY_HYDROPHOBIC.value,
+                    AA.ASPARGINE.value: HYDROPHOBICITY_AA_GROUP.HYDROPHILIC.value,
+                    AA.PROLINE.value: HYDROPHOBICITY_AA_GROUP.HYDROPHILIC.value,
+                    AA.GLUTAMINE.value: HYDROPHOBICITY_AA_GROUP.NEUTRAL.value,
+                    AA.ARGININE.value: HYDROPHOBICITY_AA_GROUP.HYDROPHILIC.value,
+                    AA.SERINE.value: HYDROPHOBICITY_AA_GROUP.NEUTRAL.value,
+                    AA.THREONINE.value: HYDROPHOBICITY_AA_GROUP.NEUTRAL.value,
+                    AA.VALINE.value: HYDROPHOBICITY_AA_GROUP.VERY_HYDROPHOBIC.value,
+                    AA.TRYPTOPHANE.value: HYDROPHOBICITY_AA_GROUP.VERY_HYDROPHOBIC.value,
+                    AA.TYROSINE.value: HYDROPHOBICITY_AA_GROUP.HYDROPHOBIC.value
+                    }
+
 group_to_aa_dict = {
     AA_GROUP.POSITIVE.value: [AA.LYSINE.value, AA.ARGININE.value, AA.HISTIDINE.value],
     AA_GROUP.NEGATIVE.value: [AA.GLUTAMATE.value, AA.ASPARTATE.value],
@@ -122,12 +152,17 @@ group_to_aa_dict = {
                                AA.ISOLEUCINE.value, AA.METHIONINE.value],
     AA_GROUP.POLAR.value: [AA.SERINE.value, AA.THREONINE.value, AA.CYSTEINE.value,
                            AA.ASPARGINE.value, AA.GLUTAMINE.value],
-    AA_GROUP.HYDROPHOBIC.value: [AA.ALANINE.value, AA.VALINE.value, AA.ISOLEUCINE.value, AA.LEUCINE.value,
-                                 AA.METHIONINE.value, AA.PHENYLALANINE.value, AA.TYROSINE.value, AA.TRYPTOPHANE.value, AA.PROLINE.value],
-    AA_GROUP.HYDROPHILIC.value: [AA.LYSINE.value, AA.ARGININE.value, AA.HISTIDINE.value,
-                                 AA.ASPARTATE.value, AA.GLUTAMATE.value,
-                                 AA.SERINE.value, AA.THREONINE.value, AA.ASPARGINE.value, AA.GLUTAMINE.value, AA.CYSTEINE.value, AA.GLYCINE.value]
+}
 
+# https://www.sigmaaldrich.com/IL/en/technical-documents/technical-article/protein-biology/protein-structural-analysis/amino-acid-reference-chart
+HYDROPHOBICITY_group_to_aa_dict = {
+    HYDROPHOBICITY_AA_GROUP.VERY_HYDROPHOBIC.value: [AA.ISOLEUCINE.value, AA.LEUCINE.value,
+                                                      AA.PHENYLALANINE.value, AA.TRYPTOPHANE.value,
+                                                      AA.VALINE.value,  AA.METHIONINE.value],
+    HYDROPHOBICITY_AA_GROUP.HYDROPHOBIC.value: [AA.ALANINE.value,AA.TYROSINE.value, AA.CYSTEINE.value],
+    HYDROPHOBICITY_AA_GROUP.NEUTRAL.value: [AA.THREONINE.value, AA.GLUTAMATE.value, AA.GLYCINE.value, AA.SERINE.value,
+                                            AA.GLUTAMINE, AA.ASPARTATE],
+    HYDROPHOBICITY_AA_GROUP.HYDROPHILIC.value: [AA.LYSINE.value, AA.ARGININE.value, AA.HISTIDINE.value, AA.PROLINE.value, AA.ASPARGINE.value],
 }
 
 alphabets_dict = {
