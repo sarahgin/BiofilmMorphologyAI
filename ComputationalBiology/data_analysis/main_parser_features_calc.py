@@ -16,13 +16,14 @@ from ComputationalBiology.file_utils import genbank_parser
 
 #species_name = 'actinomyces_israelii'
 #species_name = 'bacillus_clausii'
-#species_name = 'bacillus_subtilis'
+species_name = 'bacillus_subtilis'
 #species_name = 'escherichia_coli'
 ##species_name = 'staph_aureus'
 #species_name = 'strep_mitis'
-#species_name = 'strep_mutans'
+# species_name = 'strep_mutans'
 ##species_name = 'strep_salivarius'
-species_name = 'strep_sanguinis'
+# species_name = 'strep_sanguinis'
+# species_name = 'strep_sobrinus'
 ##species_name = 'helicobacter_pylori'
 
 overrideSpeciesParserFile = True
