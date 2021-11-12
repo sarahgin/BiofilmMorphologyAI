@@ -65,14 +65,15 @@ chem_df = pd.DataFrame.from_dict(chemical_properties, columns=chemicals_features
 # names of species for feature comparison:
 
 species_names = [ \
-   'actinomyces_israelii',
-    'bacillus_clausii',
+   # 'actinomyces_israelii',
+   #  'bacillus_clausii',
     'bacillus_subtilis',
-     'escherichia_coli',
-    'staph_aureus',
-    'strep_mitis',
-    'strep_mutans',
-    'strep_salivarius',
-    'helicobacter_pylori',
-    'strep_sanguinis'
+    #  'escherichia_coli',
+    # 'staph_aureus',
+    # 'strep_mitis',
+    # 'strep_mutans',
+    # 'strep_salivarius',
+    # 'helicobacter_pylori',
+    # 'strep_sanguinis',
+    # 'strep_sobrinus',
 ]
