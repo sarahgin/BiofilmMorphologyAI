@@ -1,1 +1,1 @@
-# BiofilmMorphologyAI
+# Bioinformatics Lab 2022
