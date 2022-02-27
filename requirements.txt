@@ -1,0 +1,9 @@
+numpy
+pandas
+biopython
+scikit-learn
+matplotlib
+seaborn
+regex
+matplotlib_venn
+logomaker
