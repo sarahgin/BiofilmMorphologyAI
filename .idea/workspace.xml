@@ -20,26 +20,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7f121c2e-b9d0-4051-a5f9-b580a50d173f" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/BioinformaticsLab/ComputationalBiology/bio_general/Species.py" beforeDir="false" afterPath="$PROJECT_DIR$/BioinformaticsLab/ComputationalBiology/bio_general/Species.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BioinformaticsLab/ComputationalBiology/bio_general/bio_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/BioinformaticsLab/ComputationalBiology/bio_general/bio_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BioinformaticsLab/ComputationalBiology/bio_general/chemical_features_discretization.py" beforeDir="false" afterPath="$PROJECT_DIR$/BioinformaticsLab/ComputationalBiology/bio_general/chemical_features_discretization.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BioinformaticsLab/ComputationalBiology/biore/biore.py" beforeDir="false" afterPath="$PROJECT_DIR$/BioinformaticsLab/ComputationalBiology/biore/biore.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BioinformaticsLab/ComputationalBiology/biore/biore_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/BioinformaticsLab/ComputationalBiology/biore/biore_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BioinformaticsLab/ComputationalBiology/biore/helix_prefix_suffix.py" beforeDir="false" afterPath="$PROJECT_DIR$/BioinformaticsLab/ComputationalBiology/biore/helix_prefix_suffix.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BioinformaticsLab/ComputationalBiology/data_analysis/all_features_calculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/BioinformaticsLab/ComputationalBiology/data_analysis/all_features_calculator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BioinformaticsLab/ComputationalBiology/data_analysis/gene_features_calculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/BioinformaticsLab/ComputationalBiology/data_analysis/gene_features_calculator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BioinformaticsLab/ComputationalBiology/data_analysis/general_features_calculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/BioinformaticsLab/ComputationalBiology/data_analysis/general_features_calculator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BioinformaticsLab/ComputationalBiology/data_analysis/kmers_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/BioinformaticsLab/ComputationalBiology/data_analysis/kmers_analysis.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BioinformaticsLab/ComputationalBiology/data_analysis/main_parser_features_calc.py" beforeDir="false" afterPath="$PROJECT_DIR$/BioinformaticsLab/ComputationalBiology/data_analysis/main_parser_features_calc.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BioinformaticsLab/ComputationalBiology/data_analysis/main_visualization.py" beforeDir="false" afterPath="$PROJECT_DIR$/BioinformaticsLab/ComputationalBiology/data_analysis/main_visualization.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BioinformaticsLab/ComputationalBiology/data_analysis/protein_features_calculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/BioinformaticsLab/ComputationalBiology/data_analysis/protein_features_calculator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BioinformaticsLab/ComputationalBiology/file_utils/genbank_parser.py" beforeDir="false" afterPath="$PROJECT_DIR$/BioinformaticsLab/ComputationalBiology/file_utils/genbank_parser.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BioinformaticsLab/data/data_inputs/GenBank/BS168.gb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BioinformaticsLab/data/data_inputs/GenBank/staph_aureus.gb" beforeDir="false" afterPath="$PROJECT_DIR$/BioinformaticsLab/data/data_inputs/GenBank/staph_aureus.gb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BioinformaticsLab/data/data_outputs/features_bacillus_subtilis.pickle" beforeDir="false" afterPath="$PROJECT_DIR$/BioinformaticsLab/data/data_outputs/features_bacillus_subtilis.pickle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BioinformaticsLab/data/data_outputs/features_staph_aureus.pickle" beforeDir="false" afterPath="$PROJECT_DIR$/BioinformaticsLab/data/data_outputs/features_staph_aureus.pickle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BioinformaticsLab/data/data_outputs/species_bacillus_subtilis.pickle" beforeDir="false" afterPath="$PROJECT_DIR$/BioinformaticsLab/data/data_outputs/species_bacillus_subtilis.pickle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BioinformaticsLab/data/data_outputs/species_staph_aureus.pickle" beforeDir="false" afterPath="$PROJECT_DIR$/BioinformaticsLab/data/data_outputs/species_staph_aureus.pickle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,7 +31,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/BioinformaticsLab" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectId" id="25nFOLLQ5x4k80XOKzOrwjm9aDu" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -118,12 +102,15 @@
       <option name="presentableId" value="Default" />
       <updated>1646154910705</updated>
       <workItem from="1646154912561" duration="13000" />
-      <workItem from="1646154938221" duration="9048000" />
+      <workItem from="1646154938221" duration="17921000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="2" />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName="requirements.txt" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -137,10 +124,10 @@
     </option>
   </component>
   <component name="WindowStateProjectService">
-    <state x="691" y="322" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1646159773987">
+    <state x="691" y="322" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1646430128300">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="691" y="322" key="#com.intellij.fileTypes.FileTypeChooser/1920.0.1280.693/0.0.1920.1040@0.0.1920.1040" timestamp="1646159773987" />
+    <state x="691" y="322" key="#com.intellij.fileTypes.FileTypeChooser/1920.0.1280.693/0.0.1920.1040@0.0.1920.1040" timestamp="1646430128300" />
     <state x="740" y="275" key="FileChooserDialogImpl" timestamp="1646157076681">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>

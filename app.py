@@ -11,7 +11,7 @@ from BioinformaticsLab.ComputationalBiology.data_analysis import all_features_ca
 from BioinformaticsLab.ComputationalBiology.data_analysis.main_parser_features_calc import features_on_each_gene
 from BioinformaticsLab.ComputationalBiology.file_utils.genbank_parser import read_genbank_file
 from BioinformaticsLab.ComputationalBiology.data_analysis.gene_features_calculator import compute_gc_content
-
+import boto3
 from flask import Flask, send_from_directory, jsonify, request, json
 from flask_cors import CORS, cross_origin
 from random import randrange
@@ -30,6 +30,15 @@ cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 # absoulte path for dir
 cwd = os.getcwd()
+aws_storage_bucket_name = "bio-upload-files"
+# session = boto3.Session(
+#     aws_access_key_id=settings.AWS_SERVER_PUBLIC_KEY,
+#     aws_secret_access_key=settings.AWS_SERVER_SECRET_KEY,
+# )
+ACCESS_ID = "AKIARDVFNR2ZY5JRSV7Z"
+ACCESS_KEY = "HgkvAFPGms/KfGVUW/YIyA4cq+TopM1uaxVj2ocx"
+s3_client = boto3.resource('s3', aws_access_key_id=ACCESS_ID, aws_secret_access_key= ACCESS_KEY)
+
 path_to_input_file = os.path.join(cwd, "BioinformaticsLab", "data", "data_inputs", "GenBank")
 path_to_pickle_files = os.path.join(cwd, "BioinformaticsLab", "data", "data_outputs")
 # path = f"{cwd}/TranscriptionalFactors/data_inputs"
@@ -173,6 +182,25 @@ def gcContent():
     return json.dumps(gc_content)
 
 
+@app.route('/api/uploadBucketFile', methods=['POST'])
+def file_bucket_download():
+
+    post_data = request.get_json()
+    fileNameKey = post_data.get("fileName")
+    valid_file = valid(fileNameKey)
+    if valid_file:
+        full_path = os.path.join(path_to_input_file, fileNameKey)
+        req = s3_client.meta.client.download_file(aws_storage_bucket_name, fileNameKey, full_path)
+        to_return = {
+            'faild_list': [],
+            'status': status_to_client("Uploaded")}
+    else:
+        to_return = {
+            'faild_list': [],
+            'status':status_to_client("")}
+    return to_return
+
+
 @app.route('/api/uploadFile', methods=['POST'])
 def file_input_manger():
     to_return = {
@@ -240,7 +268,7 @@ def download_gb_file_by_id(acc_id_dict):
     Entrez.email = "jcecomputationalbiology@gmail.com"  # Provide an email address
     faild_list_acc = []
     for acc_id in acc_id_list:
-        print(acc_id)
+        print("acc",acc_id)
         # chgned from gb to gbwithparts
         try:
             with Entrez.efetch(db="nucleotide", id=acc_id, rettype="gbwithparts", retmode="text") as in_handle:
