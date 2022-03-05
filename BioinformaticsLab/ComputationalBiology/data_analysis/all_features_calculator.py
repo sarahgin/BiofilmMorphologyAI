@@ -129,8 +129,8 @@ def create_species_df(spp: Species):
         current_features_dict = create_gene_features_dict(gene)
         list_of_dict.append(current_features_dict)
 
-        if len(list_of_dict) % 1000 == 0:
-            print("create_species_df: gene num-", len(list_of_dict))
+        # if len(list_of_dict) % 1000 == 0:
+        #     print("create_species_df: gene num-", len(list_of_dict))
 
     df = pd.DataFrame(list_of_dict)
     df = df.set_index(GeneralFeatures.GENE_ID.name)

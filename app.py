@@ -184,7 +184,6 @@ def gcContent():
 
 @app.route('/api/uploadBucketFile', methods=['POST'])
 def file_bucket_download():
-
     post_data = request.get_json()
     fileNameKey = post_data.get("fileName")
     valid_file = valid(fileNameKey)
