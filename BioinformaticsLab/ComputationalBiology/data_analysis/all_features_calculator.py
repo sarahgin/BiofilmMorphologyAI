@@ -43,19 +43,19 @@ class ProteinFeatures(Enum):
     NONPOLAR_AA = 7
     AA_LENGTH = 8
     # chemical features
-    H1 = 9
-    H2 = 10
-    H3 = 11
-    V = 12
-    P1 = 13
-    P2 = 14
-    SASA = 15
-    NCI = 16
-    MASS = 17
+    # H1 = 9
+    # H2 = 10
+    # H3 = 11
+    # V = 12
+    # P1 = 13
+    # P2 = 14
+    # SASA = 15
+    # NCI = 16
+    # MASS = 17
     #pH-related
-    PKA_COOH = 18
-    PKA_NH = 19,
-    PI = 20
+    # PKA_COOH = 18
+    # PKA_NH = 19,
+    # PI = 20
 
 class KmerFeatures(Enum):
     PREFIX_SUFFIX_DICT = 1
@@ -88,18 +88,18 @@ protein_features_map = {
     ProteinFeatures.NONPOLAR_AA: compute_nonpolar_aa,
     ProteinFeatures.AA_LENGTH: compute_protein_length,
     #chemical properties
-    ProteinFeatures.H1: compute_H1,
-    ProteinFeatures.H2: compute_H2,
-    ProteinFeatures.H3: compute_H3,
-    ProteinFeatures.V: compute_V,
-    ProteinFeatures.P1: compute_P1,
-    ProteinFeatures.P2: compute_P2,
-    ProteinFeatures.SASA: compute_SASA,
-    ProteinFeatures.NCI: compute_NCI,
-    ProteinFeatures.MASS: compute_MASS,
-    ProteinFeatures.PKA_COOH: compute_PKA_COOH,
-    ProteinFeatures.PKA_NH: compute_PKA_NH,
-    ProteinFeatures.PI: compute_PI
+    # ProteinFeatures.H1: compute_H1,
+    # ProteinFeatures.H2: compute_H2,
+    # ProteinFeatures.H3: compute_H3,
+    # ProteinFeatures.V: compute_V,
+    # ProteinFeatures.P1: compute_P1,
+    # ProteinFeatures.P2: compute_P2,
+    # ProteinFeatures.SASA: compute_SASA,
+    # ProteinFeatures.NCI: compute_NCI,
+    # ProteinFeatures.MASS: compute_MASS,
+    # ProteinFeatures.PKA_COOH: compute_PKA_COOH,
+    # ProteinFeatures.PKA_NH: compute_PKA_NH,
+    # ProteinFeatures.PI: compute_PI
 }
 
 kmer_features_map = {
