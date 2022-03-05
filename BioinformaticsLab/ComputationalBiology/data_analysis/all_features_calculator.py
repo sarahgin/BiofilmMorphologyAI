@@ -1,7 +1,7 @@
 # from pytictoc import TicToc
 # t = TicToc() #create instance of class
 from enum import Enum
-
+from multiprocessing import Pool
 import pandas as pd
 
 from BioinformaticsLab.ComputationalBiology.bio_general import Species
@@ -120,6 +120,7 @@ def create_species_df(spp: Species):
     """
     # gene_type is a list containing the required type
     # if it is an empty list it means that we should not filter out any type
+    # threding from for to func
 
     list_of_dict = []
     for gene_key in spp.all_genes:
@@ -129,8 +130,8 @@ def create_species_df(spp: Species):
         current_features_dict = create_gene_features_dict(gene)
         list_of_dict.append(current_features_dict)
 
-        # if len(list_of_dict) % 1000 == 0:
-        #     print("create_species_df: gene num-", len(list_of_dict))
+        if len(list_of_dict) % 1000 == 0:
+            print("create_species_df: gene num-", len(list_of_dict))
 
     df = pd.DataFrame(list_of_dict)
     df = df.set_index(GeneralFeatures.GENE_ID.name)
@@ -169,7 +170,6 @@ def create_gene_features_dict(gene: Gene):
     return features_dict
 
 # if __name__ == '__main__':
-
 #    g = Gene(coding_sequence = 'AGTCGCCAATTT', start=0, end=12, strand=1, gene_type='CDS', name="dummy", qualifiers = None)
 #    res, counts = create_gene_features_dict(g, 3, 5, 2, 4)
 #    print(res)

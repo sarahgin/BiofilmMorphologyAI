@@ -2,7 +2,7 @@ import io
 import os
 from json import loads
 from os import listdir
-
+from celery import Celery
 import numpy as np
 import pandas as pd
 from numpy import int64, float64
@@ -30,11 +30,8 @@ cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 # absoulte path for dir
 cwd = os.getcwd()
+
 aws_storage_bucket_name = "bio-upload-files"
-# session = boto3.Session(
-#     aws_access_key_id=settings.AWS_SERVER_PUBLIC_KEY,
-#     aws_secret_access_key=settings.AWS_SERVER_SECRET_KEY,
-# )
 ACCESS_ID = "AKIARDVFNR2ZY5JRSV7Z"
 ACCESS_KEY = "HgkvAFPGms/KfGVUW/YIyA4cq+TopM1uaxVj2ocx"
 s3_client = boto3.resource('s3', aws_access_key_id=ACCESS_ID, aws_secret_access_key= ACCESS_KEY)
@@ -182,6 +179,19 @@ def gcContent():
     return json.dumps(gc_content)
 
 
+# file from server
+# @app.route('/api/chooseFileFromServer', methods=['POST'])
+# def file_from_server():
+#     post_data = request.get_json()
+#     fileName = post_data.get("fileName")
+#     #valid_file = valid(fileName)
+#     print("route", fileName)
+#     to_return = {
+#         'faild_list': [],
+#         'status': status_to_client("Uploaded")}
+#     return to_return
+
+# download file from s3 server and save it to data_inputs
 @app.route('/api/uploadBucketFile', methods=['POST'])
 def file_bucket_download():
     post_data = request.get_json()
@@ -196,7 +206,8 @@ def file_bucket_download():
     else:
         to_return = {
             'faild_list': [],
-            'status':status_to_client("")}
+            'status': status_to_client("")}
+
     return to_return
 
 
