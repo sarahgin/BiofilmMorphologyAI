@@ -95,6 +95,7 @@ def match_client_feature_to_df(feature_list_by_user):
 #     return {'hello': b.printHello()}
 
 
+
 @app.route('/api/features', methods=['GET'])
 def feature():
     file_list_names = request.args.getlist('fileList[]')
@@ -104,11 +105,16 @@ def feature():
     print("after match", arr_match_feature_server)
     path_to_pickle_files = {}
     to_return = dict()
+
     for file in file_list_names:
+
         to_return[file] = dict()
         fileName = os.path.splitext(file)[0]
         path_to_pickle_files[file] = './BioinformaticsLab/data/data_outputs/features_' + fileName + '.pickle'
         print(fileName)
+        if len(check_existing_files(file)) == 2:
+            print("Already exsist")
+            break
         features_on_each_gene(fileName)
 
     for fileName in path_to_pickle_files:
@@ -260,16 +266,21 @@ def check_existing_files(filename):
     current_pickle_files = get_current_pickle_files()
     # ---------------remove extension-------------------
     file_name_without_ex = os.path.splitext(filename)[0]
-    current_input_files_without_ex = [os.path.splitext(name)[0] for name in current_input_files]
+    # current_input_files_without_ex = [os.path.splitext(name)[0] for name in current_input_files]
     get_current_pickle_files_without_ex = [os.path.splitext(name)[0] for name in current_pickle_files]
     # ---------------------------------------------------
     list_of_present = []
-    if file_name_without_ex in current_input_files_without_ex:
-        list_of_present.append(file_name_without_ex)
-
+    # if file_name_without_ex in current_input_files_without_ex:
+    #     list_of_present.append(file_name_without_ex)
+    counterOfPickeleFiles = 0
     for name in get_current_pickle_files_without_ex:
+
         if file_name_without_ex in name:
+            counterOfPickeleFiles += 1
             list_of_present.append(name)
+            if counterOfPickeleFiles == 2:
+                break;
+
     return list_of_present
 
 
@@ -345,3 +356,4 @@ def get_features_list():
         dict_to_return['Protein_Features'].append(str(feature).partition(".")[-1].replace("_", " "))
     dict_to_return['Genome_Features'] = ['GC CONTENT', 'DNA LENGTH']
     return jsonify(dict_to_return)
+
