@@ -1,0 +1,50 @@
+LOCUS       X90314                   360 bp    DNA     linear   PRI 05-NOV-1999
+DEFINITION  H.sapiens mitochondrial DNA for D-loop (isolate WG+ice37+B).
+ACCESSION   X90314
+VERSION     X90314.1
+KEYWORDS    control region; D-loop; hypervariable segment I.
+SOURCE      mitochondrion Homo sapiens (human)
+  ORGANISM  Homo sapiens
+            Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi;
+            Mammalia; Eutheria; Euarchontoglires; Primates; Haplorrhini;
+            Catarrhini; Hominidae; Homo.
+REFERENCE   1  (bases 1 to 360)
+  AUTHORS   Sajantila,A., Lahermo,P., Anttinen,T., Lukka,M., Sistonen,P.,
+            Savontaus,M.L., Aula,P., Beckman,L., Tranebjaerg,L., Gedde-Dahl,T.,
+            Issel-Tarver,L., DiRienzo,A. and Paabo,S.
+  TITLE     Genes and languages in Europe: an analysis of mitochondrial
+            lineages
+  JOURNAL   Genome Res. 5 (1), 42-52 (1995)
+   PUBMED   8717054
+REFERENCE   2  (bases 1 to 360)
+  AUTHORS   Sajantila,A., Lahermo,P., Anttinen,T., Lukka,M., Sistonen,P.,
+            Savontaus,M.L., Aula,P., Beckman,L., Tranebjaerg,L., Gedde-Dahl,T.,
+            Issel-Tarver,L., DiRienzo,A. and Pbo,S.
+  TITLE     Genes and languages in Europe: an analysis of mitochondrial
+            lineages
+  JOURNAL   Unpublished
+REFERENCE   3  (bases 1 to 360)
+  AUTHORS   Sajantila,A.
+  TITLE     Direct Submission
+  JOURNAL   Submitted (11-JUL-1995) Sajantila A., Ludwig Maximilians
+            University, Department of General Biology, Luissenstrasse 14,
+            D-80333, Munich, FRG
+FEATURES             Location/Qualifiers
+     source          1..360
+                     /organism="Homo sapiens"
+                     /organelle="mitochondrion"
+                     /mol_type="genomic DNA"
+                     /isolate="European individual WG+ice37+B"
+                     /db_xref="taxon:9606"
+                     /map="16024-16383 nt"
+     D-loop          1..360
+                     /note="control region, hypervariable segment I (HVI)"
+ORIGIN      
+        1 ttctttcatg gggaagcaga tttgggtacc acccaagtat tgacttaccc atcaacaacc
+       61 gctatgtatt tcgtacatta ctgccagcca ccatgaatat tgcacggtac cataaatact
+      121 tgaccacctg tagtacataa aaacccaatc cacatcaaaa ccccctcccc atgcttacaa
+      181 gcaagtacag caatcaaccc tcaactatca cacatcaact gcaactccaa agccacccct
+      241 cacccactag gataccaaca aacctaccca cccttaacag tacatagtac ataaagccat
+      301 ttaccgtaca tagcacatta cagtcaaatc ccttctcgtc cccatggatg acccccctca
+//
+

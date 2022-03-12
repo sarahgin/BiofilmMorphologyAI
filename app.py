@@ -78,6 +78,9 @@ general_feature_list = ['GENE_ID', 'GENE_NAME', 'TYPE', 'PRODUCT_TYPE', 'STRAND'
 #                         'PKA_NH', 'PI']
 protein_feature_list = ['HYDROPHOBIC_AA', 'HYDROPHILIC_AA', 'POLAR_AA', 'AROMATIC_AA', 'POSITIVE_AA', 'NEGATIVE_AA',
                         'NONPOLAR_AA', 'AA_LENGTH']
+numeric_feature_list =['GC_CONTENT', 'DNA_LENGTH', 'HYDROPHOBIC_AA', 'HYDROPHILIC_AA', 'POLAR_AA', 'AROMATIC_AA',
+                       'POSITIVE_AA', 'NEGATIVE_AA', 'NONPOLAR_AA', 'AA_LENGTH', 'H1', 'H2', 'H3', 'V', 'P1', 'P2',
+                       'SASA', 'NCI', 'MASS', 'PKA_COOH', 'PKA_NH', 'PI']
 
 
 def match_client_feature_to_df(feature_list_by_user):
@@ -93,7 +96,6 @@ def match_client_feature_to_df(feature_list_by_user):
 # @app.route('/')
 # def get_current_time():
 #     return {'hello': b.printHello()}
-
 
 
 @app.route('/api/features', methods=['GET'])
@@ -181,10 +183,42 @@ def gcContent():
     file_name = os.path.splitext(file_name)[0]
     path_to_pickle_files = './BioinformaticsLab/data/data_outputs/features_' + file_name + '.pickle'
     data_frame_file = pd.read_pickle(path_to_pickle_files)
-    gc_content =list(data_frame_file[['GC_CONTENT']].values)
-    gc_content =[number[0] for number in gc_content]
+    gc_content = list(data_frame_file[['GC_CONTENT']].values)
+    gc_content = [number[0] for number in gc_content]
 
     return json.dumps(gc_content)
+
+
+# @app.route('/api/features', methods=['GET'])
+def numeric_feature_to_hist():
+    file_list_names = request.args.getlist('fileList[]')
+    feature_list_by_user = request.args.getlist('featureList[]')
+    # print(feature_list_by_user)
+    arr_match_feature_server = match_client_feature_to_df(feature_list_by_user)
+    # print("after match", arr_match_feature_server)
+    to_return = dict()
+    # feature_info = {
+    #     'featureName': '',
+    #     'data': []}
+    for file_name in file_list_names:
+        path_to_pickle_files = './BioinformaticsLab/data/data_outputs/features_' + file_name[:-3] + '.pickle'
+        data_frame_file = pd.read_pickle(path_to_pickle_files)
+        for feature_to_compute in arr_match_feature_server:
+            print(feature_to_compute)
+            raw_data = list(data_frame_file[[feature_to_compute]].values)
+            # print("before", raw_data)
+            raw_data = [number[0] for number in raw_data]
+            # print(raw_data)
+            to_return[feature_to_compute] = raw_data
+    # print(to_return.keys())
+    # print('GC_CONTENT')
+    # print(to_return.get('GC_CONTENT'))
+    # print('POLAR_AA')
+    # print(to_return.get('POLAR_AA'))
+
+    return to_return
+
+
 
 
 # file from server
@@ -198,6 +232,7 @@ def gcContent():
 #         'faild_list': [],
 #         'status': status_to_client("Uploaded")}
 #     return to_return
+
 
 # download file from s3 server and save it to data_inputs
 @app.route('/api/uploadBucketFile', methods=['POST'])
@@ -279,7 +314,7 @@ def check_existing_files(filename):
             counterOfPickeleFiles += 1
             list_of_present.append(name)
             if counterOfPickeleFiles == 2:
-                break;
+                break
 
     return list_of_present
 
@@ -291,8 +326,7 @@ def download_gb_file_by_id(acc_id_dict):
     Entrez.email = "jcecomputationalbiology@gmail.com"  # Provide an email address
     faild_list_acc = []
     for acc_id in acc_id_list:
-        print("acc",acc_id)
-        # chgned from gb to gbwithparts
+        # print("acc", acc_id)
         try:
             with Entrez.efetch(db="nucleotide", id=acc_id, rettype="gbwithparts", retmode="text") as in_handle:
                 file_name = f"{acc_id}.gb"  # if going to changed we need to see what to do
