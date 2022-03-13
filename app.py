@@ -204,21 +204,20 @@ def numeric_feature_to_hist():
         path_to_pickle_files = './BioinformaticsLab/data/data_outputs/features_' + file_name[:-3] + '.pickle'
         data_frame_file = pd.read_pickle(path_to_pickle_files)
         for feature_to_compute in arr_match_feature_server:
-            print(feature_to_compute)
-            raw_data = list(data_frame_file[[feature_to_compute]].values)
-            # print("before", raw_data)
-            raw_data = [number[0] for number in raw_data]
-            # print(raw_data)
-            to_return[feature_to_compute] = raw_data
-    # print(to_return.keys())
-    # print('GC_CONTENT')
-    # print(to_return.get('GC_CONTENT'))
-    # print('POLAR_AA')
-    # print(to_return.get('POLAR_AA'))
+            if feature_to_compute in numeric_feature_list:
+                print(feature_to_compute)
+                raw_data = list(data_frame_file[[feature_to_compute]].values)
+                # print("before", raw_data)
+                raw_data = [number[0] for number in raw_data]
+                # print(raw_data)
+                to_return[feature_to_compute] = raw_data
+            # print(to_return.keys())
+            # print('GC_CONTENT')
+            # print(to_return.get('GC_CONTENT'))
+            # print('POLAR_AA')
+            # print(to_return.get('POLAR_AA'))
 
     return to_return
-
-
 
 
 # file from server
