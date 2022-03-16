@@ -1,0 +1,41 @@
+LOCUS       AF451972                 354 bp    DNA     linear   PRI 31-JAN-2002
+DEFINITION  Pongo pygmaeus Puti mitochondrial D-loop, partial sequence.
+ACCESSION   AF451972
+VERSION     AF451972.1
+KEYWORDS    .
+SOURCE      mitochondrion Pongo pygmaeus (Bornean orangutan)
+  ORGANISM  Pongo pygmaeus
+            Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi;
+            Mammalia; Eutheria; Euarchontoglires; Primates; Haplorrhini;
+            Catarrhini; Hominidae; Pongo.
+REFERENCE   1  (bases 1 to 354)
+  AUTHORS   Deinard,A.S.
+  TITLE     The Evolutionary Genetics of the Chimpanzees
+  JOURNAL   Thesis (1997) University Microfilms International, 300 North Zeeb
+            Road, Ann Arbor, MI, USA
+REFERENCE   2  (bases 1 to 354)
+  AUTHORS   Deinard,A.S. and Kidd,K.K.
+  TITLE     Mitochondrial D-loop variation among the great apes
+  JOURNAL   Unpublished
+REFERENCE   3  (bases 1 to 354)
+  AUTHORS   Deinard,A.S. and Kidd,K.K.
+  TITLE     Direct Submission
+  JOURNAL   Submitted (27-NOV-2001) Department of Genetics, Yale University,
+            333 Cedar Street, New Haven, CT 06520, USA
+FEATURES             Location/Qualifiers
+     source          1..354
+                     /organism="Pongo pygmaeus"
+                     /organelle="mitochondrion"
+                     /mol_type="genomic DNA"
+                     /isolate="Puti"
+                     /db_xref="taxon:9600"
+     D-loop          <1..>354
+ORIGIN      
+        1 ttgggtgcca ccccagtact gacccatttc taacggccta tgtatttcgt acattcctgc
+       61 tagccaacat gaatatcacc caacacaaca atcgcttaac caactataat gcatacaaaa
+      121 ctccaaccac actcgacctc cacaccccgc ttacaagcaa gtaccccccc atgccccccc
+      181 acccaaacac atacaccgat ctctccacat aacccctcaa cccccagcat atcaacagac
+      241 caaacaaacc ttaaagtaca tagcacatac tatcctaacc gcacatagca catcccgtta
+      301 aaaccctgct catccccacg gatgcccccc ctcagttagt aatcccttac tcac
+//
+

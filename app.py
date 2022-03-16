@@ -114,42 +114,39 @@ def feature():
         fileName = os.path.splitext(file)[0]
         path_to_pickle_files[file] = './BioinformaticsLab/data/data_outputs/features_' + fileName + '.pickle'
         print(fileName)
-        if len(check_existing_files(file)) == 2:
-            print("Already exsist")
-            break
-        features_on_each_gene(fileName)
+        if len(check_existing_files(file)) != 2:
+            features_on_each_gene(fileName)
 
-    for fileName in path_to_pickle_files:
-        data_frame_file = pd.read_pickle(path_to_pickle_files[fileName])
-        full_data_features = dict()
-        genome_dict = dict()
+        for fileName in path_to_pickle_files:
+            data_frame_file = pd.read_pickle(path_to_pickle_files[fileName])
+            full_data_features = dict()
+            genome_dict = dict()
 
-        for feature_name in arr_match_feature_server:
-            if feature_name in genome_feature_list:
-                if feature_name == 'GC_CONTENT':
-                    genome_dict[feature_name] = data_frame_file[[feature_name]].mean().to_json().split(':')[1][:-1]
-                elif feature_name == 'DNA_LENGTH':
-                    genome_dict[feature_name] = data_frame_file[[feature_name]].sum().to_json().split(':')[1][:-1]
-        array_genes_features = intersection(arr_match_feature_server, gene_feature_list)
-        if len(array_genes_features) != 0:
-            array_genes_features.append('GENE_NAME')
-            object_genes = create_object_from_data_frame(data_frame_file, array_genes_features,'Gene')
-            full_data_features['Gene'] = object_genes
-        array_protein_features = intersection(arr_match_feature_server, protein_feature_list)
-        if len(array_protein_features) != 0:
-            array_protein_features.append('GENE_NAME')
-            object_protein = create_object_from_data_frame(data_frame_file,array_protein_features, 'Protein')
-            full_data_features['Protein'] = object_protein
+            for feature_name in arr_match_feature_server:
+                if feature_name in genome_feature_list:
+                    if feature_name == 'GC_CONTENT':
+                        genome_dict[feature_name] = data_frame_file[[feature_name]].mean().to_json().split(':')[1][:-1]
+                    elif feature_name == 'DNA_LENGTH':
+                        genome_dict[feature_name] = data_frame_file[[feature_name]].sum().to_json().split(':')[1][:-1]
+            array_genes_features = intersection(arr_match_feature_server, gene_feature_list)
+            if len(array_genes_features) != 0:
+                array_genes_features.append('GENE_NAME')
+                object_genes = create_object_from_data_frame(data_frame_file, array_genes_features,'Gene')
+                full_data_features['Gene'] = object_genes
+            array_protein_features = intersection(arr_match_feature_server, protein_feature_list)
+            if len(array_protein_features) != 0:
+                array_protein_features.append('GENE_NAME')
+                object_protein = create_object_from_data_frame(data_frame_file,array_protein_features, 'Protein')
+                full_data_features['Protein'] = object_protein
 
-        array_general_features = intersection(arr_match_feature_server, general_feature_list)
-        if len(array_general_features) != 0:
-            if 'GENE_NAME' not in array_general_features:
-                array_general_features.append('GENE_NAME')
-            object_general = create_object_from_data_frame(data_frame_file, array_general_features,'General')
-            full_data_features['General'] =object_general
-        full_data_features['Genome'] = genome_dict
-        to_return[fileName] = full_data_features
-
+            array_general_features = intersection(arr_match_feature_server, general_feature_list)
+            if len(array_general_features) != 0:
+                if 'GENE_NAME' not in array_general_features:
+                    array_general_features.append('GENE_NAME')
+                object_general = create_object_from_data_frame(data_frame_file, array_general_features,'General')
+                full_data_features['General'] =object_general
+            full_data_features['Genome'] = genome_dict
+            to_return[fileName] = full_data_features
     return to_return
 
 
@@ -189,34 +186,23 @@ def gcContent():
     return json.dumps(gc_content)
 
 
-# @app.route('/api/features', methods=['GET'])
+@app.route('/api/featuresHist', methods=['GET'])
 def numeric_feature_to_hist():
-    file_list_names = request.args.getlist('fileList[]')
+    file_name = request.args.getlist('fileName')[0]
+    print(file_name)
     feature_list_by_user = request.args.getlist('featureList[]')
-    # print(feature_list_by_user)
+    print(feature_list_by_user)
     arr_match_feature_server = match_client_feature_to_df(feature_list_by_user)
-    # print("after match", arr_match_feature_server)
-    to_return = dict()
-    # feature_info = {
-    #     'featureName': '',
-    #     'data': []}
-    for file_name in file_list_names:
-        path_to_pickle_files = './BioinformaticsLab/data/data_outputs/features_' + file_name[:-3] + '.pickle'
-        data_frame_file = pd.read_pickle(path_to_pickle_files)
-        for feature_to_compute in arr_match_feature_server:
-            if feature_to_compute in numeric_feature_list:
-                print(feature_to_compute)
-                raw_data = list(data_frame_file[[feature_to_compute]].values)
-                # print("before", raw_data)
-                raw_data = [number[0] for number in raw_data]
-                # print(raw_data)
-                to_return[feature_to_compute] = raw_data
-            # print(to_return.keys())
-            # print('GC_CONTENT')
-            # print(to_return.get('GC_CONTENT'))
-            # print('POLAR_AA')
-            # print(to_return.get('POLAR_AA'))
-
+    print("after match", arr_match_feature_server)
+    to_return = {}
+    path_to_pickle_files = './BioinformaticsLab/data/data_outputs/features_' + file_name[:-3] + '.pickle'
+    data_frame_file = pd.read_pickle(path_to_pickle_files)
+    for feature_to_compute in arr_match_feature_server:
+        if feature_to_compute in numeric_feature_list:
+            raw_data = list(data_frame_file[[feature_to_compute]].values)
+            raw_data = [0 if np.isnan(float64(number[0])) else float64(number[0]) for number in raw_data] #TODO: check NaN 
+            to_return[feature_to_compute] = raw_data
+    # to_return={'GC_CONTENT':to_return['GC_CONTENT'],'POLAR_AA':to_return['POLAR_AA']}
     return to_return
 
 
