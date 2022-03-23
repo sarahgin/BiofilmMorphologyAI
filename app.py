@@ -70,6 +70,39 @@ features_dict = {
     'PI': 'PI'
 
 }
+features_description = {
+    'GC CONTENT': 'GC_CONTENT',
+    'DNA LENGTH': 'DNA_LENGTH',
+    'GENE NAME': 'GENE_NAME',
+    'GENE ID': '',
+    'TYPE': 'TYPE',
+    'PRODUCT TYPE': 'PRODUCT_TYPE',
+    'STRAND': 'STRAND',
+    'PRODUCT DESCRIPTION': 'PRODUCT_DESCRIPTION',
+    'HYDROPHOBIC AA': 'HYDROPHOBIC_AA',
+    'HYDROPHILIC AA': 'HYDROPHILIC_AA',
+    'POLAR AA': 'POLAR_AA',
+    'AROMATIC AA': 'AROMATIC_AA',
+    'POSITIVE AA': 'POSITIVE_AA',
+    'NEGATIVE AA': 'NEGATIVE_AA',
+    'NONPOLAR AA': 'NONPOLAR_AA',
+    'AA LENGTH': 'AA_LENGTH',
+    'H1': 'H1',
+    'H2': 'H2',
+    'H3': 'H3',
+    'V': 'V',
+    'P1': 'P1',
+    'P2': 'P2',
+    'SASA': 'SASA',
+    'NCI': 'NCI',
+    'MASS': 'MASS',
+    'PKA COOH': 'PKA_COOH',
+    'PKA NH': 'PKA_NH',
+    'PI': 'PI'
+}
+
+
+
 genome_feature_list = ['GC_CONTENT', 'DNA_LENGTH']
 gene_feature_list = ['GC_CONTENT', 'DNA_LENGTH']
 general_feature_list = ['GENE_ID', 'GENE_NAME', 'TYPE', 'PRODUCT_TYPE', 'STRAND', 'PRODUCT_DESCRIPTION']
@@ -376,3 +409,7 @@ def get_features_list():
     dict_to_return['Genome_Features'] = ['GC CONTENT', 'DNA LENGTH']
     return jsonify(dict_to_return)
 
+
+@app.route('/api/getfeaturesdescription', methods=['GET'])
+def get_features_description():
+    return jsonify(features_description)
