@@ -74,7 +74,7 @@ features_description = {
     'GC CONTENT': 'GC_CONTENT',
     'DNA LENGTH': 'DNA_LENGTH',
     'GENE NAME': 'GENE_NAME',
-    'GENE ID': '',
+    'GENE ID': 'GENE ID',
     'TYPE': 'TYPE',
     'PRODUCT TYPE': 'PRODUCT_TYPE',
     'STRAND': 'STRAND',
@@ -410,6 +410,6 @@ def get_features_list():
     return jsonify(dict_to_return)
 
 
-@app.route('/api/getfeaturesdescription', methods=['GET'])
+@app.route('/api/getFeaturesDescription', methods=['GET'])
 def get_features_description():
     return jsonify(features_description)
