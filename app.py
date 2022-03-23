@@ -200,7 +200,7 @@ def numeric_feature_to_hist():
     for feature_to_compute in arr_match_feature_server:
         if feature_to_compute in numeric_feature_list:
             raw_data = list(data_frame_file[[feature_to_compute]].values)
-            raw_data = [0 if np.isnan(float64(number[0])) else float64(number[0]) for number in raw_data] #TODO: check NaN 
+            raw_data = [0 if np.isnan(float64(number[0])) else float64(number[0]) for number in raw_data] #TODO: check NaN
             to_return[feature_to_compute] = raw_data
     # to_return={'GC_CONTENT':to_return['GC_CONTENT'],'POLAR_AA':to_return['POLAR_AA']}
     return to_return
