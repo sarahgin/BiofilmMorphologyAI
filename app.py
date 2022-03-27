@@ -154,7 +154,17 @@ def feature():
             data_frame_file = pd.read_pickle(path_to_pickle_files[fileName])
             full_data_features = dict()
             genome_dict = dict()
-
+            gene_bank_file ='./BioinformaticsLab/data/data_inputs/GenBank/' + fileName
+            with open(gene_bank_file, "r") as input_handle:
+                gen = SeqIO.parse(input_handle, "genbank")
+                record_gb = next(gen)
+            # print( record_gb.annotations['date'])
+            genome_dict['Description'] = record_gb.description
+            genome_dict['Publish date'] = record_gb.annotations['date']
+            count_type= dict(data_frame_file['PRODUCT_TYPE'].value_counts())
+            print(count_type)
+            for type in count_type:
+                genome_dict['Number of '+type] = int(count_type[type])
             for feature_name in arr_match_feature_server:
                 if feature_name in genome_feature_list:
                     if feature_name == 'GC_CONTENT':
@@ -285,6 +295,7 @@ def file_input_manger():
             'status': status}
     else:
         # return a list of falid acc numbers if one is ok it will save it and others not
+        print(request.get_json())
         faild_list, status = download_gb_file_by_id(request.get_json())
         to_return = {
             'faild_list': faild_list,
