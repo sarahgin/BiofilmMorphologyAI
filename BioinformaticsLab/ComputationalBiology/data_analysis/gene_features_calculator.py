@@ -107,7 +107,7 @@ def create_prefix_suffix_dict(seq: str,
 
                 if curr_prefix not in result.keys():
                     result[curr_prefix] = {}
-                    assert (curr_prefix not in prefix_counts_dict.keys())
+                    #assert (curr_prefix not in prefix_counts_dict.keys())
                     prefix_counts_dict[curr_prefix] = 1
                 else:
                     prefix_counts_dict[curr_prefix] += 1

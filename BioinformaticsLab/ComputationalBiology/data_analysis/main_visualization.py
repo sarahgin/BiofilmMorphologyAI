@@ -58,7 +58,7 @@ def plot_hist_feature(df, feature_name: str, out_file='', show=False):
 def plot_all_features_histograms(df: DataFrame, show=False, suffix=''):
     for gene_feature in list(GeneFeatures.__members__.keys()) + list(ProteinFeatures.__members__.keys()):
         print(gene_feature)
-        assert (gene_feature in df.columns)  # Assuming that the column exists
+        # assert (gene_feature in df.columns)  # Assuming that the column exists
         out_file = '../../data/data_graphs/features_histograms/{}/{}.png'.format(species_name + suffix, gene_feature)
         create_dir_if_not_exists(out_file)
         plot_hist_feature(df, gene_feature, out_file=out_file, show=show)

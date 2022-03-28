@@ -8,7 +8,7 @@ dir_path = 'data//' + organism + '//'
 
 fasta_file = dir_path + 'top_subseqs_' + organism + '.txt'
 
-assert (os.path.exists(fasta_file))
+# assert (os.path.exists(fasta_file))
 sequences = []
 
 

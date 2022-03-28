@@ -20,8 +20,8 @@ def read_genbank_file(gene_bank_file: str):
 
 def get_coding_gene_seq(genome_sequence, start, end, strand):
 
-    assert(0 <= start < len(genome_sequence))
-    assert(0 < end <= len(genome_sequence))
+    # assert(0 <= start < len(genome_sequence))
+    # assert(0 < end <= len(genome_sequence))
 
     seq = genome_sequence[start:end]
     if strand == -1:
@@ -54,7 +54,7 @@ def init_all_genes(record_gb):
         if gene_key not in all_genes.keys():
 
             if 'gene' in f.qualifiers.keys():
-                assert(len(f.qualifiers['gene']) <= 1), 'ERROR_' + features_list[i].type + \
+                #assert(len(f.qualifiers['gene']) <= 1), 'ERROR_' + features_list[i].type + \
                                                         '_' + features_list[i+1].type
 
             if f.type != 'gene' and f.type != 'regulatory':

@@ -53,7 +53,7 @@ def features_on_each_gene(fileName):
         #genbank_file = '../../data/data_inputs/GenBank/' + species_name + '.gb'
         genbank_file = './BioinformaticsLab/data/data_inputs/GenBank/' + species_name + '.gb'
         print(genbank_file)
-        assert (os.path.exists(genbank_file))  # making sure that the path is valid
+        #assert (os.path.exists(genbank_file))  # making sure that the path is valid
         record_gb = genbank_parser.read_genbank_file(genbank_file)
         spp = genbank_parser.init_species(record_gb)
         with open(SPECIES_PARSER_FILE, 'wb') as pickle_file:

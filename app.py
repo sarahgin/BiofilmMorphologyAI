@@ -229,24 +229,49 @@ def gcContent():
     return json.dumps(gc_content)
 
 
+# @app.route('/api/featuresHist', methods=['GET'])
+# def numeric_feature_to_hist():
+#     file_name = request.args.getlist('fileName')[0]
+#     print(file_name)
+#     feature_list_by_user = request.args.getlist('featureList[]')
+#     print(feature_list_by_user)
+#     arr_match_feature_server = match_client_feature_to_df(feature_list_by_user)
+#     print("after match", arr_match_feature_server)
+#     to_return = {}
+#     path_to_pickle_files = './BioinformaticsLab/data/data_outputs/features_' + file_name[:-3] + '.pickle'
+#     data_frame_file = pd.read_pickle(path_to_pickle_files)
+#     for feature_to_compute in arr_match_feature_server:
+#         if feature_to_compute in numeric_feature_list:
+#             raw_data = list(data_frame_file[[feature_to_compute]].values)
+#             raw_data = [0 if np.isnan(float64(number[0])) else float64(number[0]) for number in raw_data] #TODO: check NaN
+#             to_return[feature_to_compute] = raw_data
+#     # to_return={'GC_CONTENT':to_return['GC_CONTENT'],'POLAR_AA':to_return['POLAR_AA']}
+#     return to_return
+
+# need to be check with postman
 @app.route('/api/featuresHist', methods=['GET'])
 def numeric_feature_to_hist():
-    file_name = request.args.getlist('fileName')[0]
-    print(file_name)
+    file_list_names = request.args.getlist('fileList[]')
+    print(file_list_names)
     feature_list_by_user = request.args.getlist('featureList[]')
     print(feature_list_by_user)
     arr_match_feature_server = match_client_feature_to_df(feature_list_by_user)
     print("after match", arr_match_feature_server)
+    numeric_of_files = {}
     to_return = {}
-    path_to_pickle_files = './BioinformaticsLab/data/data_outputs/features_' + file_name[:-3] + '.pickle'
-    data_frame_file = pd.read_pickle(path_to_pickle_files)
-    for feature_to_compute in arr_match_feature_server:
-        if feature_to_compute in numeric_feature_list:
-            raw_data = list(data_frame_file[[feature_to_compute]].values)
-            raw_data = [0 if np.isnan(float64(number[0])) else float64(number[0]) for number in raw_data] #TODO: check NaN
-            to_return[feature_to_compute] = raw_data
+    for file_name in file_list_names:
+        path_to_pickle_files = './BioinformaticsLab/data/data_outputs/features_' + file_name[:-3] + '.pickle'
+        data_frame_file = pd.read_pickle(path_to_pickle_files)
+        for feature_to_compute in arr_match_feature_server:
+            if feature_to_compute in numeric_feature_list:
+                raw_data = list(data_frame_file[[feature_to_compute]].values)
+                raw_data = [0 if np.isnan(float64(number[0])) else float64(number[0]) for number in raw_data] #TODO: check NaN
+                numeric_of_files[feature_to_compute] = raw_data
+        to_return[file_name] = numeric_of_files
     # to_return={'GC_CONTENT':to_return['GC_CONTENT'],'POLAR_AA':to_return['POLAR_AA']}
+
     return to_return
+
 
 
 # file from server

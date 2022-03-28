@@ -39,7 +39,7 @@ def get_subsequences(motif_info: str, sequence: str, prefix_type: str):
     res = []
     # find all matches of (HELIX (\d+)..(\d+))# TODO: make general fo beta
     all_matches = regex.findall(prefix_type + ' (\d+)\\.\\.(\d+)', motif_info)
-    assert (all_matches is not None)
+    #assert (all_matches is not None)
 
     # go over the matches
     for start, end in all_matches:
@@ -82,7 +82,7 @@ def create_subseq_df(df: pd.DataFrame, col_name: str, subseq_type: str):
 def find_S_by_column(df: pd.DataFrame, col_name: str):
     df_counter = df.groupby(col_name).count()
     df_counter['sequence'] = df_counter['Protein names']  # since sequence column is now index
-    assert (len(df[col_name].unique() == len(df_counter)))
+    # assert (len(df[col_name].unique() == len(df_counter)))
 
     max_count = df_counter['sequence'].max()
     max_value = df_counter[df_counter['sequence'] == max_count].index.tolist()[0]
@@ -90,7 +90,7 @@ def find_S_by_column(df: pd.DataFrame, col_name: str):
     print('col_name={}: {} was found: {} ({:.2}%),out of {} valid seqs'
           .format(col_name, max_value, max_count, 100 * max_count / total_seqs_non_unique, total_seqs_non_unique))
     # df_counter['sequence'].plot.hist(bins=2500)
-    assert sum(df[col_name] == max_value) == max_count  # sainty check
+    #assert sum(df[col_name] == max_value) == max_count  # sainty check
     return df_counter
 
 
@@ -137,7 +137,7 @@ def organisms_analysis(organism: str, region_type: str):
     dfs = []
 
     file_path = 'data/' + organism + '.tab'
-    assert (os.path.exists(file_path))
+    #assert (os.path.exists(file_path))
     df = parse_file(file_path)
 
     # split into reviewed vs. unreviewed
@@ -146,7 +146,7 @@ def organisms_analysis(organism: str, region_type: str):
     if reviewd_only:
         reviewedDF = df[df['Status'] == 'reviewed']
         unreviewedDF = df[df['Status'] == 'unreviewed']
-        assert (len(df) == len(reviewedDF) + len(unreviewedDF))
+        #assert (len(df) == len(reviewedDF) + len(unreviewedDF))
         df = reviewedDF
         print('num of genes in raw data: ', len(df),
               ' Reviewed: ', len(reviewedDF),
@@ -239,7 +239,7 @@ def parse_IEDB_excel():
                 'Alignment'].values
 
             # adding a new entry to merged_dict (all 4 files)
-            assert len(cluster_consensus) == 1
+            #assert len(cluster_consensus) == 1
             cluster_consensus_seq = cluster_consensus[0]
             if cluster_consensus_seq not in merged_dict.keys():
                 merged_dict[cluster_consensus_seq] = list(cluster_sequences)

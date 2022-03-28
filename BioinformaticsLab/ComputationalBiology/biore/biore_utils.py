@@ -72,7 +72,7 @@ def group_into_aa(seq):
 
 
 def get_hamming(seq1, seq2):
-    assert len(seq1) == len(seq2)
+    #assert len(seq1) == len(seq2)
     return distance.hamming(list(seq1), list(seq2))
 
 
