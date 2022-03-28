@@ -158,11 +158,9 @@ def feature():
             with open(gene_bank_file, "r") as input_handle:
                 gen = SeqIO.parse(input_handle, "genbank")
                 record_gb = next(gen)
-            # print( record_gb.annotations['date'])
             genome_dict['Description'] = record_gb.description
             genome_dict['Publish date'] = record_gb.annotations['date']
             count_type= dict(data_frame_file['PRODUCT_TYPE'].value_counts())
-            print(count_type)
             for type in count_type:
                 genome_dict['Number of '+type] = int(count_type[type])
             for feature_name in arr_match_feature_server:
@@ -252,14 +250,12 @@ def gcContent():
 @app.route('/api/featuresHist', methods=['GET'])
 def numeric_feature_to_hist():
     file_list_names = request.args.getlist('fileList[]')
-    print(file_list_names)
     feature_list_by_user = request.args.getlist('featureList[]')
-    print(feature_list_by_user)
     arr_match_feature_server = match_client_feature_to_df(feature_list_by_user)
     print("after match", arr_match_feature_server)
-    numeric_of_files = {}
     to_return = {}
     for file_name in file_list_names:
+        numeric_of_files = {}
         path_to_pickle_files = './BioinformaticsLab/data/data_outputs/features_' + file_name[:-3] + '.pickle'
         data_frame_file = pd.read_pickle(path_to_pickle_files)
         for feature_to_compute in arr_match_feature_server:
@@ -268,7 +264,6 @@ def numeric_feature_to_hist():
                 raw_data = [0 if np.isnan(float64(number[0])) else float64(number[0]) for number in raw_data] #TODO: check NaN
                 numeric_of_files[feature_to_compute] = raw_data
         to_return[file_name] = numeric_of_files
-    # to_return={'GC_CONTENT':to_return['GC_CONTENT'],'POLAR_AA':to_return['POLAR_AA']}
 
     return to_return
 
