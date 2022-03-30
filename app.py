@@ -257,11 +257,15 @@ def numeric_feature_to_hist():
     for file_name in file_list_names:
         numeric_of_files = {}
         path_to_pickle_files = './BioinformaticsLab/data/data_outputs/features_' + file_name[:-3] + '.pickle'
+        fileName = os.path.splitext(file_name)[0]
+        if len(check_existing_files(fileName)) != 2:
+            features_on_each_gene(fileName)
         data_frame_file = pd.read_pickle(path_to_pickle_files)
         for feature_to_compute in arr_match_feature_server:
             if feature_to_compute in numeric_feature_list:
                 raw_data = list(data_frame_file[[feature_to_compute]].values)
-                raw_data = [0 if np.isnan(float64(number[0])) else float64(number[0]) for number in raw_data] #TODO: check NaN
+                raw_data = [float64(number[0]) for number in raw_data if not np.isnan(float64(number[0]))] #TODO: check NaN
+                # raw_data = [0 if np.isnan(float64(number[0])) else float64(number[0]) for number in raw_data] #TODO: check NaN
                 numeric_of_files[feature_to_compute] = raw_data
         to_return[file_name] = numeric_of_files
 
