@@ -102,7 +102,7 @@ features_description = {
 }
 
 
-
+# test_git = ['dor']
 genome_feature_list = ['GC_CONTENT', 'DNA_LENGTH']
 gene_feature_list = ['GC_CONTENT', 'DNA_LENGTH']
 general_feature_list = ['GENE_ID', 'GENE_NAME', 'TYPE', 'PRODUCT_TYPE', 'STRAND', 'PRODUCT_DESCRIPTION']
