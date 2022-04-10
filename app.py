@@ -102,7 +102,6 @@ features_description = {
 }
 
 
-# test_git = ['dor']
 genome_feature_list = ['GC_CONTENT', 'DNA_LENGTH']
 gene_feature_list = ['GC_CONTENT', 'DNA_LENGTH']
 general_feature_list = ['GENE_ID', 'GENE_NAME', 'TYPE', 'PRODUCT_TYPE', 'STRAND', 'PRODUCT_DESCRIPTION']
@@ -205,12 +204,12 @@ def create_object_from_data_frame(data_frame, arr_features_name, type_of_gene):
         object_per_gene = {"key":index}
         for feature in arr_features_name:
             # print(feature,type(data_frame[feature].iloc[index,]))
-            if type(data_frame[feature].iloc[index,]) != int64 and type(data_frame[feature].iloc[index,]) != float64:
-                object_per_gene[list(features_dict.keys())[list(features_dict.values()).index(feature)]] = data_frame[feature].iloc[index,]
+            if type(data_frame[feature].iloc[index,]) != int64 and type(data_frame[feature].iloc[index, ]) != float64:
+                object_per_gene[list(features_dict.keys())[list(features_dict.values()).index(feature)]] = data_frame[feature].iloc[index, ]
 
-            elif not np.isnan(data_frame[feature].iloc[index,]):
+            elif not np.isnan(data_frame[feature].iloc[index, ]):
                 object_per_gene[list(features_dict.keys())[list(features_dict.values()).index(feature)]] = float(
-                    data_frame[feature].iloc[index,])
+                    data_frame[feature].iloc[index, ])
         object_genes.append(object_per_gene)
     return object_genes
 
@@ -448,3 +447,46 @@ def get_features_list():
 @app.route('/api/getFeaturesDescription', methods=['GET'])
 def get_features_description():
     return jsonify(features_description)
+
+
+# need file name for getting the data
+@app.route('/api/test', methods=['GET'])
+def get_number_of_null_gene_name():
+    file_name = request.args.getlist('fileList[]')
+    path_to_pickle_file = './BioinformaticsLab/data/data_outputs/features_' + file_name[0][:-3] + '.pickle'
+    data_frame_file = pd.read_pickle(path_to_pickle_file)
+    df_new = data_frame_file[['GENE_NAME', 'PRODUCT_TYPE']]
+    counter_list = {}
+    unique_names = df_new['PRODUCT_TYPE'].unique()
+
+    unique_names = list(filter(None, unique_names)) # removed None vaule type
+
+    for index, row in df_new.iterrows():
+        if row['GENE_NAME'] == '':
+            if row['PRODUCT_TYPE'] in unique_names:
+                if row['PRODUCT_TYPE'] in counter_list:
+                    counter_list[row['PRODUCT_TYPE']] = counter_list[row['PRODUCT_TYPE']] + 1
+                else:
+                    counter_list[row['PRODUCT_TYPE']] = 1
+    return counter_list
+    # cds_counter = 0
+    # tRNA_counter = 0
+    # rRNA_counter = 0
+    # tmRNA_counter = 0
+    # for index, row in df_new.iterrows():
+    #     if row['GENE_NAME'] == '':
+    #         if row['PRODUCT_TYPE'] == 'CDS':
+    #             cds_counter = cds_counter + 1
+    #         elif row['PRODUCT_TYPE'] == 'tRNA':
+    #             tRNA_counter = tRNA_counter + 1
+    #         elif row['PRODUCT_TYPE'] == 'rRNA':
+    #             rRNA_counter = rRNA_counter + 1
+    #         elif row['PRODUCT_TYPE'] == 'tmRNA':
+    #             tmRNA_counter = tmRNA_counter + 1
+    #
+    # to_return ={'Missing CDS': str(cds_counter),
+    #             'Missing tRNA': str(tRNA_counter),
+    #             'Missing rRNA': str(rRNA_counter),
+    #             'Missing tmRNA': str(tmRNA_counter)}
+    # return to_return
+
