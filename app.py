@@ -450,7 +450,7 @@ def get_features_description():
 
 
 # need file name for getting the data
-@app.route('/api/test', methods=['GET'])
+@app.route('/api/missingNames', methods=['GET'])
 def get_number_of_null_gene_name():
     file_name = request.args.getlist('fileList[]')
     path_to_pickle_file = './BioinformaticsLab/data/data_outputs/features_' + file_name[0][:-3] + '.pickle'
