@@ -71,6 +71,6 @@ wcwidth==0.2.5
 Werkzeug==2.0.2
 zope.event==4.5.0
 zope.interface==5.4.0
-awscli
+#awscli
 boto3
 celery

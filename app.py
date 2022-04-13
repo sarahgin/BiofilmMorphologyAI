@@ -118,25 +118,21 @@ numeric_feature_list =['GC_CONTENT', 'DNA_LENGTH', 'HYDROPHOBIC_AA', 'HYDROPHILI
 def match_client_feature_to_df(feature_list_by_user):
     feature_list_by_user_match_server = list()
     for feature_name in feature_list_by_user:
-        print(feature_name)
+        #print(feature_name)
         if feature_name in features_dict:
             feature_list_by_user_match_server.append(features_dict[feature_name])
     return feature_list_by_user_match_server
 
 
 @cross_origin()
-# @app.route('/')
-# def get_current_time():
-#     return {'hello': b.printHello()}
-
 
 @app.route('/api/features', methods=['GET'])
 def feature():
     file_list_names = request.args.getlist('fileList[]')
     feature_list_by_user = request.args.getlist('featureList[]')
-    print(feature_list_by_user)
+    #print(feature_list_by_user)
     arr_match_feature_server = match_client_feature_to_df(feature_list_by_user)
-    print("after match", arr_match_feature_server)
+    #("after match", arr_match_feature_server)
     path_to_pickle_files = {}
     to_return = dict()
 
@@ -145,7 +141,7 @@ def feature():
         to_return[file] = dict()
         fileName = os.path.splitext(file)[0]
         path_to_pickle_files[file] = './BioinformaticsLab/data/data_outputs/features_' + fileName + '.pickle'
-        print(fileName)
+        #print(fileName)
         if len(check_existing_files(file)) != 2:
             features_on_each_gene(fileName)
 
@@ -251,7 +247,7 @@ def numeric_feature_to_hist():
     file_list_names = request.args.getlist('fileList[]')
     feature_list_by_user = request.args.getlist('featureList[]')
     arr_match_feature_server = match_client_feature_to_df(feature_list_by_user)
-    print("after match", arr_match_feature_server)
+    #print("after match", arr_match_feature_server)
     to_return = {}
     for file_name in file_list_names:
         numeric_of_files = {}
@@ -269,21 +265,6 @@ def numeric_feature_to_hist():
         to_return[file_name] = numeric_of_files
 
     return to_return
-
-
-
-# file from server
-# @app.route('/api/chooseFileFromServer', methods=['POST'])
-# def file_from_server():
-#     post_data = request.get_json()
-#     fileName = post_data.get("fileName")
-#     #valid_file = valid(fileName)
-#     print("route", fileName)
-#     to_return = {
-#         'faild_list': [],
-#         'status': status_to_client("Uploaded")}
-#     return to_return
-
 
 # download file from s3 server and save it to data_inputs
 @app.route('/api/uploadBucketFile', methods=['POST'])
@@ -318,7 +299,7 @@ def file_input_manger():
             'status': status}
     else:
         # return a list of falid acc numbers if one is ok it will save it and others not
-        print(request.get_json())
+        #print(request.get_json())
         faild_list, status = download_gb_file_by_id(request.get_json())
         to_return = {
             'faild_list': faild_list,
@@ -397,7 +378,7 @@ def download_gb_file_by_id(acc_id_dict):
 @app.route('/api/chart_data')
 def get_chart_data():
     array = list(map(lambda x: {'x': x, 'y': randrange(20)}, range(10)))
-    print(jsonify(array))
+    #print(jsonify(array))
     return jsonify(array)
 
 
