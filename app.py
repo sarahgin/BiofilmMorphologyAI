@@ -265,7 +265,7 @@ def numeric_feature_to_hist():
         to_return[file_name] = numeric_of_files
 
     return to_return
-
+#TODO: delete this raw
 # download file from s3 server and save it to data_inputs
 @app.route('/api/uploadBucketFile', methods=['POST'])
 def file_bucket_download():
