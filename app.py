@@ -1,8 +1,4 @@
-import io
 import os
-from json import loads
-from os import listdir
-from celery import Celery
 import numpy as np
 import pandas as pd
 from numpy import int64, float64
@@ -17,14 +13,7 @@ from flask_cors import CORS, cross_origin
 from random import randrange
 from Bio import Entrez, SeqIO
 
-import time
-from werkzeug.utils import secure_filename
 
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-from flask import Response
-
-# b = back.Back()
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
@@ -101,10 +90,17 @@ features_description = {
     'PI': 'PI'
 }
 
+title_features_description = {
+    'Gene_Features': 'title gene desc',
+    'General_Features': 'title genral desc',
+    'Protein_Features': 'title protein desc',
+}
+
 
 genome_feature_list = ['GC_CONTENT', 'DNA_LENGTH']
 gene_feature_list = ['GC_CONTENT', 'DNA_LENGTH']
 general_feature_list = ['GENE_ID', 'GENE_NAME', 'TYPE', 'PRODUCT_TYPE', 'STRAND', 'PRODUCT_DESCRIPTION']
+#               TODO: after formating the code of the new featuers use this one.
 # protein_feature_list = ['HYDROPHOBIC_AA', 'HYDROPHILIC_AA', 'POLAR_AA', 'AROMATIC_AA', 'POSITIVE_AA', 'NEGATIVE_AA',
 #                         'NONPOLAR_AA', 'AA_LENGTH', 'H1', 'H2', 'H3', 'V', 'P1', 'P2', 'SASA', 'NCI', 'MASS', 'PKA_COOH',
 #                         'PKA_NH', 'PI']
@@ -118,33 +114,26 @@ numeric_feature_list =['GC_CONTENT', 'DNA_LENGTH', 'HYDROPHOBIC_AA', 'HYDROPHILI
 def match_client_feature_to_df(feature_list_by_user):
     feature_list_by_user_match_server = list()
     for feature_name in feature_list_by_user:
-        #print(feature_name)
         if feature_name in features_dict:
             feature_list_by_user_match_server.append(features_dict[feature_name])
     return feature_list_by_user_match_server
 
 
 @cross_origin()
-
 @app.route('/api/features', methods=['GET'])
 def feature():
     file_list_names = request.args.getlist('fileList[]')
     feature_list_by_user = request.args.getlist('featureList[]')
-    #print(feature_list_by_user)
     arr_match_feature_server = match_client_feature_to_df(feature_list_by_user)
-    #("after match", arr_match_feature_server)
     path_to_pickle_files = {}
     to_return = dict()
 
     for file in file_list_names:
-
         to_return[file] = dict()
         fileName = os.path.splitext(file)[0]
         path_to_pickle_files[file] = './BioinformaticsLab/data/data_outputs/features_' + fileName + '.pickle'
-        #print(fileName)
         if len(check_existing_files(file)) != 2:
             features_on_each_gene(fileName)
-
         for fileName in path_to_pickle_files:
             data_frame_file = pd.read_pickle(path_to_pickle_files[fileName])
             full_data_features = dict()
@@ -155,7 +144,7 @@ def feature():
                 record_gb = next(gen)
             genome_dict['Description'] = record_gb.description
             genome_dict['Publish date'] = record_gb.annotations['date']
-            count_type= dict(data_frame_file['PRODUCT_TYPE'].value_counts())
+            count_type = dict(data_frame_file['PRODUCT_TYPE'].value_counts())
             for type in count_type:
                 genome_dict['Number of '+type] = int(count_type[type])
             for feature_name in arr_match_feature_server:
@@ -167,7 +156,7 @@ def feature():
             array_genes_features = intersection(arr_match_feature_server, gene_feature_list)
             if len(array_genes_features) != 0:
                 array_genes_features.append('GENE_NAME')
-                object_genes = create_object_from_data_frame(data_frame_file, array_genes_features,'Gene')
+                object_genes = create_object_from_data_frame(data_frame_file, array_genes_features, 'Gene')
                 full_data_features['Gene'] = object_genes
             array_protein_features = intersection(arr_match_feature_server, protein_feature_list)
             if len(array_protein_features) != 0:
@@ -179,8 +168,8 @@ def feature():
             if len(array_general_features) != 0:
                 if 'GENE_NAME' not in array_general_features:
                     array_general_features.append('GENE_NAME')
-                object_general = create_object_from_data_frame(data_frame_file, array_general_features,'General')
-                full_data_features['General'] =object_general
+                object_general = create_object_from_data_frame(data_frame_file, array_general_features, 'General')
+                full_data_features['General'] = object_general
             full_data_features['Genome'] = genome_dict
             to_return[fileName] = full_data_features
     return to_return
@@ -199,7 +188,6 @@ def create_object_from_data_frame(data_frame, arr_features_name, type_of_gene):
     for index in range(data_frame.shape[0]):
         object_per_gene = {"key":index}
         for feature in arr_features_name:
-            # print(feature,type(data_frame[feature].iloc[index,]))
             if type(data_frame[feature].iloc[index,]) != int64 and type(data_frame[feature].iloc[index, ]) != float64:
                 object_per_gene[list(features_dict.keys())[list(features_dict.values()).index(feature)]] = data_frame[feature].iloc[index, ]
 
@@ -221,33 +209,12 @@ def gcContent():
 
     return json.dumps(gc_content)
 
-
-# @app.route('/api/featuresHist', methods=['GET'])
-# def numeric_feature_to_hist():
-#     file_name = request.args.getlist('fileName')[0]
-#     print(file_name)
-#     feature_list_by_user = request.args.getlist('featureList[]')
-#     print(feature_list_by_user)
-#     arr_match_feature_server = match_client_feature_to_df(feature_list_by_user)
-#     print("after match", arr_match_feature_server)
-#     to_return = {}
-#     path_to_pickle_files = './BioinformaticsLab/data/data_outputs/features_' + file_name[:-3] + '.pickle'
-#     data_frame_file = pd.read_pickle(path_to_pickle_files)
-#     for feature_to_compute in arr_match_feature_server:
-#         if feature_to_compute in numeric_feature_list:
-#             raw_data = list(data_frame_file[[feature_to_compute]].values)
-#             raw_data = [0 if np.isnan(float64(number[0])) else float64(number[0]) for number in raw_data] #TODO: check NaN
-#             to_return[feature_to_compute] = raw_data
-#     # to_return={'GC_CONTENT':to_return['GC_CONTENT'],'POLAR_AA':to_return['POLAR_AA']}
-#     return to_return
-
 # need to be check with postman
 @app.route('/api/featuresHist', methods=['GET'])
 def numeric_feature_to_hist():
     file_list_names = request.args.getlist('fileList[]')
     feature_list_by_user = request.args.getlist('featureList[]')
     arr_match_feature_server = match_client_feature_to_df(feature_list_by_user)
-    #print("after match", arr_match_feature_server)
     to_return = {}
     for file_name in file_list_names:
         numeric_of_files = {}
@@ -299,7 +266,6 @@ def file_input_manger():
             'status': status}
     else:
         # return a list of falid acc numbers if one is ok it will save it and others not
-        #print(request.get_json())
         faild_list, status = download_gb_file_by_id(request.get_json())
         to_return = {
             'faild_list': faild_list,
@@ -348,7 +314,6 @@ def check_existing_files(filename):
             list_of_present.append(name)
             if counterOfPickeleFiles == 2:
                 break
-
     return list_of_present
 
 
@@ -378,7 +343,6 @@ def download_gb_file_by_id(acc_id_dict):
 @app.route('/api/chart_data')
 def get_chart_data():
     array = list(map(lambda x: {'x': x, 'y': randrange(20)}, range(10)))
-    #print(jsonify(array))
     return jsonify(array)
 
 
@@ -392,10 +356,6 @@ def status_to_client(status):
         "FeatureReceived": {"FeatureReceived": 200}
     }
     return dict_status[status]
-    # if status == "Success":
-    #     to_return = {"status": 200}
-    #     return to_return
-    # return {"status": 500}
 
 
 @app.route('/api/existinglistFiles', methods=['GET'])
@@ -430,44 +390,33 @@ def get_features_description():
     return jsonify(features_description)
 
 
+@app.route('/api/getTitleFeaturesDescription', methods=['GET'])
+def get_title_features_description():
+    print(title_features_description)
+    return jsonify(title_features_description)
+
+
 # need file name for getting the data
 @app.route('/api/missingNames', methods=['GET'])
 def get_number_of_null_gene_name():
     file_name = request.args.getlist('fileList[]')
-    path_to_pickle_file = './BioinformaticsLab/data/data_outputs/features_' + file_name[0][:-3] + '.pickle'
-    data_frame_file = pd.read_pickle(path_to_pickle_file)
-    df_new = data_frame_file[['GENE_NAME', 'PRODUCT_TYPE']]
-    counter_list = {}
-    unique_names = df_new['PRODUCT_TYPE'].unique()
+    to_return = {}
+    for name in file_name:
+        print(name)
+        path_to_pickle_file = './BioinformaticsLab/data/data_outputs/features_' + name[:-3] + '.pickle'
+        data_frame_file = pd.read_pickle(path_to_pickle_file)
+        df_new = data_frame_file[['GENE_NAME', 'PRODUCT_TYPE']]
+        counter_list = {}
+        unique_names = df_new['PRODUCT_TYPE'].unique()
+        unique_names = list(filter(None, unique_names)) # removed None value type
+        for index, row in df_new.iterrows():
+            if row['GENE_NAME'] == '':
+                if row['PRODUCT_TYPE'] in unique_names:
+                    if row['PRODUCT_TYPE'] in counter_list:
+                        counter_list[row['PRODUCT_TYPE']] = counter_list[row['PRODUCT_TYPE']] + 1
+                    else:
+                        counter_list[row['PRODUCT_TYPE']] = 1
+        to_return[name] = counter_list
+    return to_return
 
-    unique_names = list(filter(None, unique_names)) # removed None vaule type
-
-    for index, row in df_new.iterrows():
-        if row['GENE_NAME'] == '':
-            if row['PRODUCT_TYPE'] in unique_names:
-                if row['PRODUCT_TYPE'] in counter_list:
-                    counter_list[row['PRODUCT_TYPE']] = counter_list[row['PRODUCT_TYPE']] + 1
-                else:
-                    counter_list[row['PRODUCT_TYPE']] = 1
-    return counter_list
-    # cds_counter = 0
-    # tRNA_counter = 0
-    # rRNA_counter = 0
-    # tmRNA_counter = 0
-    # for index, row in df_new.iterrows():
-    #     if row['GENE_NAME'] == '':
-    #         if row['PRODUCT_TYPE'] == 'CDS':
-    #             cds_counter = cds_counter + 1
-    #         elif row['PRODUCT_TYPE'] == 'tRNA':
-    #             tRNA_counter = tRNA_counter + 1
-    #         elif row['PRODUCT_TYPE'] == 'rRNA':
-    #             rRNA_counter = rRNA_counter + 1
-    #         elif row['PRODUCT_TYPE'] == 'tmRNA':
-    #             tmRNA_counter = tmRNA_counter + 1
-    #
-    # to_return ={'Missing CDS': str(cds_counter),
-    #             'Missing tRNA': str(tRNA_counter),
-    #             'Missing rRNA': str(rRNA_counter),
-    #             'Missing tmRNA': str(tmRNA_counter)}
-    # return to_return
 
