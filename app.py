@@ -175,6 +175,9 @@ def feature():
     return to_return
 
 
+
+
+
 def intersection(lst1, lst2):
     lst3 = [value for value in lst1 if value in lst2]
     return lst3
@@ -392,7 +395,7 @@ def get_features_description():
 
 @app.route('/api/getTitleFeaturesDescription', methods=['GET'])
 def get_title_features_description():
-    print(title_features_description)
+    # print(title_features_description)
     return jsonify(title_features_description)
 
 
@@ -402,7 +405,6 @@ def get_number_of_null_gene_name():
     file_name = request.args.getlist('fileList[]')
     to_return = {}
     for name in file_name:
-        print(name)
         path_to_pickle_file = './BioinformaticsLab/data/data_outputs/features_' + name[:-3] + '.pickle'
         data_frame_file = pd.read_pickle(path_to_pickle_file)
         df_new = data_frame_file[['GENE_NAME', 'PRODUCT_TYPE']]
