@@ -149,7 +149,6 @@ def compute_PI(amino_acid_sequence: str):
 
 
 def compute_avg_protein_chemical_feature(amino_acid_sequence: str, chemical_feature_name: str):
-    s = 0
-    for aa in amino_acid_sequence:
-        s += float(chem_df[chemical_feature_name][aa])
-    return s / len(amino_acid_sequence) if len(amino_acid_sequence) > 0 else 0
+    df = chem_df[chemical_feature_name]
+    nums = [df[l] for l in amino_acid_sequence]
+    return sum(nums)/len(nums) if len(nums) > 0 else 0

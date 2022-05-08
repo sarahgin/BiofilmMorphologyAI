@@ -60,8 +60,7 @@ chemical_properties = {'A': ['0.62', '-0.5', '2', '27.5', '8.1', '0.046', '1.181
 	                   'W': ['0.81', '-3.4', '3', '145.5', '5.4', '0.409', '2.663', '0.037977', '186.2132', '2.46', '9.41', '5.88'],
 	                   'Y': ['0.26', '-2.3', '3', '117.3', '6.2', '0.298', '2.368', '0.023599', '163.1760', '2.20', '9.21', '5.63']}
 chem_df = pd.DataFrame.from_dict(chemical_properties, columns=chemicals_features, orient='index')
-
-
+chem_df = chem_df.astype('float32')
 # names of species for feature comparison:
 
 species_names = [ \
