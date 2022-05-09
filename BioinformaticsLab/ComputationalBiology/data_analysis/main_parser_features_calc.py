@@ -26,11 +26,11 @@ species_name = 'bacillus_subtilis'
 # species_name = 'strep_sobrinus'
 ##species_name = 'helicobacter_pylori'
 
-overrideSpeciesParserFile = False
+overrideSpeciesParserFile = True
 #added by dor and adi for connecting the new backend
 #SPECIES_PARSER_FILE = '../../data/data_outputs/species_' + species_name + '.pickle'
 
-overrideFeaturesFile = False
+overrideFeaturesFile = True
 #added by dor and adi for connecting the new backend
 #FEATURES_DF_FILE = '../../data/data_outputs/features_' + species_name + '.pickle'
 
