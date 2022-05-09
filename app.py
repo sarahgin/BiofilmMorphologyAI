@@ -98,18 +98,23 @@ title_features_description = {
 
 
 genome_feature_list = ['GC_CONTENT', 'DNA_LENGTH']
-gene_feature_list = ['GC_CONTENT', 'DNA_LENGTH']
+gene_feature_list = ['GC_CONTENT', 'DNA_LENGTH', 'PRODUCT_DESCRIPTION']
 general_feature_list = ['GENE_ID', 'GENE_NAME', 'TYPE', 'PRODUCT_TYPE', 'STRAND', 'PRODUCT_DESCRIPTION']
 #               TODO: after formating the code of the new featuers use this one.
-# protein_feature_list = ['HYDROPHOBIC_AA', 'HYDROPHILIC_AA', 'POLAR_AA', 'AROMATIC_AA', 'POSITIVE_AA', 'NEGATIVE_AA',
-#                         'NONPOLAR_AA', 'AA_LENGTH', 'H1', 'H2', 'H3', 'V', 'P1', 'P2', 'SASA', 'NCI', 'MASS', 'PKA_COOH',
-#                         'PKA_NH', 'PI']
 protein_feature_list = ['HYDROPHOBIC_AA', 'HYDROPHILIC_AA', 'POLAR_AA', 'AROMATIC_AA', 'POSITIVE_AA', 'NEGATIVE_AA',
-                        'NONPOLAR_AA', 'AA_LENGTH']
+                        'NONPOLAR_AA', 'AA_LENGTH', 'H1', 'H2', 'H3', 'V', 'P1', 'P2', 'SASA', 'NCI', 'MASS', 'PKA_COOH',
+                        'PKA_NH', 'PI','PRODUCT_DESCRIPTION']
+# protein_feature_list = ['HYDROPHOBIC_AA', 'HYDROPHILIC_AA', 'POLAR_AA', 'AROMATIC_AA', 'POSITIVE_AA', 'NEGATIVE_AA',
+#                         'NONPOLAR_AA', 'AA_LENGTH']
 numeric_feature_list =['GC_CONTENT', 'DNA_LENGTH', 'HYDROPHOBIC_AA', 'HYDROPHILIC_AA', 'POLAR_AA', 'AROMATIC_AA',
                        'POSITIVE_AA', 'NEGATIVE_AA', 'NONPOLAR_AA', 'AA_LENGTH', 'H1', 'H2', 'H3', 'V', 'P1', 'P2',
                        'SASA', 'NCI', 'MASS', 'PKA_COOH', 'PKA_NH', 'PI']
 
+numeric_feature_title_x_y ={'GC_CONTENT':{"x":"x", "y":"y"}, 'DNA_LENGTH':{"x":"x", "y":"y"}, 'HYDROPHOBIC_AA':{"x":"x", "y":"y"}, 'HYDROPHILIC_AA':{"x":"x", "y":"y"},
+                            'POLAR_AA':{"x":"x", "y":"y"}, 'AROMATIC_AA':{"x":"x", "y":"y"},
+                       'POSITIVE_AA':{"x":"x", "y":"y"}, 'NEGATIVE_AA':{"x":"x", "y":"y"}, 'NONPOLAR_AA':{"x":"x", "y":"y"},
+                            'AA_LENGTH':{"x":"x", "y":"y"}, 'H1':{"x":"x", "y":"y"}, 'H2':{"x":"x", "y":"y"}, 'H3':{"x":"x", "y":"y"}, 'V':{"x":"x", "y":"y"}, 'P1':{"x":"x", "y":"y"}, 'P2':{"x":"x", "y":"y"},
+                       'SASA':{"x":"x", "y":"y"}, 'NCI':{"x":"x", "y":"y"}, 'MASS':{"x":"x", "y":"y"}, 'PKA_COOH':{"x":"x", "y":"y"}, 'PKA_NH':{"x":"x", "y":"y"}, 'PI':{"x":"x", "y":"y"}}
 
 def match_client_feature_to_df(feature_list_by_user):
     feature_list_by_user_match_server = list()
@@ -281,7 +286,6 @@ def get_file(file):
     filename = file.filename
     valid_file = valid(filename)
     if valid_file:
-
         full_path = os.path.join(path_to_input_file, filename)
         file.save(full_path)
         return status_to_client("Uploaded")
@@ -388,10 +392,13 @@ def get_features_list():
     return jsonify(dict_to_return)
 
 
+@app.route('/api/getNumericFeatureTitleXY', methods=['GET'])
+def get_numeric_feature_title_x_y():
+    return jsonify(numeric_feature_title_x_y)
+
 @app.route('/api/getFeaturesDescription', methods=['GET'])
 def get_features_description():
     return jsonify(features_description)
-
 
 @app.route('/api/getTitleFeaturesDescription', methods=['GET'])
 def get_title_features_description():
@@ -406,6 +413,8 @@ def get_number_of_null_gene_name():
     to_return = {}
     for name in file_name:
         path_to_pickle_file = './BioinformaticsLab/data/data_outputs/features_' + name[:-3] + '.pickle'
+        if not os.path.exists(path_to_pickle_file):
+            features_on_each_gene(name[:-3])
         data_frame_file = pd.read_pickle(path_to_pickle_file)
         df_new = data_frame_file[['GENE_NAME', 'PRODUCT_TYPE']]
         counter_list = {}
@@ -415,10 +424,11 @@ def get_number_of_null_gene_name():
             if row['GENE_NAME'] == '':
                 if row['PRODUCT_TYPE'] in unique_names:
                     if row['PRODUCT_TYPE'] in counter_list:
-                        counter_list[row['PRODUCT_TYPE']] = counter_list[row['PRODUCT_TYPE']] + 1
+                          counter_list[row['PRODUCT_TYPE']] = counter_list[row['PRODUCT_TYPE']] + 1
                     else:
-                        counter_list[row['PRODUCT_TYPE']] = 1
+                           counter_list[row['PRODUCT_TYPE']] = 1
         to_return[name] = counter_list
+
     return to_return
 
 
