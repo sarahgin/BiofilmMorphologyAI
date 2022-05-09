@@ -1,7 +1,7 @@
 import re
 import pandas as pd
 
-from BioinformaticsLab.ComputationalBiology.bio_general.bio_macros import chem_df
+from BioinformaticsLab.ComputationalBiology.bio_general.bio_macros import chem_df, chem_dictionaries
 
 '''
 Alanine 	Ala 	A
@@ -149,6 +149,7 @@ def compute_PI(amino_acid_sequence: str):
 
 
 def compute_avg_protein_chemical_feature(amino_acid_sequence: str, chemical_feature_name: str):
-    df = chem_df[chemical_feature_name]
-    nums = [df[l] for l in amino_acid_sequence]
-    return sum(nums)/len(nums) if len(nums) > 0 else 0
+    seq_series = pd.Series(list(amino_acid_sequence))
+    res = seq_series.map(chem_dictionaries[chemical_feature_name])
+    return res.mean()
+
