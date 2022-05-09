@@ -26,11 +26,11 @@ species_name = 'bacillus_subtilis'
 # species_name = 'strep_sobrinus'
 ##species_name = 'helicobacter_pylori'
 
-overrideSpeciesParserFile = True
+overrideSpeciesParserFile = False
 #added by dor and adi for connecting the new backend
 #SPECIES_PARSER_FILE = '../../data/data_outputs/species_' + species_name + '.pickle'
 
-overrideFeaturesFile = True
+overrideFeaturesFile = False
 #added by dor and adi for connecting the new backend
 #FEATURES_DF_FILE = '../../data/data_outputs/features_' + species_name + '.pickle'
 
@@ -41,16 +41,17 @@ overrideFeaturesFile = True
 #PREFIX_SUFFIX_DF_FILE = '../../data/data_outputs/prefix_suffix_dict_' + species_name + '.pickle'
 
 
-def features_on_each_gene(fileName):
+def create_single_species_df(filename):
     # PARSE
     # added by dor and adi for connecting the new backend
-    species_name = fileName
+    species_name = filename
     SPECIES_PARSER_FILE = './BioinformaticsLab/data/data_outputs/species_' + species_name + '.pickle'  # TODO: ask Noa about the path
     FEATURES_DF_FILE = './BioinformaticsLab/data/data_outputs/features_' + species_name + '.pickle'
-    #end of edit
+    # SPECIES_PARSER_FILE = '../../data/data_outputs/species_' + species_name + '.pickle'
+    # FEATURES_DF_FILE = '../../data/data_outputs/features_' + species_name + '.pickle'
 
     if not os.path.exists(SPECIES_PARSER_FILE) or overrideSpeciesParserFile:
-        #genbank_file = '../../data/data_inputs/GenBank/' + species_name + '.gb'
+        # genbank_file = '../../data/data_inputs/GenBank/' + species_name + '.gb'
         genbank_file = './BioinformaticsLab/data/data_inputs/GenBank/' + species_name + '.gb'
         print(genbank_file)
         #assert (os.path.exists(genbank_file))  # making sure that the path is valid
@@ -68,26 +69,19 @@ def features_on_each_gene(fileName):
         species_df.to_pickle(FEATURES_DF_FILE)
     else:
         species_df = pd.read_pickle(FEATURES_DF_FILE)
+    return species_df
 
 
+def create_multi_species_df(filenames: list):
+    dfs = []
+    for filename in filenames:
+        current_df = create_single_species_df(filename)
+        dfs.append(current_df)
+
+    multi_species_df = pd.concat(dfs)
+    return multi_species_df
+
+#
 # if __name__ == '__main__':
-#     # PARSE
-#     if not os.path.exists(SPECIES_PARSER_FILE) or overrideSpeciesParserFile:
-#         genbank_file = '../../data/data_inputs/GenBank/' + species_name + '.gb'
-#         assert (os.path.exists(genbank_file))  # making sure that the path is valid
-#         record_gb = genbank_parser.read_genbank_file(genbank_file)
-#         spp = genbank_parser.init_species(record_gb)
-#         with open(SPECIES_PARSER_FILE, 'wb') as pickle_file:
-#             pickle.dump(spp, file=pickle_file)
-#     else:
-#         with open(SPECIES_PARSER_FILE, 'rb') as pickle_file:
-#             spp = pickle.load(file=pickle_file)
-#
-#     # compute features file
-#     if not os.path.exists(FEATURES_DF_FILE) or overrideFeaturesFile:
-#         species_df = create_species_df(spp)
-#         species_df.to_pickle(FEATURES_DF_FILE)
-#     else:
-#         species_df = pd.read_pickle(FEATURES_DF_FILE)
-#
-# print('all done :)')
+#     # create_single_species_df('BS168')
+#     multi_species_df = create_multi_species_df(['BS168', 'BS168'])
