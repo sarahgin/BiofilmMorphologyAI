@@ -4,7 +4,7 @@ import pandas as pd
 from numpy import int64, float64
 
 from BioinformaticsLab.ComputationalBiology.data_analysis import all_features_calculator as fc
-from BioinformaticsLab.ComputationalBiology.data_analysis.main_parser_features_calc import features_on_each_gene
+from BioinformaticsLab.ComputationalBiology.data_analysis.main_parser_features_calc import create_single_species_df
 from BioinformaticsLab.ComputationalBiology.file_utils.genbank_parser import read_genbank_file
 from BioinformaticsLab.ComputationalBiology.data_analysis.gene_features_calculator import compute_gc_content
 import boto3
@@ -133,7 +133,7 @@ def feature():
         fileName = os.path.splitext(file)[0]
         path_to_pickle_files[file] = './BioinformaticsLab/data/data_outputs/features_' + fileName + '.pickle'
         if len(check_existing_files(file)) != 2:
-            features_on_each_gene(fileName)
+            create_single_species_df(fileName)
         for fileName in path_to_pickle_files:
             data_frame_file = pd.read_pickle(path_to_pickle_files[fileName])
             full_data_features = dict()
@@ -224,7 +224,7 @@ def numeric_feature_to_hist():
         path_to_pickle_files = './BioinformaticsLab/data/data_outputs/features_' + file_name[:-3] + '.pickle'
         fileName = os.path.splitext(file_name)[0]
         if len(check_existing_files(fileName)) != 2:
-            features_on_each_gene(fileName)
+            create_single_species_df(fileName)
         data_frame_file = pd.read_pickle(path_to_pickle_files)
         for feature_to_compute in arr_match_feature_server:
             if feature_to_compute in numeric_feature_list:
