@@ -99,12 +99,12 @@ title_features_description = {
 
 
 genome_feature_list = ['GC_CONTENT', 'DNA_LENGTH']
-gene_feature_list = ['GC_CONTENT', 'DNA_LENGTH', 'PRODUCT_DESCRIPTION']
+gene_feature_list = ['GC_CONTENT', 'DNA_LENGTH']
 general_feature_list = ['GENE_ID', 'GENE_NAME', 'TYPE', 'PRODUCT_TYPE', 'STRAND', 'PRODUCT_DESCRIPTION']
 #               TODO: after formating the code of the new featuers use this one.
 protein_feature_list = ['HYDROPHOBIC_AA', 'HYDROPHILIC_AA', 'POLAR_AA', 'AROMATIC_AA', 'POSITIVE_AA', 'NEGATIVE_AA',
                         'NONPOLAR_AA', 'AA_LENGTH', 'H1', 'H2', 'H3', 'V', 'P1', 'P2', 'SASA', 'NCI', 'MASS', 'PKA_COOH',
-                        'PKA_NH', 'PI','PRODUCT_DESCRIPTION']
+                        'PKA_NH', 'PI']
 # protein_feature_list = ['HYDROPHOBIC_AA', 'HYDROPHILIC_AA', 'POLAR_AA', 'AROMATIC_AA', 'POSITIVE_AA', 'NEGATIVE_AA',
 #                         'NONPOLAR_AA', 'AA_LENGTH']
 numeric_feature_list =['GC_CONTENT', 'DNA_LENGTH', 'HYDROPHOBIC_AA', 'HYDROPHILIC_AA', 'POLAR_AA', 'AROMATIC_AA',
@@ -150,23 +150,30 @@ def feature():
                 record_gb = next(gen)
             genome_dict['Description'] = record_gb.description
             genome_dict['Publish date'] = record_gb.annotations['date']
+            genome_dict['DNA LENGTH'] = data_frame_file[['DNA_LENGTH']].sum().to_json().split(':')[1][:-1]
+
             count_type = dict(data_frame_file['PRODUCT_TYPE'].value_counts())
             for type in count_type:
                 genome_dict['Number of '+type] = int(count_type[type])
-            for feature_name in arr_match_feature_server:
-                if feature_name in genome_feature_list:
-                    if feature_name == 'GC_CONTENT':
-                        genome_dict[feature_name] = data_frame_file[[feature_name]].mean().to_json().split(':')[1][:-1]
-                    elif feature_name == 'DNA_LENGTH':
-                        genome_dict[feature_name] = data_frame_file[[feature_name]].sum().to_json().split(':')[1][:-1]
+            # for feature_name in arr_match_feature_server:
+            #     if feature_name in genome_feature_list:
+            #         if feature_name == 'GC_CONTENT':
+            #             genome_dict[feature_name] = data_frame_file[[feature_name]].mean().to_json().split(':')[1][:-1]
+            #         elif feature_name == 'DNA_LENGTH':
+            #             genome_dict[feature_name] = data_frame_file[[feature_name]].sum().to_json().split(':')[1][:-1]
             array_genes_features = intersection(arr_match_feature_server, gene_feature_list)
+            print("arr_match_feature_server",arr_match_feature_server)
+            print("gene_feature_list",gene_feature_list)
+            print("array_genes_features", array_genes_features)
             if len(array_genes_features) != 0:
                 array_genes_features.append('GENE_NAME')
+                array_genes_features.append('PRODUCT_DESCRIPTION')
                 object_genes = create_object_from_data_frame(data_frame_file, array_genes_features, 'Gene')
                 full_data_features['Gene'] = object_genes
             array_protein_features = intersection(arr_match_feature_server, protein_feature_list)
             if len(array_protein_features) != 0:
                 array_protein_features.append('GENE_NAME')
+                array_protein_features.append('PRODUCT_DESCRIPTION')
                 object_protein = create_object_from_data_frame(data_frame_file,array_protein_features, 'Protein')
                 full_data_features['Protein'] = object_protein
 
