@@ -40,15 +40,18 @@ overrideFeaturesFile = True
 #overridePrefixSuffixDictFile = True
 #PREFIX_SUFFIX_DF_FILE = '../../data/data_outputs/prefix_suffix_dict_' + species_name + '.pickle'
 
+PREFIX_FEATURES_FILE = './BioinformaticsLab/data/data_outputs/features_'
+# PREFIX_FEATURES_FILE = '../../data/data_outputs/features_'
 
 def create_single_species_df(filename):
     # PARSE
     # added by dor and adi for connecting the new backend
     species_name = filename
     SPECIES_PARSER_FILE = './BioinformaticsLab/data/data_outputs/species_' + species_name + '.pickle'  # TODO: ask Noa about the path
-    FEATURES_DF_FILE = './BioinformaticsLab/data/data_outputs/features_' + species_name + '.pickle'
+    FEATURES_DF_FILE = PREFIX_FEATURES_FILE + species_name + '.pickle'
+
     # SPECIES_PARSER_FILE = '../../data/data_outputs/species_' + species_name + '.pickle'
-    # FEATURES_DF_FILE = '../../data/data_outputs/features_' + species_name + '.pickle'
+    # FEATURES_DF_FILE = PREFIX_FEATURES_FILE + species_name + '.pickle'
 
     if not os.path.exists(SPECIES_PARSER_FILE) or overrideSpeciesParserFile:
         # genbank_file = '../../data/data_inputs/GenBank/' + species_name + '.gb'
@@ -79,9 +82,13 @@ def create_multi_species_df(filenames: list):
         dfs.append(current_df)
 
     multi_species_df = pd.concat(dfs)
+    current_file = PREFIX_FEATURES_FILE + '_'.join(filenames) + '.pickle'
+
+    multi_species_df.to_pickle(current_file)
     return multi_species_df
+
 
 #
 # if __name__ == '__main__':
 #     # create_single_species_df('BS168')
-#     multi_species_df = create_multi_species_df(['BS168', 'BS168'])
+#     multi_species_df = create_multi_species_df(['BS168', 'noa'])
