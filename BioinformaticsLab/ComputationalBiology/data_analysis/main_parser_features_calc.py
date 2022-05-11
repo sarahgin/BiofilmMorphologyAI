@@ -78,11 +78,11 @@ def create_single_species_df(filename):
 def create_multi_species_df(filenames: list):
     dfs = []
     for filename in filenames:
-        current_df = create_single_species_df(filename)
+        current_df = create_single_species_df(filename) #TODO: check if alreday exsist
         dfs.append(current_df)
 
     multi_species_df = pd.concat(dfs)
-    current_file = PREFIX_FEATURES_FILE + '_'.join(filenames) + '.pickle'
+    current_file = PREFIX_FEATURES_FILE + '_combined_'.join(filenames) + '.pickle'
 
     multi_species_df.to_pickle(current_file)
     return multi_species_df

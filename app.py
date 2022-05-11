@@ -5,6 +5,8 @@ from numpy import int64, float64
 
 from BioinformaticsLab.ComputationalBiology.data_analysis import all_features_calculator as fc
 from BioinformaticsLab.ComputationalBiology.data_analysis.main_parser_features_calc import create_single_species_df
+from BioinformaticsLab.ComputationalBiology.data_analysis.main_parser_features_calc import create_multi_species_df
+
 from BioinformaticsLab.ComputationalBiology.file_utils.genbank_parser import read_genbank_file
 from BioinformaticsLab.ComputationalBiology.data_analysis.gene_features_calculator import compute_gc_content
 import boto3
@@ -139,17 +141,22 @@ def feature():
         fileName = os.path.splitext(file)[0]
         path_to_pickle_files[file] = './BioinformaticsLab/data/data_outputs/features_' + fileName + '.pickle'
         if len(check_existing_files(file)) != 2:
-            create_single_species_df(fileName)
+            if "_combined_" in fileName:
+                listName = fileName.split("_combined_")
+                create_multi_species_df(listName)
+            else:
+                create_single_species_df(fileName)
         for fileName in path_to_pickle_files:
             data_frame_file = pd.read_pickle(path_to_pickle_files[fileName])
             full_data_features = dict()
             genome_dict = dict()
-            gene_bank_file ='./BioinformaticsLab/data/data_inputs/GenBank/' + fileName
-            with open(gene_bank_file, "r") as input_handle:
-                gen = SeqIO.parse(input_handle, "genbank")
-                record_gb = next(gen)
-            genome_dict['Description'] = record_gb.description
-            genome_dict['Publish date'] = record_gb.annotations['date']
+            if "_combined_" not in fileName:
+                gene_bank_file ='./BioinformaticsLab/data/data_inputs/GenBank/' + fileName
+                with open(gene_bank_file, "r") as input_handle:
+                    gen = SeqIO.parse(input_handle, "genbank")
+                    record_gb = next(gen)
+                genome_dict['Description'] = record_gb.description
+                genome_dict['Publish date'] = record_gb.annotations['date']
             genome_dict['DNA LENGTH'] = data_frame_file[['DNA_LENGTH']].sum().to_json().split(':')[1][:-1]
 
             count_type = dict(data_frame_file['PRODUCT_TYPE'].value_counts())
@@ -237,7 +244,11 @@ def numeric_feature_to_hist():
         path_to_pickle_files = './BioinformaticsLab/data/data_outputs/features_' + file_name[:-3] + '.pickle'
         fileName = os.path.splitext(file_name)[0]
         if len(check_existing_files(fileName)) != 2:
-            create_single_species_df(fileName)
+            if "_combined_" in fileName:
+                listName = fileName.split("_combined_")
+                create_multi_species_df(listName)
+            else:
+                create_single_species_df(fileName)
         data_frame_file = pd.read_pickle(path_to_pickle_files)
         for feature_to_compute in arr_match_feature_server:
             if feature_to_compute in numeric_feature_list:
