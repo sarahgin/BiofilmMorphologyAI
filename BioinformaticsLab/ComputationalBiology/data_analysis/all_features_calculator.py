@@ -87,19 +87,19 @@ protein_features_map = {
     ProteinFeatures.NEGATIVE_AA: compute_negative_aa,
     ProteinFeatures.NONPOLAR_AA: compute_nonpolar_aa,
     ProteinFeatures.AA_LENGTH: compute_protein_length,
-    #chemical properties
-    ProteinFeatures.H1: compute_H1,
-    ProteinFeatures.H2: compute_H2,
-    ProteinFeatures.H3: compute_H3,
-    ProteinFeatures.V: compute_V,
-    ProteinFeatures.P1: compute_P1,
-    ProteinFeatures.P2: compute_P2,
-    ProteinFeatures.SASA: compute_SASA,
-    ProteinFeatures.NCI: compute_NCI,
-    ProteinFeatures.MASS: compute_MASS,
-    ProteinFeatures.PKA_COOH: compute_PKA_COOH,
-    ProteinFeatures.PKA_NH: compute_PKA_NH,
-    ProteinFeatures.PI: compute_PI
+    # Chemical properties:
+    # ProteinFeatures.H1: compute_H1,
+    # ProteinFeatures.H2: compute_H2,
+    # ProteinFeatures.H3: compute_H3,
+    # ProteinFeatures.V: compute_V,
+    # ProteinFeatures.P1: compute_P1,
+    # ProteinFeatures.P2: compute_P2,
+    # ProteinFeatures.SASA: compute_SASA,
+    # ProteinFeatures.NCI: compute_NCI,
+    # ProteinFeatures.MASS: compute_MASS,
+    # ProteinFeatures.PKA_COOH: compute_PKA_COOH,
+    # ProteinFeatures.PKA_NH: compute_PKA_NH,
+    # ProteinFeatures.PI: compute_PI
 }
 
 kmer_features_map = {
