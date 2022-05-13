@@ -21,6 +21,7 @@
   <component name="ChangeListManager">
     <list default="true" id="7f121c2e-b9d0-4051-a5f9-b580a50d173f" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gitignore.txt" beforeDir="false" afterPath="$PROJECT_DIR$/gitignore.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

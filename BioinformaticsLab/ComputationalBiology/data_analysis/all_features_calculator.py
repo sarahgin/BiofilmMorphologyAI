@@ -43,19 +43,20 @@ class ProteinFeatures(Enum):
     NONPOLAR_AA = 7
     AA_LENGTH = 8
     # chemical features
-    H1 = 9
-    H2 = 10
-    H3 = 11
-    V = 12
-    P1 = 13
-    P2 = 14
-    SASA = 15
-    NCI = 16
-    MASS = 17
+    # H1 = 9
+    # H2 = 10
+    # H3 = 11
+    # V = 12
+    # P1 = 13
+    # P2 = 14
+    # SASA = 15
+    # NCI = 16
+    # MASS = 17
     #pH-related
-    PKA_COOH = 18
-    PKA_NH = 19,
-    PI = 20
+    # PKA_COOH = 18
+    # PKA_NH = 19,
+    # PI = 20
+
 
 class KmerFeatures(Enum):
     PREFIX_SUFFIX_DICT = 1
