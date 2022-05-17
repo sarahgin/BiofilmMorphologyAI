@@ -72,6 +72,9 @@ def create_single_species_df(filename):
         species_df.to_pickle(FEATURES_DF_FILE)
     else:
         species_df = pd.read_pickle(FEATURES_DF_FILE)
+
+    # convert numerical columns to have 2 significant digits
+    species_df = species_df.round(2)
     return species_df
 
 
@@ -90,5 +93,5 @@ def create_multi_species_df(filenames: list):
 
 #
 # if __name__ == '__main__':
-#     # create_single_species_df('BS168')
+#     create_single_species_df('BS168')
 #     multi_species_df = create_multi_species_df(['BS168', 'noa'])
