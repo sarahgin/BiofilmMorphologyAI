@@ -69,6 +69,7 @@ def create_single_species_df(filename):
     # compute features file
     if not os.path.exists(FEATURES_DF_FILE) or overrideFeaturesFile:
         species_df = create_species_df(spp)
+        species_df = species_df.round(2)
         species_df.to_pickle(FEATURES_DF_FILE)
     else:
         species_df = pd.read_pickle(FEATURES_DF_FILE)

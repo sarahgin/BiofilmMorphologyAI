@@ -102,7 +102,7 @@ title_features_description = {
 
 genome_feature_list = ['GC_CONTENT', 'DNA_LENGTH']
 gene_feature_list = ['GC_CONTENT', 'DNA_LENGTH']
-general_feature_list = ['GENE_ID', 'GENE_NAME', 'TYPE', 'PRODUCT_TYPE', 'STRAND', 'PRODUCT_DESCRIPTION']
+general_feature_list = [ 'GENE_NAME', 'TYPE', 'PRODUCT_TYPE', 'STRAND', 'PRODUCT_DESCRIPTION']
 #               TODO: after formating the code of the new featuers use this one.
 protein_feature_list = ['HYDROPHOBIC_AA', 'HYDROPHILIC_AA', 'POLAR_AA', 'AROMATIC_AA', 'POSITIVE_AA', 'NEGATIVE_AA',
                         'NONPOLAR_AA', 'AA_LENGTH', 'H1', 'H2', 'H3', 'V', 'P1', 'P2', 'SASA', 'NCI', 'MASS', 'PKA_COOH',
@@ -158,7 +158,6 @@ def feature():
                 genome_dict['Description'] = record_gb.description
                 genome_dict['Publish date'] = record_gb.annotations['date']
             genome_dict['DNA LENGTH'] = data_frame_file[['DNA_LENGTH']].sum().to_json().split(':')[1][:-1]
-
             count_type = dict(data_frame_file['PRODUCT_TYPE'].value_counts())
             for type in count_type:
                 genome_dict['Number of '+type] = int(count_type[type])
@@ -169,9 +168,6 @@ def feature():
             #         elif feature_name == 'DNA_LENGTH':
             #             genome_dict[feature_name] = data_frame_file[[feature_name]].sum().to_json().split(':')[1][:-1]
             array_genes_features = intersection(arr_match_feature_server, gene_feature_list)
-            print("arr_match_feature_server",arr_match_feature_server)
-            print("gene_feature_list",gene_feature_list)
-            print("array_genes_features", array_genes_features)
             if len(array_genes_features) != 0:
                 array_genes_features.append('GENE_NAME')
                 array_genes_features.append('PRODUCT_DESCRIPTION')
@@ -188,6 +184,8 @@ def feature():
             if len(array_general_features) != 0:
                 if 'GENE_NAME' not in array_general_features:
                     array_general_features.append('GENE_NAME')
+                if 'PRODUCT_DESCRIPTION' not in array_general_features:
+                    array_general_features.append('PRODUCT_DESCRIPTION')
                 object_general = create_object_from_data_frame(data_frame_file, array_general_features, 'General')
                 full_data_features['General'] = object_general
             full_data_features['Genome'] = genome_dict
@@ -243,6 +241,7 @@ def numeric_feature_to_hist():
         numeric_of_files = {}
         path_to_pickle_files = './BioinformaticsLab/data/data_outputs/features_' + file_name[:-3] + '.pickle'
         fileName = os.path.splitext(file_name)[0]
+        print(fileName)
         if len(check_existing_files(fileName)) != 2:
             if "_combined_" in fileName:
                 listName = fileName.split("_combined_")
@@ -340,6 +339,7 @@ def check_existing_files(filename):
             list_of_present.append(name)
             if counterOfPickeleFiles == 2:
                 break
+    print("list_of_present",list_of_present)
     return list_of_present
 
 
@@ -365,11 +365,6 @@ def download_gb_file_by_id(acc_id_dict):
     else:
         return faild_list_acc, status_to_client("")
 
-
-@app.route('/api/chart_data')
-def get_chart_data():
-    array = list(map(lambda x: {'x': x, 'y': randrange(20)}, range(10)))
-    return jsonify(array)
 
 
 def status_to_client(status):
@@ -451,3 +446,23 @@ def get_number_of_null_gene_name():
     return to_return
 
 
+@app.route('/api/statisticFeatureHist', methods=['GET'])
+def statistic_feature_hist():
+    file_list_names = request.args.getlist('fileList[]')
+    feature_list_by_user = request.args.getlist('featureList[]')
+    arr_match_feature_server = match_client_feature_to_df(feature_list_by_user)
+    to_return = {}
+    for file_name in file_list_names:
+        all_statistic_per_file = []
+        path_to_pickle_files = './BioinformaticsLab/data/data_outputs/features_' + file_name[:-3] + '.pickle'
+        data_frame_file = pd.read_pickle(path_to_pickle_files)
+        for feature_to_compute in arr_match_feature_server:
+            if feature_to_compute in numeric_feature_list:
+                numeric_of_files={}
+                numeric_of_files["name"]=feature_to_compute
+                numeric_of_files['mean'] =data_frame_file[feature_to_compute].mean().round(2)
+                numeric_of_files['std'] =data_frame_file[feature_to_compute].std().round(2)
+                all_statistic_per_file.append(numeric_of_files)
+        to_return[file_name]=all_statistic_per_file
+
+    return to_return
