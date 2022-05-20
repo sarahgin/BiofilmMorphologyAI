@@ -17,6 +17,7 @@ from Bio import Entrez, SeqIO
 
 
 app = Flask(__name__)
+app.config['JSON_SORT_KEYS'] = False
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 # absoulte path for dir
@@ -70,6 +71,7 @@ features_description = {
     'PRODUCT TYPE': 'PRODUCT_TYPE',
     'STRAND': 'Positive/Negative',
     'PRODUCT DESCRIPTION': 'PRODUCT_DESCRIPTION',
+    'IS PSEUDO': 'IS PSEUDO',
     'HYDROPHOBIC AA': '% of hydrophobic amino acids',
     'HYDROPHILIC AA': '% of hydrophilic amino acids',
     'POLAR AA': '% of polar amino acids',
@@ -113,11 +115,17 @@ numeric_feature_list =['GC_CONTENT', 'DNA_LENGTH', 'HYDROPHOBIC_AA', 'HYDROPHILI
                        'POSITIVE_AA', 'NEGATIVE_AA', 'NONPOLAR_AA', 'AA_LENGTH', 'H1', 'H2', 'H3', 'V', 'P1', 'P2',
                        'SASA', 'NCI', 'MASS', 'PKA_COOH', 'PKA_NH', 'PI']
 
-numeric_feature_title_x_y ={'GC_CONTENT':{"x":"x", "y":"y"}, 'DNA_LENGTH':{"x":"x", "y":"y"}, 'HYDROPHOBIC_AA':{"x":"x", "y":"y"}, 'HYDROPHILIC_AA':{"x":"x", "y":"y"},
-                            'POLAR_AA':{"x":"x", "y":"y"}, 'AROMATIC_AA':{"x":"x", "y":"y"},
-                       'POSITIVE_AA':{"x":"x", "y":"y"}, 'NEGATIVE_AA':{"x":"x", "y":"y"}, 'NONPOLAR_AA':{"x":"x", "y":"y"},
-                            'AA_LENGTH':{"x":"x", "y":"y"}, 'H1':{"x":"x", "y":"y"}, 'H2':{"x":"x", "y":"y"}, 'H3':{"x":"x", "y":"y"}, 'V':{"x":"x", "y":"y"}, 'P1':{"x":"x", "y":"y"}, 'P2':{"x":"x", "y":"y"},
-                       'SASA':{"x":"x", "y":"y"}, 'NCI':{"x":"x", "y":"y"}, 'MASS':{"x":"x", "y":"y"}, 'PKA_COOH':{"x":"x", "y":"y"}, 'PKA_NH':{"x":"x", "y":"y"}, 'PI':{"x":"x", "y":"y"}}
+# numeric_feature_title_x_y ={'GC_CONTENT':{"x":"x", "y":"y"}, 'DNA_LENGTH':{"x":"x", "y":"y"}, 'HYDROPHOBIC_AA':{"x":"x", "y":"y"}, 'HYDROPHILIC_AA':{"x":"x", "y":"y"},
+#                             'POLAR_AA':{"x":"x", "y":"y"}, 'AROMATIC_AA':{"x":"x", "y":"y"},
+#                        'POSITIVE_AA':{"x":"x", "y":"y"}, 'NEGATIVE_AA':{"x":"x", "y":"y"}, 'NONPOLAR_AA':{"x":"x", "y":"y"},
+#                             'AA_LENGTH':{"x":"x", "y":"y"}, 'H1':{"x":"x", "y":"y"}, 'H2':{"x":"x", "y":"y"}, 'H3':{"x":"x", "y":"y"}, 'V':{"x":"x", "y":"y"}, 'P1':{"x":"x", "y":"y"}, 'P2':{"x":"x", "y":"y"},
+#                        'SASA':{"x":"x", "y":"y"}, 'NCI':{"x":"x", "y":"y"}, 'MASS':{"x":"x", "y":"y"}, 'PKA_COOH':{"x":"x", "y":"y"}, 'PKA_NH':{"x":"x", "y":"y"}, 'PI':{"x":"x", "y":"y"}}
+numeric_feature_title_x_y ={'GC_CONTENT':{"x":"Feature value", "y":"Count"}, 'DNA_LENGTH':{"x":"Feature value", "y":"Count"}, 'HYDROPHOBIC_AA':{"x":"Feature value", "y":"Count"}, 'HYDROPHILIC_AA':{"x":"Feature value", "y":"Count"},
+'POLAR_AA':{"x":"Feature value", "y":"Count"}, 'AROMATIC_AA':{"x":"Feature value", "y":"Count"},
+'POSITIVE_AA':{"x":"Feature value", "y":"Count"}, 'NEGATIVE_AA':{"x":"Feature value", "y":"Count"}, 'NONPOLAR_AA':{"x":"Feature value", "y":"Count"},
+'AA_LENGTH':{"x":"Feature value", "y":"Count"}, 'H1':{"x":"Feature value", "y":"Count"}, 'H2':{"x":"Feature value", "y":"Count"}, 'H3':{"x":"Feature value", "y":"Count"}, 'V':{"x":"Feature value", "y":"Count"}, 'P1':{"x":"Feature value", "y":"Count"}, 'P2':{"x":"Feature value", "y":"Count"},
+'SASA':{"x":"Feature value", "y":"Count"}, 'NCI':{"x":"Feature value", "y":"Count"}, 'MASS':{"x":"Feature value", "y":"Count"}, 'PKA_COOH':{"x":"Feature value", "y":"Count"}, 'PKA_NH':{"x":"Feature value", "y":"Count"}, 'PI':{"x":"Feature value", "y":"Count"}}
+
 
 def match_client_feature_to_df(feature_list_by_user):
     feature_list_by_user_match_server = list()
@@ -193,9 +201,6 @@ def feature():
     return to_return
 
 
-
-
-
 def intersection(lst1, lst2):
     lst3 = [value for value in lst1 if value in lst2]
     return lst3
@@ -230,6 +235,7 @@ def gcContent():
 
     return json.dumps(gc_content)
 
+
 # need to be check with postman
 @app.route('/api/featuresHist', methods=['GET'])
 def numeric_feature_to_hist():
@@ -241,7 +247,6 @@ def numeric_feature_to_hist():
         numeric_of_files = {}
         path_to_pickle_files = './BioinformaticsLab/data/data_outputs/features_' + file_name[:-3] + '.pickle'
         fileName = os.path.splitext(file_name)[0]
-        print(fileName)
         if len(check_existing_files(fileName)) != 2:
             if "_combined_" in fileName:
                 listName = fileName.split("_combined_")
@@ -258,6 +263,7 @@ def numeric_feature_to_hist():
         to_return[file_name] = numeric_of_files
 
     return to_return
+
 
 # download file from s3 server and save it to data_inputs
 @app.route('/api/uploadBucketFile', methods=['POST'])
@@ -339,7 +345,7 @@ def check_existing_files(filename):
             list_of_present.append(name)
             if counterOfPickeleFiles == 2:
                 break
-    print("list_of_present",list_of_present)
+    #print("list_of_present",list_of_present)
     return list_of_present
 
 
@@ -364,7 +370,6 @@ def download_gb_file_by_id(acc_id_dict):
         return [], status_to_client("Uploaded")
     else:
         return faild_list_acc, status_to_client("")
-
 
 
 def status_to_client(status):
@@ -397,7 +402,8 @@ def get_features_list():
     dict_to_return['Gene_Features'] = []
     dict_to_return['Protein_Features'] = []
     for feature in [*fc.general_features_map]:
-        dict_to_return['General_Features'].append(str(feature).partition(".")[-1].replace("_", " "))
+        if str(feature).partition(".")[-1] != "GENE_ID":
+            dict_to_return['General_Features'].append(str(feature).partition(".")[-1].replace("_", " "))
     for feature in [*fc.gene_features_map]:
         dict_to_return['Gene_Features'].append(str(feature).partition(".")[-1].replace("_", " "))
     for feature in [*fc.protein_features_map]:
@@ -406,13 +412,16 @@ def get_features_list():
     return jsonify(dict_to_return)
 
 
+
 @app.route('/api/getNumericFeatureTitleXY', methods=['GET'])
 def get_numeric_feature_title_x_y():
     return jsonify(numeric_feature_title_x_y)
 
+
 @app.route('/api/getFeaturesDescription', methods=['GET'])
 def get_features_description():
     return jsonify(features_description)
+
 
 @app.route('/api/getTitleFeaturesDescription', methods=['GET'])
 def get_title_features_description():
