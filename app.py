@@ -165,6 +165,8 @@ def feature():
                     record_gb = next(gen)
                 genome_dict['Description'] = record_gb.description
                 genome_dict['Publish date'] = record_gb.annotations['date']
+                genome_dict['Accession number'] = record_gb.annotations['accessions'][0]
+
             genome_dict['DNA LENGTH'] = data_frame_file[['DNA_LENGTH']].sum().to_json().split(':')[1][:-1]
             count_type = dict(data_frame_file['PRODUCT_TYPE'].value_counts())
             for type in count_type:
