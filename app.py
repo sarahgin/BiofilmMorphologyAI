@@ -67,11 +67,11 @@ features_description = {
     'DNA LENGTH': 'Number of nucleotides',
     'GENE NAME': 'Gene name',
     'GENE ID': 'Gene ID',
-    'TYPE': 'TYPE',
-    'PRODUCT TYPE': 'PRODUCT_TYPE',
-    'STRAND': 'Positive/Negative',
-    'PRODUCT DESCRIPTION': 'PRODUCT_DESCRIPTION',
-    'IS PSEUDO': 'IS PSEUDO',
+    'TYPE': 'Type of genomic region (e.g., gene)',
+    'PRODUCT TYPE': 'Type of gene product (e.g., CDS for coding genes, tRNA, rRNA, regulatory etc.)',
+    'STRAND': 'Gene strand, either positive (+1) or negative (-1)',
+    'PRODUCT DESCRIPTION': 'Description of the gene product\function',
+    'IS PSEUDO': 'Specifies whether the gene is pseudogene',
     'HYDROPHOBIC AA': '% of hydrophobic amino acids',
     'HYDROPHILIC AA': '% of hydrophilic amino acids',
     'POLAR AA': '% of polar amino acids',
@@ -439,7 +439,13 @@ def get_number_of_null_gene_name():
     for name in file_name:
         path_to_pickle_file = './BioinformaticsLab/data/data_outputs/features_' + name[:-3] + '.pickle'
         if not os.path.exists(path_to_pickle_file):
-            features_on_each_gene(name[:-3])
+            #TODO: FIMD OUT WITH ADI WHY WE DIDNT FIX IT BEFORE
+            if "_combined_" in file_name:
+                listName = file_name.split("_combined_")
+                create_multi_species_df(listName)
+            else:
+                create_single_species_df(file_name)
+            #features_on_each_gene(name[:-3])
         data_frame_file = pd.read_pickle(path_to_pickle_file)
         df_new = data_frame_file[['GENE_NAME', 'PRODUCT_TYPE']]
         counter_list = {}
@@ -453,8 +459,54 @@ def get_number_of_null_gene_name():
                     else:
                            counter_list[row['PRODUCT_TYPE']] = 1
         to_return[name] = counter_list
-
     return to_return
+
+
+# @app.route('/api/productTypeNames', methods=['GET'])
+# def get_name_of_product_type():
+#     file_name = request.args.getlist('fileList[]')
+#     to_return = {}
+#     for name in file_name:
+#         path_to_pickle_file = './BioinformaticsLab/data/data_outputs/features_' + name[:-3] + '.pickle'
+#         if not os.path.exists(path_to_pickle_file):
+#             #TODO: FIMD OUT WITH ADI WHY WE DIDNT FIX IT BEFORE
+#             if "_combined_" in file_name:
+#                 listName = file_name.split("_combined_")
+#                 create_multi_species_df(listName)
+#             else:
+#                 create_single_species_df(file_name)
+#             #features_on_each_gene(name[:-3])
+#         data_frame_file = pd.read_pickle(path_to_pickle_file)
+#         df_new = data_frame_file[['GENE_NAME', 'PRODUCT_TYPE']]
+#         unique_names = df_new['PRODUCT_TYPE'].unique()
+#         unique_names = list(filter(None, unique_names))
+#         to_return[name] = unique_names
+#     return to_return
+
+@app.route('/api/productTypeNames', methods=['GET'])
+def get_name_of_product_type():
+    file_name = request.args.getlist('fileList[]')
+    to_return = {}
+    for name in file_name:
+        path_to_pickle_file = './BioinformaticsLab/data/data_outputs/features_' + name[:-3] + '.pickle'
+        if not os.path.exists(path_to_pickle_file):
+            #TODO: FIMD OUT WITH ADI WHY WE DIDNT FIX IT BEFORE
+            if "_combined_" in file_name:
+                listName = file_name.split("_combined_")
+                create_multi_species_df(listName)
+            else:
+                create_single_species_df(file_name)
+            #features_on_each_gene(name[:-3])
+        data_frame_file = pd.read_pickle(path_to_pickle_file)
+        df_new = data_frame_file[['GENE_NAME', 'PRODUCT_TYPE']]
+        unique_names = df_new['PRODUCT_TYPE'].unique()
+        unique_names = list(filter(None, unique_names))
+        obj_to_return ={}
+        for product_type in unique_names:
+            obj_to_return[product_type] = product_type
+        to_return[name] = obj_to_return
+    return to_return
+
 
 
 @app.route('/api/statisticFeatureHist', methods=['GET'])
