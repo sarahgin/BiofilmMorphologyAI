@@ -7,12 +7,11 @@ from BioinformaticsLab.ComputationalBiology.data_analysis import all_features_ca
 from BioinformaticsLab.ComputationalBiology.data_analysis.main_parser_features_calc import create_single_species_df
 from BioinformaticsLab.ComputationalBiology.data_analysis.main_parser_features_calc import create_multi_species_df
 
-from BioinformaticsLab.ComputationalBiology.file_utils.genbank_parser import read_genbank_file
-from BioinformaticsLab.ComputationalBiology.data_analysis.gene_features_calculator import compute_gc_content
+
 import boto3
 from flask import Flask, send_from_directory, jsonify, request, json
 from flask_cors import CORS, cross_origin
-from random import randrange
+
 from Bio import Entrez, SeqIO
 
 
@@ -30,7 +29,6 @@ s3_client = boto3.resource('s3', aws_access_key_id=ACCESS_ID, aws_secret_access_
 
 path_to_input_file = os.path.join(cwd, "BioinformaticsLab", "data", "data_inputs", "GenBank")
 path_to_pickle_files = os.path.join(cwd, "BioinformaticsLab", "data", "data_outputs")
-# path = f"{cwd}/TranscriptionalFactors/data_inputs"
 features_dict = {
     'GC CONTENT': 'GC_CONTENT',
     'DNA LENGTH': 'DNA_LENGTH',
@@ -171,12 +169,6 @@ def feature():
             count_type = dict(data_frame_file['PRODUCT_TYPE'].value_counts())
             for type in count_type:
                 genome_dict['Number of '+type] = int(count_type[type])
-            # for feature_name in arr_match_feature_server:
-            #     if feature_name in genome_feature_list:
-            #         if feature_name == 'GC_CONTENT':
-            #             genome_dict[feature_name] = data_frame_file[[feature_name]].mean().to_json().split(':')[1][:-1]
-            #         elif feature_name == 'DNA_LENGTH':
-            #             genome_dict[feature_name] = data_frame_file[[feature_name]].sum().to_json().split(':')[1][:-1]
             array_genes_features = intersection(arr_match_feature_server, gene_feature_list)
             if len(array_genes_features) != 0:
                 array_genes_features.append('GENE_NAME')
@@ -308,7 +300,6 @@ def file_input_manger():
 
 
 def get_file(file):
-    # file = request.files['file']
     filename = file.filename
     valid_file = valid(filename)
     if valid_file:
@@ -333,12 +324,10 @@ def check_existing_files(filename):
     current_pickle_files = get_current_pickle_files()
     # ---------------remove extension-------------------
     file_name_without_ex = os.path.splitext(filename)[0]
-    # current_input_files_without_ex = [os.path.splitext(name)[0] for name in current_input_files]
     get_current_pickle_files_without_ex = [os.path.splitext(name)[0] for name in current_pickle_files]
     # ---------------------------------------------------
     list_of_present = []
-    # if file_name_without_ex in current_input_files_without_ex:
-    #     list_of_present.append(file_name_without_ex)
+
     counterOfPickeleFiles = 0
     for name in get_current_pickle_files_without_ex:
 
@@ -347,7 +336,6 @@ def check_existing_files(filename):
             list_of_present.append(name)
             if counterOfPickeleFiles == 2:
                 break
-    #print("list_of_present",list_of_present)
     return list_of_present
 
 
@@ -362,7 +350,6 @@ def download_gb_file_by_id(acc_id_dict):
         try:
             with Entrez.efetch(db="nucleotide", id=acc_id, rettype="gbwithparts", retmode="text") as in_handle:
                 file_name = f"{acc_id}.gb"  # if going to changed we need to see what to do
-                # data = in_handle.read()
                 with open((os.path.join(path_to_input_file, file_name)), "w+") as out_handle:
                     out_handle.write(in_handle.read())  # was data
         except:
@@ -414,7 +401,6 @@ def get_features_list():
     return jsonify(dict_to_return)
 
 
-
 @app.route('/api/getNumericFeatureTitleXY', methods=['GET'])
 def get_numeric_feature_title_x_y():
     return jsonify(numeric_feature_title_x_y)
@@ -427,7 +413,6 @@ def get_features_description():
 
 @app.route('/api/getTitleFeaturesDescription', methods=['GET'])
 def get_title_features_description():
-    # print(title_features_description)
     return jsonify(title_features_description)
 
 
@@ -462,27 +447,6 @@ def get_number_of_null_gene_name():
     return to_return
 
 
-# @app.route('/api/productTypeNames', methods=['GET'])
-# def get_name_of_product_type():
-#     file_name = request.args.getlist('fileList[]')
-#     to_return = {}
-#     for name in file_name:
-#         path_to_pickle_file = './BioinformaticsLab/data/data_outputs/features_' + name[:-3] + '.pickle'
-#         if not os.path.exists(path_to_pickle_file):
-#             #TODO: FIMD OUT WITH ADI WHY WE DIDNT FIX IT BEFORE
-#             if "_combined_" in file_name:
-#                 listName = file_name.split("_combined_")
-#                 create_multi_species_df(listName)
-#             else:
-#                 create_single_species_df(file_name)
-#             #features_on_each_gene(name[:-3])
-#         data_frame_file = pd.read_pickle(path_to_pickle_file)
-#         df_new = data_frame_file[['GENE_NAME', 'PRODUCT_TYPE']]
-#         unique_names = df_new['PRODUCT_TYPE'].unique()
-#         unique_names = list(filter(None, unique_names))
-#         to_return[name] = unique_names
-#     return to_return
-
 @app.route('/api/productTypeNames', methods=['GET'])
 def get_name_of_product_type():
     file_name = request.args.getlist('fileList[]')
@@ -508,7 +472,6 @@ def get_name_of_product_type():
     return to_return
 
 
-
 @app.route('/api/statisticFeatureHist', methods=['GET'])
 def statistic_feature_hist():
     file_list_names = request.args.getlist('fileList[]')
@@ -522,9 +485,9 @@ def statistic_feature_hist():
         for feature_to_compute in arr_match_feature_server:
             if feature_to_compute in numeric_feature_list:
                 numeric_of_files={}
-                numeric_of_files["name"]=feature_to_compute
-                numeric_of_files['mean'] =data_frame_file[feature_to_compute].mean().round(2)
-                numeric_of_files['std'] =data_frame_file[feature_to_compute].std().round(2)
+                numeric_of_files["name"] = feature_to_compute
+                numeric_of_files['mean'] = data_frame_file[feature_to_compute].mean().round(2)
+                numeric_of_files['std'] = data_frame_file[feature_to_compute].std().round(2)
                 all_statistic_per_file.append(numeric_of_files)
         to_return[file_name]=all_statistic_per_file
 
