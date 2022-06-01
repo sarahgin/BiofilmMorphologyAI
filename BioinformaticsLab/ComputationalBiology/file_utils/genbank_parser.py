@@ -85,6 +85,9 @@ def init_all_genes(record_gb):
             # assert((f.type == 'CDS' and codon_start != -1) or (f.type != 'CDS'))
 
             description = '' if 'product' not in f.qualifiers.keys() else f.qualifiers['product']
+            if type(description) == list:
+                # convert the description field to be a string rather than a list of strings
+                description = ' '.join([str(item) for item in description])
             gp = GeneProduct(type=f.type,
                              translation=translation,
                              is_pseudo=is_pseudo,
