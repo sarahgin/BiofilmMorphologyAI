@@ -138,6 +138,7 @@ def match_client_feature_to_df(feature_list_by_user):
 def feature():
     file_list_names = request.args.getlist('fileList[]')
     feature_list_by_user = request.args.getlist('featureList[]')
+    filter_by_gene_name = request.args.getlist('geneFilter[]')
     arr_match_feature_server = match_client_feature_to_df(feature_list_by_user)
     path_to_pickle_files = {}
     to_return = dict()
@@ -154,6 +155,11 @@ def feature():
                 create_single_species_df(fileName)
         for fileName in path_to_pickle_files:
             data_frame_file = pd.read_pickle(path_to_pickle_files[fileName])
+            gene_name_list = data_frame_file['GENE_NAME'].tolist()
+            gene_name_list = [i for i in gene_name_list if i != '']
+            intersection_list_gene = intersection(gene_name_list, filter_by_gene_name)
+            if len(intersection_list_gene) != 0:
+                data_frame_file = data_frame_file[data_frame_file['GENE_NAME'].isin(intersection_list_gene)]
             full_data_features = dict()
             genome_dict = dict()
             if "_combined_" not in fileName:
@@ -235,6 +241,8 @@ def gcContent():
 def numeric_feature_to_hist():
     file_list_names = request.args.getlist('fileList[]')
     feature_list_by_user = request.args.getlist('featureList[]')
+    filter_by_gene_name = request.args.getlist('geneFilter[]')
+
     arr_match_feature_server = match_client_feature_to_df(feature_list_by_user)
     to_return = {}
     for file_name in file_list_names:
@@ -248,6 +256,11 @@ def numeric_feature_to_hist():
             else:
                 create_single_species_df(fileName)
         data_frame_file = pd.read_pickle(path_to_pickle_files)
+        gene_name_list = data_frame_file['GENE_NAME'].tolist()
+        gene_name_list = [i for i in gene_name_list if i != '']
+        intersection_list_gene = intersection(gene_name_list, filter_by_gene_name)
+        if len(intersection_list_gene) != 0:
+            data_frame_file = data_frame_file[data_frame_file['GENE_NAME'].isin(intersection_list_gene)]
         for feature_to_compute in arr_match_feature_server:
             if feature_to_compute in numeric_feature_list:
                 raw_data = list(data_frame_file[[feature_to_compute]].values)
@@ -420,6 +433,8 @@ def get_title_features_description():
 @app.route('/api/missingNames', methods=['GET'])
 def get_number_of_null_gene_name():
     file_name = request.args.getlist('fileList[]')
+    filter_by_gene_name = request.args.getlist('geneFilter[]')
+
     to_return = {}
     for name in file_name:
         path_to_pickle_file = './BioinformaticsLab/data/data_outputs/features_' + name[:-3] + '.pickle'
@@ -432,6 +447,12 @@ def get_number_of_null_gene_name():
                 create_single_species_df(file_name)
             #features_on_each_gene(name[:-3])
         data_frame_file = pd.read_pickle(path_to_pickle_file)
+        gene_name_list = data_frame_file['GENE_NAME'].tolist()
+        gene_name_list = [i for i in gene_name_list if i != '']
+        intersection_list_gene = intersection(gene_name_list, filter_by_gene_name)
+        if len(intersection_list_gene) != 0:
+            data_frame_file = data_frame_file[data_frame_file['GENE_NAME'].isin(intersection_list_gene)]
+
         df_new = data_frame_file[['GENE_NAME', 'PRODUCT_TYPE']]
         counter_list = {}
         unique_names = df_new['PRODUCT_TYPE'].unique()
@@ -450,6 +471,8 @@ def get_number_of_null_gene_name():
 @app.route('/api/productTypeNames', methods=['GET'])
 def get_name_of_product_type():
     file_name = request.args.getlist('fileList[]')
+    filter_by_gene_name = request.args.getlist('geneFilter[]')
+
     to_return = {}
     for name in file_name:
         path_to_pickle_file = './BioinformaticsLab/data/data_outputs/features_' + name[:-3] + '.pickle'
@@ -462,6 +485,11 @@ def get_name_of_product_type():
                 create_single_species_df(file_name)
             #features_on_each_gene(name[:-3])
         data_frame_file = pd.read_pickle(path_to_pickle_file)
+        gene_name_list = data_frame_file['GENE_NAME'].tolist()
+        gene_name_list = [i for i in gene_name_list if i != '']
+        intersection_list_gene = intersection(gene_name_list, filter_by_gene_name)
+        if len(intersection_list_gene) != 0:
+            data_frame_file = data_frame_file[data_frame_file['GENE_NAME'].isin(intersection_list_gene)]
         df_new = data_frame_file[['GENE_NAME', 'PRODUCT_TYPE']]
         unique_names = df_new['PRODUCT_TYPE'].unique()
         unique_names = list(filter(None, unique_names))
@@ -476,19 +504,25 @@ def get_name_of_product_type():
 def statistic_feature_hist():
     file_list_names = request.args.getlist('fileList[]')
     feature_list_by_user = request.args.getlist('featureList[]')
+    filter_by_gene_name = request.args.getlist('geneFilter[]')
+
     arr_match_feature_server = match_client_feature_to_df(feature_list_by_user)
     to_return = {}
     for file_name in file_list_names:
         all_statistic_per_file = []
         path_to_pickle_files = './BioinformaticsLab/data/data_outputs/features_' + file_name[:-3] + '.pickle'
         data_frame_file = pd.read_pickle(path_to_pickle_files)
+        gene_name_list = data_frame_file['GENE_NAME'].tolist()
+        gene_name_list = [i for i in gene_name_list if i != '']
+        intersection_list_gene = intersection(gene_name_list, filter_by_gene_name)
+        if len(intersection_list_gene) != 0:
+            data_frame_file = data_frame_file[data_frame_file['GENE_NAME'].isin(intersection_list_gene)]
         for feature_to_compute in arr_match_feature_server:
             if feature_to_compute in numeric_feature_list:
                 numeric_of_files={}
                 numeric_of_files["name"] = feature_to_compute
-                numeric_of_files['mean'] = data_frame_file[feature_to_compute].mean().round(2)
-                numeric_of_files['std'] = data_frame_file[feature_to_compute].std().round(2)
+                numeric_of_files['mean'] = data_frame_file[feature_to_compute].mean().round(2) if not np.isnan(data_frame_file[feature_to_compute].mean().round(2)) else ''
+                numeric_of_files['std'] = data_frame_file[feature_to_compute].std().round(2) if not np.isnan(data_frame_file[feature_to_compute].std().round(2)) else ''
                 all_statistic_per_file.append(numeric_of_files)
         to_return[file_name]=all_statistic_per_file
-
     return to_return
