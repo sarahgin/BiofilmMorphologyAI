@@ -21,7 +21,6 @@
   <component name="ChangeListManager">
     <list default="true" id="7f121c2e-b9d0-4051-a5f9-b580a50d173f" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -149,10 +148,10 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="691" y="322" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1646430128300">
+    <state x="691" y="322" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1654354386527">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="691" y="322" key="#com.intellij.fileTypes.FileTypeChooser/1920.0.1280.693/0.0.1920.1040@0.0.1920.1040" timestamp="1646430128300" />
+    <state x="691" y="322" key="#com.intellij.fileTypes.FileTypeChooser/1920.0.1280.693/0.0.1920.1040@0.0.1920.1040" timestamp="1654354386527" />
     <state x="371" y="88" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1652272542383">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
