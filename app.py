@@ -139,6 +139,8 @@ def feature():
     file_list_names = request.args.getlist('fileList[]')
     feature_list_by_user = request.args.getlist('featureList[]')
     filter_by_gene_name = request.args.getlist('geneFilter[]')
+    filter_by_product_description = request.args.getlist('productDescription[]')
+    filter_by_excluded_product_description = request.args.getlist('excludedProductDescription[]')
     arr_match_feature_server = match_client_feature_to_df(feature_list_by_user)
     path_to_pickle_files = {}
     to_return = dict()
@@ -160,6 +162,12 @@ def feature():
             intersection_list_gene = intersection(gene_name_list, filter_by_gene_name)
             if len(intersection_list_gene) != 0:
                 data_frame_file = data_frame_file[data_frame_file['GENE_NAME'].isin(intersection_list_gene)]
+            pattern = '|'.join([w.strip() for w in filter_by_product_description])
+            data_frame_file = data_frame_file[data_frame_file['PRODUCT_DESCRIPTION'].str.contains(pattern, case=False, na=False)]
+            if len(filter_by_excluded_product_description) != 0 and filter_by_excluded_product_description[0] != '':
+                pattern_excluded = '|'.join([w.strip() for w in filter_by_excluded_product_description])
+                data_frame_file = data_frame_file[~data_frame_file['PRODUCT_DESCRIPTION'].str.contains(pattern_excluded, case=False, na=False)]
+
             full_data_features = dict()
             genome_dict = dict()
             if "_combined_" not in fileName:
@@ -242,6 +250,8 @@ def numeric_feature_to_hist():
     file_list_names = request.args.getlist('fileList[]')
     feature_list_by_user = request.args.getlist('featureList[]')
     filter_by_gene_name = request.args.getlist('geneFilter[]')
+    filter_by_product_description = request.args.getlist('productDescription[]')
+    filter_by_excluded_product_description = request.args.getlist('excludedProductDescription[]')
 
     arr_match_feature_server = match_client_feature_to_df(feature_list_by_user)
     to_return = {}
@@ -261,6 +271,12 @@ def numeric_feature_to_hist():
         intersection_list_gene = intersection(gene_name_list, filter_by_gene_name)
         if len(intersection_list_gene) != 0:
             data_frame_file = data_frame_file[data_frame_file['GENE_NAME'].isin(intersection_list_gene)]
+        pattern = '|'.join([w.strip() for w in filter_by_product_description])
+        data_frame_file = data_frame_file[data_frame_file['PRODUCT_DESCRIPTION'].str.contains(pattern, case=False, na=False)]
+        if len(filter_by_excluded_product_description) != 0 and filter_by_excluded_product_description[0] != '':
+            pattern_excluded = '|'.join([w.strip() for w in filter_by_excluded_product_description])
+            data_frame_file = data_frame_file[
+                ~data_frame_file['PRODUCT_DESCRIPTION'].str.contains(pattern_excluded, case=False, na=False)]
         for feature_to_compute in arr_match_feature_server:
             if feature_to_compute in numeric_feature_list:
                 raw_data = list(data_frame_file[[feature_to_compute]].values)
@@ -434,6 +450,8 @@ def get_title_features_description():
 def get_number_of_null_gene_name():
     file_name = request.args.getlist('fileList[]')
     filter_by_gene_name = request.args.getlist('geneFilter[]')
+    filter_by_product_description = request.args.getlist('productDescription[]')
+    filter_by_excluded_product_description = request.args.getlist('excludedProductDescription[]')
 
     to_return = {}
     for name in file_name:
@@ -452,7 +470,12 @@ def get_number_of_null_gene_name():
         intersection_list_gene = intersection(gene_name_list, filter_by_gene_name)
         if len(intersection_list_gene) != 0:
             data_frame_file = data_frame_file[data_frame_file['GENE_NAME'].isin(intersection_list_gene)]
-
+        pattern = '|'.join([w.strip() for w in filter_by_product_description])
+        data_frame_file = data_frame_file[data_frame_file['PRODUCT_DESCRIPTION'].str.contains(pattern, case=False, na=False)]
+        if len(filter_by_excluded_product_description) != 0 and filter_by_excluded_product_description[0] != '':
+            pattern_excluded = '|'.join([w.strip() for w in filter_by_excluded_product_description])
+            data_frame_file = data_frame_file[
+                ~data_frame_file['PRODUCT_DESCRIPTION'].str.contains(pattern_excluded, case=False, na=False)]
         df_new = data_frame_file[['GENE_NAME', 'PRODUCT_TYPE']]
         counter_list = {}
         unique_names = df_new['PRODUCT_TYPE'].unique()
@@ -472,6 +495,8 @@ def get_number_of_null_gene_name():
 def get_name_of_product_type():
     file_name = request.args.getlist('fileList[]')
     filter_by_gene_name = request.args.getlist('geneFilter[]')
+    filter_by_product_description = request.args.getlist('productDescription[]')
+    filter_by_excluded_product_description = request.args.getlist('excludedProductDescription[]')
 
     to_return = {}
     for name in file_name:
@@ -490,6 +515,12 @@ def get_name_of_product_type():
         intersection_list_gene = intersection(gene_name_list, filter_by_gene_name)
         if len(intersection_list_gene) != 0:
             data_frame_file = data_frame_file[data_frame_file['GENE_NAME'].isin(intersection_list_gene)]
+        pattern = '|'.join([w.strip() for w in filter_by_product_description])
+        data_frame_file = data_frame_file[data_frame_file['PRODUCT_DESCRIPTION'].str.contains(pattern, case=False, na=False)]
+        if len(filter_by_excluded_product_description) != 0 and filter_by_excluded_product_description[0] != '':
+            pattern_excluded = '|'.join([w.strip() for w in filter_by_excluded_product_description])
+            data_frame_file = data_frame_file[
+                ~data_frame_file['PRODUCT_DESCRIPTION'].str.contains(pattern_excluded, case=False, na=False)]
         df_new = data_frame_file[['GENE_NAME', 'PRODUCT_TYPE']]
         unique_names = df_new['PRODUCT_TYPE'].unique()
         unique_names = list(filter(None, unique_names))
@@ -505,6 +536,8 @@ def statistic_feature_hist():
     file_list_names = request.args.getlist('fileList[]')
     feature_list_by_user = request.args.getlist('featureList[]')
     filter_by_gene_name = request.args.getlist('geneFilter[]')
+    filter_by_product_description = request.args.getlist('productDescription[]')
+    filter_by_excluded_product_description = request.args.getlist('excludedProductDescription[]')
 
     arr_match_feature_server = match_client_feature_to_df(feature_list_by_user)
     to_return = {}
@@ -517,6 +550,11 @@ def statistic_feature_hist():
         intersection_list_gene = intersection(gene_name_list, filter_by_gene_name)
         if len(intersection_list_gene) != 0:
             data_frame_file = data_frame_file[data_frame_file['GENE_NAME'].isin(intersection_list_gene)]
+        pattern = '|'.join([w.strip() for w in filter_by_product_description])
+        data_frame_file = data_frame_file[data_frame_file['PRODUCT_DESCRIPTION'].str.contains(pattern, case=False, na=False)]
+        if len(filter_by_excluded_product_description) != 0 and filter_by_excluded_product_description[0] != '':
+            pattern_excluded = '|'.join([w.strip() for w in filter_by_excluded_product_description])
+            data_frame_file = data_frame_file[~data_frame_file['PRODUCT_DESCRIPTION'].str.contains(pattern_excluded, case=False, na=False)]
         for feature_to_compute in arr_match_feature_server:
             if feature_to_compute in numeric_feature_list:
                 numeric_of_files={}
