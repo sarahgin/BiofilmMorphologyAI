@@ -20,7 +20,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7f121c2e-b9d0-4051-a5f9-b580a50d173f" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -181,10 +180,10 @@
     </state>
     <state width="1237" height="224" key="GridCell.Tab.0.right/0.0.1280.680@0.0.1280.680" timestamp="1649561672284" />
     <state width="1877" height="480" key="GridCell.Tab.0.right/1920.0.1280.693/0.0.1920.1040@0.0.1920.1040" timestamp="1648053285123" />
-    <state x="214" y="0" width="881" height="1040" key="find.popup" timestamp="1653305529430">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state x="212" y="-11" width="587" height="680" key="find.popup" timestamp="1654715572356">
+      <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state x="0" y="0" width="587" height="680" key="find.popup/0.0.1280.680@0.0.1280.680" timestamp="1648441090617" />
+    <state x="212" y="-11" width="587" height="680" key="find.popup/0.0.1280.680@0.0.1280.680" timestamp="1654715572356" />
     <state x="214" y="0" width="881" height="1040" key="find.popup/1920.0.1280.693/0.0.1920.1040@0.0.1920.1040" timestamp="1653305529430" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
