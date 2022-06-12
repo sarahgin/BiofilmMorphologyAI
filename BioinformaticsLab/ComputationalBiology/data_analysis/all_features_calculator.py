@@ -127,7 +127,7 @@ def create_species_df(spp: Species):
     for gene_key in spp.all_genes:
         gene = spp.all_genes[gene_key]
 
-        #  dictionary fro current gene:
+        #  dictionary for current gene:
         current_features_dict = create_gene_features_dict(gene)
         list_of_dict.append(current_features_dict)
 
