@@ -153,5 +153,7 @@ def compute_avg_protein_chemical_feature(amino_acid_sequence: str, chemical_feat
     c = Counter(amino_acid_sequence)
     for letter in c:
         total += c[letter] * chem_dictionaries[chemical_feature_name][letter]
-    return total / len(amino_acid_sequence)
+    if len(amino_acid_sequence) != 0:
+        return total / len(amino_acid_sequence)
+    return 0
 
