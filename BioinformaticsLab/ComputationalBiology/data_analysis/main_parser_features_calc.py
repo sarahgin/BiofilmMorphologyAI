@@ -40,23 +40,23 @@ overrideFeaturesFile = True
 #overridePrefixSuffixDictFile = True
 #PREFIX_SUFFIX_DF_FILE = '../../data/data_outputs/prefix_suffix_dict_' + species_name + '.pickle'
 
-# PREFIX_FEATURES_FILE = './BioinformaticsLab/data/data_outputs/features_'
-PREFIX_FEATURES_FILE = '../../data/data_outputs/features_'
+PREFIX_FEATURES_FILE = './BioinformaticsLab/data/data_outputs/features_'
+# PREFIX_FEATURES_FILE = '../../data/data_outputs/features_'
 
 
 def create_single_species_df(filename):
     # PARSE
     # added by dor and adi for connecting the new backend
     species_name = filename
-    # SPECIES_PARSER_FILE = './BioinformaticsLab/data/data_outputs/species_' + species_name + '.pickle'  # TODO: ask Noa about the path
-    # FEATURES_DF_FILE = PREFIX_FEATURES_FILE + species_name + '.pickle'
-
-    SPECIES_PARSER_FILE = '../../data/data_outputs/species_' + species_name + '.pickle'
+    SPECIES_PARSER_FILE = './BioinformaticsLab/data/data_outputs/species_' + species_name + '.pickle'  # TODO: ask Noa about the path
     FEATURES_DF_FILE = PREFIX_FEATURES_FILE + species_name + '.pickle'
 
+    # SPECIES_PARSER_FILE = '../../data/data_outputs/species_' + species_name + '.pickle'
+    # FEATURES_DF_FILE = PREFIX_FEATURES_FILE + species_name + '.pickle'
+
     if not os.path.exists(SPECIES_PARSER_FILE) or overrideSpeciesParserFile:
-        genbank_file = '../../data/data_inputs/GenBank/' + species_name + '.gb'
-        # genbank_file = './BioinformaticsLab/data/data_inputs/GenBank/' + species_name + '.gb'
+        # genbank_file = '../../data/data_inputs/GenBank/' + species_name + '.gb'
+        genbank_file = './BioinformaticsLab/data/data_inputs/GenBank/' + species_name + '.gb'
         print(genbank_file)
         #assert (os.path.exists(genbank_file))  # making sure that the path is valid
         record_gb = genbank_parser.read_genbank_file(genbank_file)
