@@ -1,10 +1,8 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
 
-from BioinformaticsLab.ComputationalBiology.bio_general.bio_macros import ValidAlphabet
-from BioinformaticsLab.ComputationalBiology.bio_general.bio_utils import kmers_generator, merge_add_dicts
-
-from BioinformaticsLab.ComputationalBiology.data_analysis.all_features_calculator import GeneralFeatures, GeneFeatures, KmerFeatures
+from BioinformaticsLab.ComputationalBiology.bio_general.bio_utils import merge_add_dicts
+from BioinformaticsLab.ComputationalBiology.data_analysis.all_features_calculator import GeneralFeatures
 
 
 def create_kmers_df(species_df, product_type: str, min_gene_length=0, max_gene_length=np.inf):

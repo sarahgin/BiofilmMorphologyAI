@@ -1,14 +1,13 @@
 # from pytictoc import TicToc
 # t = TicToc() #create instance of class
 from enum import Enum
-from multiprocessing import Pool
-import pandas as pd
 
 from BioinformaticsLab.ComputationalBiology.bio_general import Species
-from BioinformaticsLab.ComputationalBiology.bio_general.bio_macros import SUFFIX_LENGTH_MAX, PREFIX_LENGTH_MAX, PREFIX_LENGTH_MIN, \
-    SUFFIX_LENGTH_MIN
-from BioinformaticsLab.ComputationalBiology.data_analysis.gene_features_calculator import *
+from BioinformaticsLab.ComputationalBiology.data_analysis.discovery_calculator import *
 from BioinformaticsLab.ComputationalBiology.data_analysis.general_features_calculator import *
+from BioinformaticsLab.ComputationalBiology.data_analysis.motif_features_calculator import has_tataat_motif, \
+    get_tataat_relative_positions, has_tttatt_motif, get_tttatt_relative_positions, has_ppkl_motif, \
+    get_ppkl_relative_positions
 from BioinformaticsLab.ComputationalBiology.data_analysis.protein_features_calculator import *
 
 
@@ -20,16 +19,9 @@ class GeneralFeatures(Enum):
     STRAND = 5
     PRODUCT_DESCRIPTION = 6
     IS_PSEUDO = 7
-    # HEXAMER_DICT = 7
-    # HEXAMER_NEXT_NUCLEOTIDE = 8
-    # CODON_DICT = 9
-    # TODO: add tss?
-
-
-# features of the DNA sequence
-class GeneFeatures(Enum):
-    GC_CONTENT = 1
-    DNA_LENGTH = 2
+    GC_CONTENT = 8
+    GENE_LENGTH = 9
+    # TODO: add tss? (transcription start site)
 
 
 # features of the protein sequence
@@ -41,7 +33,8 @@ class ProteinFeatures(Enum):
     POSITIVE_AA = 5
     NEGATIVE_AA = 6
     NONPOLAR_AA = 7
-    AA_LENGTH = 8
+    PROTEIN_LENGTH = 8
+
     # chemical features
     H1 = 9
     H2 = 10
@@ -52,17 +45,39 @@ class ProteinFeatures(Enum):
     SASA = 15
     NCI = 16
     MASS = 17
-    #pH-related
+
+    #pH-related:
     PKA_COOH = 18
     PKA_NH = 19,
     PI = 20
 
 
-class KmerFeatures(Enum):
-    PREFIX_SUFFIX_DICT = 1
+class DNAMotifFeatures(Enum):
+    HAS_TATAAT = 1
+    RELATIVE_POSITIONS_TATAAT = 2
+    HAS_TTTATT = 3
+    RELATIVE_POSITIONS_TTTATT = 4
+
+
+class ProteinMotifFeautres(Enum):
+    HAS_PPKL = 1  # TODO: this is  a made up motif
+    RELATIVE_POSITIONS_PPKL = 2  # TODO: this is  a made up motif
+
+
+class PrefixSuffixFeatures(Enum):
+    # represents the 3 dictionaries: full_dict, counts_dict
+    # and relative_positions_dict
+    GENE_PREFIX_SUFFIX_TUPLE = 1
+    # PROTEIN_PREFIX_SUFFIX_TUPLE = 2
 
 
 features_to_compute = {}
+
+
+prefix_suffix_map = {
+    PrefixSuffixFeatures.GENE_PREFIX_SUFFIX_TUPLE: create_gene_prefix_suffix_dict,
+    # PrefixSuffix.PROTEIN_PREFIX_SUFFIX_TUPLE: create_protein_prefix_suffix_dict
+}
 
 general_features_map = {
     GeneralFeatures.GENE_ID: get_gene_id,
@@ -72,12 +87,10 @@ general_features_map = {
     GeneralFeatures.STRAND: get_strand,
     GeneralFeatures.PRODUCT_DESCRIPTION: get_product_description,
     GeneralFeatures.IS_PSEUDO: get_is_pseudo,
+    GeneralFeatures.GC_CONTENT: compute_gc_content,
+    GeneralFeatures.GENE_LENGTH: compute_gene_length,
 }
 
-gene_features_map = {
-    GeneFeatures.GC_CONTENT: compute_gc_content,
-    GeneFeatures.DNA_LENGTH: compute_gene_length
-}
 
 protein_features_map = {
     ProteinFeatures.HYDROPHOBIC_AA: compute_hydrophobic_aa,
@@ -87,7 +100,7 @@ protein_features_map = {
     ProteinFeatures.POSITIVE_AA: compute_positive_aa,
     ProteinFeatures.NEGATIVE_AA: compute_negative_aa,
     ProteinFeatures.NONPOLAR_AA: compute_nonpolar_aa,
-    ProteinFeatures.AA_LENGTH: compute_protein_length,
+    ProteinFeatures.PROTEIN_LENGTH: compute_protein_length,
     #Chemical properties:
     ProteinFeatures.H1: compute_H1,
     ProteinFeatures.H2: compute_H2,
@@ -103,12 +116,16 @@ protein_features_map = {
     ProteinFeatures.PI: compute_PI
 }
 
-kmer_features_map = {
-    KmerFeatures.PREFIX_SUFFIX_DICT: create_gene_prefix_suffix_dict,
+dna_motif_features_map = {
+    DNAMotifFeatures.HAS_TATAAT: has_tataat_motif,
+    DNAMotifFeatures.RELATIVE_POSITIONS_TATAAT: get_tataat_relative_positions,
+    DNAMotifFeatures.HAS_TTTATT: has_tttatt_motif,
+    DNAMotifFeatures.RELATIVE_POSITIONS_TTTATT: get_tttatt_relative_positions,
+}
 
-    # GeneralFeatures.HEXAMER_DICT: compute_hexamer_positions,
-    # GeneralFeatures.HEXAMER_NEXT_NUCLEOTIDE: compute_hexamer_next_nucleotide,
-    # GeneralFeatures.CODON_DICT: compute_codon_counts #TODO codon bias
+protein_motif_features_map = {
+    ProteinMotifFeautres.HAS_PPKL: has_ppkl_motif, # TODO: this is  a made up motif
+    ProteinMotifFeautres.RELATIVE_POSITIONS_PPKL: get_ppkl_relative_positions  # TODO: this is  a made up motif
 }
 
 
@@ -141,36 +158,37 @@ def create_species_df(spp: Species):
 
 
 def create_gene_features_dict(gene: Gene):
+    if gene.coding_sequence is None or gene.coding_sequence == '':
+        print(gene)
+
     features_dict = {}
+    # Computation for DNA sequences
     for key in GeneralFeatures:
         if key in features_to_compute or len(features_to_compute) == 0:
             func = general_features_map[key]
             features_dict[key.name] = func(gene)
 
-    for key in GeneFeatures:
+    for key in DNAMotifFeatures:
         if key in features_to_compute or len(features_to_compute) == 0:
-            func = gene_features_map[key]
-            features_dict[key.name] = func(gene.coding_sequence)
+            func = dna_motif_features_map[key]
+            features_dict[key.name] = func(gene)
 
-    # TEMPORARILY COMMENTED OUT
-    # for key in KmerFeatures:
-    #    if key in features_to_compute or len(features_to_compute) == 0:
-    #        func = kmer_features_map[key]
-    #        features_dict[key.name] = func(gene,
-    #                                       PREFIX_LENGTH_MIN,
-    #                                       PREFIX_LENGTH_MAX,
-    #                                       SUFFIX_LENGTH_MIN,
-    #                                       SUFFIX_LENGTH_MAX)
+    for key in PrefixSuffixFeatures:
+        if key in features_to_compute or len(features_to_compute) == 0:
+            func = prefix_suffix_map[key]
+            features_dict[key.name] = func(gene)
 
+    # Computation for protein sequences
     if gene.gene_product is not None:
         for key in ProteinFeatures:
             if key in features_to_compute or len(features_to_compute) == 0:
                 func = protein_features_map[key]
                 features_dict[key.name] = func(gene.gene_product.translation)
 
+        for key in ProteinMotifFeautres:
+            if key in features_to_compute or len(features_to_compute) == 0:
+                func = protein_motif_features_map[key]
+                features_dict[key.name] = func(gene)
+
     return features_dict
 
-# if __name__ == '__main__':
-#    g = Gene(coding_sequence = 'AGTCGCCAATTT', start=0, end=12, strand=1, gene_type='CDS', name="dummy", qualifiers = None)
-#    res, counts = create_gene_features_dict(g, 3, 5, 2, 4)
-#    print(res)
