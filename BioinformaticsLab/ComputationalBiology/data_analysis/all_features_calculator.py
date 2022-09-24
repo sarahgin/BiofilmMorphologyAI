@@ -79,7 +79,7 @@ prefix_suffix_map = {
     # PrefixSuffix.PROTEIN_PREFIX_SUFFIX_TUPLE: create_protein_prefix_suffix_dict
 }
 
-general_features_map = {
+dna_features_map = {
     DNAFeatures.GENE_ID: get_gene_id,
     DNAFeatures.GENE_NAME: get_gene_name,
     DNAFeatures.TYPE: get_type,
@@ -90,7 +90,6 @@ general_features_map = {
     DNAFeatures.GC_CONTENT: compute_gc_content,
     DNAFeatures.GENE_LENGTH: compute_gene_length,
 }
-
 
 protein_features_map = {
     ProteinFeatures.HYDROPHOBIC_AA: compute_hydrophobic_aa,
@@ -165,7 +164,7 @@ def create_gene_features_dict(gene: Gene):
     # Computation for DNA sequences
     for key in DNAFeatures:
         if key in features_to_compute or len(features_to_compute) == 0:
-            func = general_features_map[key]
+            func = dna_features_map[key]
             features_dict[key.name] = func(gene)
 
     for key in DNAMotifFeatures:
