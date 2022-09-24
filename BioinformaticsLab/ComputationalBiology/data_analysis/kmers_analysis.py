@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 from BioinformaticsLab.ComputationalBiology.bio_general.bio_utils import merge_add_dicts
-from BioinformaticsLab.ComputationalBiology.data_analysis.all_features_calculator import GeneralFeatures
+from BioinformaticsLab.ComputationalBiology.data_analysis.all_features_calculator import DNAFeatures
 
 
 def create_kmers_df(species_df, product_type: str, min_gene_length=0, max_gene_length=np.inf):
@@ -20,7 +20,7 @@ def create_kmers_df(species_df, product_type: str, min_gene_length=0, max_gene_l
         print(count)
         count += 1
 
-        hex_dict = row[GeneralFeatures.HEXAMER_DICT.name]
+        hex_dict = row[DNAFeatures.HEXAMER_DICT.name]
         for k in hex_dict:
             hex_norm = hex_dict[k]
             if k in kmers_dict:

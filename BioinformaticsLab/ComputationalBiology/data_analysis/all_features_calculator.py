@@ -11,7 +11,7 @@ from BioinformaticsLab.ComputationalBiology.data_analysis.motif_features_calcula
 from BioinformaticsLab.ComputationalBiology.data_analysis.protein_features_calculator import *
 
 
-class GeneralFeatures(Enum):
+class DNAFeatures(Enum):
     GENE_ID = 1
     GENE_NAME = 2
     TYPE = 3
@@ -80,15 +80,15 @@ prefix_suffix_map = {
 }
 
 general_features_map = {
-    GeneralFeatures.GENE_ID: get_gene_id,
-    GeneralFeatures.GENE_NAME: get_gene_name,
-    GeneralFeatures.TYPE: get_type,
-    GeneralFeatures.PRODUCT_TYPE: get_product_type,
-    GeneralFeatures.STRAND: get_strand,
-    GeneralFeatures.PRODUCT_DESCRIPTION: get_product_description,
-    GeneralFeatures.IS_PSEUDO: get_is_pseudo,
-    GeneralFeatures.GC_CONTENT: compute_gc_content,
-    GeneralFeatures.GENE_LENGTH: compute_gene_length,
+    DNAFeatures.GENE_ID: get_gene_id,
+    DNAFeatures.GENE_NAME: get_gene_name,
+    DNAFeatures.TYPE: get_type,
+    DNAFeatures.PRODUCT_TYPE: get_product_type,
+    DNAFeatures.STRAND: get_strand,
+    DNAFeatures.PRODUCT_DESCRIPTION: get_product_description,
+    DNAFeatures.IS_PSEUDO: get_is_pseudo,
+    DNAFeatures.GC_CONTENT: compute_gc_content,
+    DNAFeatures.GENE_LENGTH: compute_gene_length,
 }
 
 
@@ -152,7 +152,7 @@ def create_species_df(spp: Species):
             print("create_species_df: gene num-", len(list_of_dict))
 
     df = pd.DataFrame(list_of_dict)
-    df = df.set_index(GeneralFeatures.GENE_ID.name)
+    df = df.set_index(DNAFeatures.GENE_ID.name)
 
     return df
 
@@ -163,7 +163,7 @@ def create_gene_features_dict(gene: Gene):
 
     features_dict = {}
     # Computation for DNA sequences
-    for key in GeneralFeatures:
+    for key in DNAFeatures:
         if key in features_to_compute or len(features_to_compute) == 0:
             func = general_features_map[key]
             features_dict[key.name] = func(gene)
