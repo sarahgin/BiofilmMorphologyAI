@@ -29,6 +29,7 @@ s3_client = boto3.resource('s3', aws_access_key_id=ACCESS_ID, aws_secret_access_
 
 path_to_input_file = os.path.join(cwd, "BioinformaticsLab", "data", "data_inputs", "GenBank")
 path_to_pickle_files = os.path.join(cwd, "BioinformaticsLab", "data", "data_outputs")
+# TODO: add the new features by all features calac
 features_dict = {
     'GC CONTENT': 'GC_CONTENT',
     'DNA LENGTH': 'DNA_LENGTH',
@@ -60,6 +61,7 @@ features_dict = {
     'PI': 'PI'
 
 }
+# TODO: add the new features by all features calac
 features_description = {
     'GC CONTENT': '% of guanine (G)/cytosine (C) bases',
     'DNA LENGTH': 'Number of nucleotides',
@@ -92,17 +94,18 @@ features_description = {
     'PI': 'Isoelectric point'
 }
 
-
+# done withe the motif change
 title_features_description = {
     'Gene_Features': 'Features of the gene sequence (nucleotides)',
-    'General_Features': 'General information',
+    'Gene_Motif': 'Motifs within gene sequences',
     'Protein_Features': 'Features of the protein sequence (amino acids)',
+    'Protein_Motif': 'Motifs within protein sequences',
 }
 
 
-genome_feature_list = ['GC_CONTENT', 'DNA_LENGTH']
+#genome_feature_list = ['GC_CONTENT', 'DNA_LENGTH']
 gene_feature_list = ['GC_CONTENT', 'DNA_LENGTH']
-general_feature_list = [ 'GENE_NAME', 'TYPE', 'PRODUCT_TYPE', 'STRAND', 'PRODUCT_DESCRIPTION']
+general_feature_list = ['GENE_NAME', 'TYPE', 'PRODUCT_TYPE', 'STRAND', 'PRODUCT_DESCRIPTION']
 #               TODO: after formating the code of the new featuers use this one.
 protein_feature_list = ['HYDROPHOBIC_AA', 'HYDROPHILIC_AA', 'POLAR_AA', 'AROMATIC_AA', 'POSITIVE_AA', 'NEGATIVE_AA',
                         'NONPOLAR_AA', 'AA_LENGTH', 'H1', 'H2', 'H3', 'V', 'P1', 'P2', 'SASA', 'NCI', 'MASS', 'PKA_COOH',
@@ -208,7 +211,7 @@ def feature():
             to_return[fileName] = full_data_features
     return to_return
 
-
+# TODO : find out if needed - dor & adi
 def intersection(lst1, lst2):
     lst3 = [value for value in lst1 if value in lst2]
     return lst3
@@ -416,17 +419,23 @@ def get_current_pickle_files():
 @app.route('/api/listFeatures', methods=['GET'])
 def get_features_list():
     dict_to_return = dict()
-    dict_to_return['General_Features'] = []
+    # Key of dict to return is the showen one by the client side without the underscore
     dict_to_return['Gene_Features'] = []
+    dict_to_return['Gene_Motif'] = []
     dict_to_return['Protein_Features'] = []
-    for feature in [*fc.general_features_map]:
+    dict_to_return['Protein_Motif'] = []
+    for feature in [*fc.dna_features_map]: # general_features_map
         if str(feature).partition(".")[-1] != "GENE_ID":
-            dict_to_return['General_Features'].append(str(feature).partition(".")[-1].replace("_", " "))
-    for feature in [*fc.gene_features_map]:
-        dict_to_return['Gene_Features'].append(str(feature).partition(".")[-1].replace("_", " "))
+            dict_to_return['Gene_Features'].append(str(feature).partition(".")[-1].replace("_", " "))
+    # for feature in [*fc.gene_features_map]:
+    #     dict_to_return['Gene_Features'].append(str(feature).partition(".")[-1].replace("_", " "))
     for feature in [*fc.protein_features_map]:
         dict_to_return['Protein_Features'].append(str(feature).partition(".")[-1].replace("_", " "))
-    dict_to_return['Genome_Features'] = ['GC CONTENT', 'DNA LENGTH']
+    for feature in [*fc.dna_motif_features_map]:
+        dict_to_return['Gene_Motif'].append(str(feature).partition(".")[-1].replace("_", " "))
+    for feature in [*fc.protein_motif_features_map]:
+        dict_to_return['Protein_Motif'].append(str(feature).partition(".")[-1].replace("_", " "))
+    # dict_to_return['Gene_Features'] = ['GC CONTENT', 'DNA LENGTH']
     return jsonify(dict_to_return)
 
 
