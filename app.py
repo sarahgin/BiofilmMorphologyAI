@@ -564,3 +564,8 @@ def statistic_feature_hist():
                 all_statistic_per_file.append(numeric_of_files)
         to_return[file_name]=all_statistic_per_file
     return to_return
+
+
+if __name__ == '__main__':
+    # redirect("http://www.medmolnet.com",code=302)
+    app.run(host="0.0.0.0" ,port=3000)

@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  genomesight-front:
+    build:
+      context: ../BioClientLab
+      dockerfile: ./Dockerfile
+    networks:
+      - genomesight-network
+    # volumes:
+    #   - ../BioClientLab:/app
+
+  genomesight-back:
+    build:
+      context: ../ComputationalTranscriptomics
+      dockerfile: ./Dockerfile
+    networks:
+      - genomesight-network
+    # volumes:
+    #   - ../ComputationalTranscriptomics:/app
+  nginx:
+    container_name: nginx
+    restart: unless-stopped
+    image: nginx
+    ports:
+      - 81:80
+    volumes:
+      - ./nginx:/etc/nginx
+
+    networks:
+      - genomesight-network
+
+networks:
+  genomesight-network:
+    driver: bridge
