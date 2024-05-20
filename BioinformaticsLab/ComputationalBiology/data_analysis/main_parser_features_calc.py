@@ -26,7 +26,7 @@ species_name = 'bacillus_subtilis'
 # species_name = 'strep_sobrinus'
 ##species_name = 'helicobacter_pylori'
 
-overrideSpeciesParserFile = True
+overrideSpeciesParserFile = False
 #added by dor and adi for connecting the new backend
 #SPECIES_PARSER_FILE = '../../data/data_outputs/species_' + species_name + '.pickle'
 
@@ -42,6 +42,7 @@ overrideFeaturesFile = True
 
 PREFIX_FEATURES_FILE = './BioinformaticsLab/data/data_outputs/features_'
 # PREFIX_FEATURES_FILE = '../../data/data_outputs/features_'
+
 
 def create_single_species_df(filename):
     # PARSE
@@ -94,7 +95,7 @@ def create_multi_species_df(filenames: list):
     return multi_species_df
 
 
-#
-# if __name__ == '__main__':
-#     create_single_species_df('BS168')
-#     multi_species_df = create_multi_species_df(['BS168', 'noa'])
+if __name__ == '__main__':
+    species_df = create_single_species_df('Bacillus clausii')
+    print(species_df.head())
+# species_df['RELATIVE_POSITIONS_TTTATT'].explode().mean()

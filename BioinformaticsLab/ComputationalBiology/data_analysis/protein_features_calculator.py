@@ -1,6 +1,6 @@
 import re
 import pandas as pd
-
+from collections import Counter
 from BioinformaticsLab.ComputationalBiology.bio_general.bio_macros import chem_df, chem_dictionaries
 
 '''
@@ -149,7 +149,13 @@ def compute_PI(amino_acid_sequence: str):
 
 
 def compute_avg_protein_chemical_feature(amino_acid_sequence: str, chemical_feature_name: str):
-    seq_series = pd.Series(list(amino_acid_sequence))
-    res = seq_series.map(chem_dictionaries[chemical_feature_name])
-    return res.mean()
+    if len(amino_acid_sequence) == 0:
+        return None
+
+    total = 0
+    c = Counter(amino_acid_sequence)
+    for letter in c:
+        total += c[letter] * chem_dictionaries[chemical_feature_name][letter]
+
+    return total / len(amino_acid_sequence)
 
