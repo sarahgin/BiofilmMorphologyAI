@@ -7,8 +7,8 @@ services:
       dockerfile: ./Dockerfile
     networks:
       - genomesight-network
-    # volumes:
-    #   - ../BioClientLab:/app
+    volumes:
+      - ../BioClientLab/src:/usr/src/app/src
 
   genomesight-back:
     build:
@@ -16,8 +16,8 @@ services:
       dockerfile: ./Dockerfile
     networks:
       - genomesight-network
-    # volumes:
-    #   - ../ComputationalTranscriptomics:/app
+    volumes:
+      - ../ComputationalTranscriptomics:/python-docker
   nginx:
     container_name: nginx
     restart: unless-stopped
