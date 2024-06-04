@@ -15,7 +15,7 @@ services:
 
   genomesight-back:
     build:
-      context: ../ComputationalTranscriptomics
+      context: .
       dockerfile: ./Dockerfile
     networks:
       - genomesight-network
