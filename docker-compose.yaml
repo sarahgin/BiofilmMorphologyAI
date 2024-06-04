@@ -2,6 +2,7 @@ version: '3'
 
 services:
   genomesight-front:
+    image: genomesight_frontend
     build:
       context: ../BioClientLab
       dockerfile: ./Dockerfile
@@ -23,7 +24,7 @@ services:
     restart: unless-stopped
     image: nginx
     ports:
-      - 81:80
+      - 6628:80
     volumes:
       - ./nginx:/etc/nginx
 
