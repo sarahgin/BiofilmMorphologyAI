@@ -7,7 +7,7 @@ services:
     restart: always
 
     networks:
-      - genomesight-networks
+      - genomesight-network
 
 
   genomesight-back:
