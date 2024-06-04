@@ -2,6 +2,7 @@ version: '3'
 
 services:
   genomesight-front:
+    name: genomesight_frontend
     image: genomesight_frontend
     restart: always
 
@@ -11,6 +12,7 @@ services:
       - ../BioClientLab/src:/usr/src/app/src
 
   genomesight-back:
+    name: genomesight_backend
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -21,7 +23,7 @@ services:
     restart: always
 
   nginx:
-    container_name: nginx
+    container_name: genomesight_nginx
     restart: unless-stopped
     image: nginx
     ports:
