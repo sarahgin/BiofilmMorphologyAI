@@ -7,19 +7,15 @@ services:
     restart: always
 
     networks:
-      - genomesight-network
-    volumes:
-      - ../BioClientLab/src:/usr/src/app/src
+      - genomesight-networks
+
 
   genomesight-back:
     container_name: genomesight_backend
     build:
-      context: .
       dockerfile: ./Dockerfile
     networks:
       - genomesight-network
-    volumes:
-      - ../ComputationalTranscriptomics:/python-docker
     restart: always
 
   nginx:
