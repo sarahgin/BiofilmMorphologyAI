@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    ports:
+      - "8020:9000"  # MinIO Console/API port
+      - "8021:9001"  # MinIO Console (Admin GUI)
+    environment:
+      - MINIO_ROOT_USER=genomesight_admin  # Change to your desired username
+      - MINIO_ROOT_PASSWORD=Omen16!Project  # Change to your desired password
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+
+volumes:
+  minio_data:
+    driver: local

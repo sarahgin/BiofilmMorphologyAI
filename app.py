@@ -2,19 +2,18 @@ import os
 import numpy as np
 import pandas as pd
 from numpy import int64, float64
-
+from minio import Minio 
 from BioinformaticsLab.ComputationalBiology.data_analysis import all_features_calculator as fc
 from BioinformaticsLab.ComputationalBiology.data_analysis.main_parser_features_calc import create_single_species_df
 from BioinformaticsLab.ComputationalBiology.data_analysis.main_parser_features_calc import create_multi_species_df
 
+from dotenv import load_dotenv
 
 import boto3
 from flask import Flask, send_from_directory, jsonify, request, json
 from flask_cors import CORS, cross_origin
-
 from Bio import Entrez, SeqIO
-
-
+load_dotenv()
 app = Flask(__name__)
 app.config['JSON_SORT_KEYS'] = False
 cors = CORS(app)
@@ -25,7 +24,19 @@ cwd = os.getcwd()
 aws_storage_bucket_name = "bio-upload-files"
 ACCESS_ID = "AKIARDVFNR2ZY5JRSV7Z"
 ACCESS_KEY = "HgkvAFPGms/KfGVUW/YIyA4cq+TopM1uaxVj2ocx"
-s3_client = boto3.resource('s3', aws_access_key_id=ACCESS_ID, aws_secret_access_key= ACCESS_KEY)
+
+# create an minio instance for the client
+minio_client = Minio(
+    "localhost:9000",  # Replace with your MinIO server address
+    access_key=os.getenv("MINIO_ACCESS_ID"),
+    secret_key=os.getenv("MINIO_ACCESS_PASS"),
+    secure=False  # Set to True if using HTTPS
+)
+path_to_minio_files = os.path.join("BioinformaticsLab", "data", "data_inputs", "GenBank")
+
+
+
+# s3_client = boto3.resource('s3', aws_access_key_id=ACCESS_ID, aws_secret_access_key= ACCESS_KEY)
 
 path_to_input_file = os.path.join(cwd, "BioinformaticsLab", "data", "data_inputs", "GenBank")
 path_to_pickle_files = os.path.join(cwd, "BioinformaticsLab", "data", "data_outputs")
@@ -299,7 +310,7 @@ def file_bucket_download():
     valid_file = valid(fileNameKey)
     if valid_file:
         full_path = os.path.join(path_to_input_file, fileNameKey)
-        req = s3_client.meta.client.download_file(aws_storage_bucket_name, fileNameKey, full_path)
+        req = minio_client.fget_object(aws_storage_bucket_name, fileNameKey, full_path)
         to_return = {
             'faild_list': [],
             'status': status_to_client("Uploaded")}
