@@ -5,7 +5,7 @@ services:
     build:
       context: ../BioClientLab
       dockerfile: ./Dockerfile
-      env_file:
+    env_file:
       - .env  # Load environment variables from the .env file
     networks:
       - genomesight-network
@@ -16,12 +16,13 @@ services:
     build:
       context: ../ComputationalTranscriptomics
       dockerfile: ./Dockerfile
-      env_file:
+    env_file:
       - .env  # Load environment variables from the .env file
     networks:
       - genomesight-network
     volumes:
       - ../ComputationalTranscriptomics:/python-docker
+
   nginx:
     container_name: nginx
     restart: unless-stopped
@@ -30,7 +31,6 @@ services:
       - 81:80
     volumes:
       - ./nginx:/etc/nginx
-
     networks:
       - genomesight-network
 

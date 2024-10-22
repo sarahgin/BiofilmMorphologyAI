@@ -10,15 +10,15 @@ load_dotenv()
 # Initialize MinIO client
 print(os.getenv("MINIO_ACCESS_ID"))
 print(os.getenv("MINIO_ACCESS_PASS"))
+URL = os.getenv("MINIO_API_URL")
 minio_client = Minio(
-    "localhost:9000",  # Replace with your MinIO server address
+    URL,  # Replace with your MinIO server address
     access_key=os.getenv("MINIO_ACCESS_ID"),
     secret_key=os.getenv("MINIO_ACCESS_PASS"),
-    secure=False  # Set to True if using HTTPS
 )
 # Download the object and save it to the specified file path
 try:
-    minio_client.fget_object(aws_storage_bucket_name, path_to_input_file, "output.gb")
+    minio_client.fput_object(aws_storage_bucket_name, "Bacillus clausii.gb", path_to_input_file)
     # print(f"Successfully downloaded {object_name} to {file_path}")
 except Exception as e:
     print(f"Error occurred: {e}")

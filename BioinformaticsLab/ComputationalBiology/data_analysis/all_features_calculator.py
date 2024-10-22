@@ -89,6 +89,7 @@ dna_features_map = {
     DNAFeatures.IS_PSEUDO: get_is_pseudo,
     DNAFeatures.GC_CONTENT: compute_gc_content,
     DNAFeatures.GENE_LENGTH: compute_gene_length,
+    
 }
 
 protein_features_map = {

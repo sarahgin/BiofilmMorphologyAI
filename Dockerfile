@@ -1,10 +1,11 @@
 
-FROM python:3.8-slim-buster
+FROM python:3.10-slim-buster
 
 WORKDIR /python-docker
 RUN apt-get update \
     && apt-get -y install libpq-dev gcc \
-    && pip install psycopg2
+    && pip install psycopg2\
+    && pip install minio
     
 
 COPY requirements.txt requirements.txt

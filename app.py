@@ -2,7 +2,7 @@ import os
 import numpy as np
 import pandas as pd
 from numpy import int64, float64
-from minio import Minio 
+from minio import Minio
 from BioinformaticsLab.ComputationalBiology.data_analysis import all_features_calculator as fc
 from BioinformaticsLab.ComputationalBiology.data_analysis.main_parser_features_calc import create_single_species_df
 from BioinformaticsLab.ComputationalBiology.data_analysis.main_parser_features_calc import create_multi_species_df
@@ -22,17 +22,16 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 cwd = os.getcwd()
 
 aws_storage_bucket_name = "bio-upload-files"
-ACCESS_ID = "AKIARDVFNR2ZY5JRSV7Z"
-ACCESS_KEY = "HgkvAFPGms/KfGVUW/YIyA4cq+TopM1uaxVj2ocx"
+# ACCESS_ID = "AKIARDVFNR2ZY5JRSV7Z"
+# ACCESS_KEY = "HgkvAFPGms/KfGVUW/YIyA4cq+TopM1uaxVj2ocx"
 
 # create an minio instance for the client
 minio_client = Minio(
-    "localhost:9000",  # Replace with your MinIO server address
+    os.getenv("MINIO_API_URL"),  # Replace with your MinIO server address
     access_key=os.getenv("MINIO_ACCESS_ID"),
     secret_key=os.getenv("MINIO_ACCESS_PASS"),
-    secure=False  # Set to True if using HTTPS
 )
-path_to_minio_files = os.path.join("BioinformaticsLab", "data", "data_inputs", "GenBank")
+path_to_minio_files = os.path.join(cwd, "BioinformaticsLab", "data", "data_inputs", "GenBank")
 
 
 
@@ -123,9 +122,9 @@ protein_feature_list = ['HYDROPHOBIC_AA', 'HYDROPHILIC_AA', 'POLAR_AA', 'AROMATI
                         'PKA_NH', 'PI']
 # protein_feature_list = ['HYDROPHOBIC_AA', 'HYDROPHILIC_AA', 'POLAR_AA', 'AROMATIC_AA', 'POSITIVE_AA', 'NEGATIVE_AA',
 #                         'NONPOLAR_AA', 'AA_LENGTH']
-numeric_feature_list =['GC_CONTENT', 'DNA_LENGTH', 'HYDROPHOBIC_AA', 'HYDROPHILIC_AA', 'POLAR_AA', 'AROMATIC_AA',
-                       'POSITIVE_AA', 'NEGATIVE_AA', 'NONPOLAR_AA', 'AA_LENGTH', 'H1', 'H2', 'H3', 'V', 'P1', 'P2',
-                       'SASA', 'NCI', 'MASS', 'PKA_COOH', 'PKA_NH', 'PI']
+numeric_feature_list = ['GC_CONTENT', 'DNA_LENGTH', 'HYDROPHOBIC_AA', 'HYDROPHILIC_AA', 'POLAR_AA', 'AROMATIC_AA',
+                        'POSITIVE_AA', 'NEGATIVE_AA', 'NONPOLAR_AA', 'AA_LENGTH', 'H1', 'H2', 'H3', 'V', 'P1', 'P2',
+                        'SASA', 'NCI', 'MASS', 'PKA_COOH', 'PKA_NH', 'PI']
 
 # numeric_feature_title_x_y ={'GC_CONTENT':{"x":"x", "y":"y"}, 'DNA_LENGTH':{"x":"x", "y":"y"}, 'HYDROPHOBIC_AA':{"x":"x", "y":"y"}, 'HYDROPHILIC_AA':{"x":"x", "y":"y"},
 #                             'POLAR_AA':{"x":"x", "y":"y"}, 'AROMATIC_AA':{"x":"x", "y":"y"},
@@ -185,7 +184,7 @@ def feature():
             full_data_features = dict()
             genome_dict = dict()
             if "_combined_" not in fileName:
-                gene_bank_file ='./BioinformaticsLab/data/data_inputs/GenBank/' + fileName
+                gene_bank_file = './BioinformaticsLab/data/data_inputs/GenBank/' + fileName
                 with open(gene_bank_file, "r") as input_handle:
                     gen = SeqIO.parse(input_handle, "genbank")
                     record_gb = next(gen)
@@ -193,10 +192,13 @@ def feature():
                 genome_dict['Publish date'] = record_gb.annotations['date']
                 genome_dict['Accession number'] = record_gb.annotations['accessions'][0]
 
-            genome_dict['DNA LENGTH'] = data_frame_file[['DNA_LENGTH']].sum().to_json().split(':')[1][:-1]
+            # print(data_frame_file)
+            # genome_dict['DNA LENGTH'] = data_frame_file[['DNA_LENGTH']].sum().to_json().split(':')[1][:-1]
+            
+            
             count_type = dict(data_frame_file['PRODUCT_TYPE'].value_counts())
             for type in count_type:
-                genome_dict['Number of '+type] = int(count_type[type])
+                genome_dict['Number of ' + type] = int(count_type[type])
             array_genes_features = intersection(arr_match_feature_server, gene_feature_list)
             if len(array_genes_features) != 0:
                 array_genes_features.append('GENE_NAME')
@@ -207,7 +209,7 @@ def feature():
             if len(array_protein_features) != 0:
                 array_protein_features.append('GENE_NAME')
                 array_protein_features.append('PRODUCT_DESCRIPTION')
-                object_protein = create_object_from_data_frame(data_frame_file,array_protein_features, 'Protein')
+                object_protein = create_object_from_data_frame(data_frame_file, array_protein_features, 'Protein')
                 full_data_features['Protein'] = object_protein
 
             array_general_features = intersection(arr_match_feature_server, general_feature_list)
@@ -218,6 +220,7 @@ def feature():
                     array_general_features.append('PRODUCT_DESCRIPTION')
                 object_general = create_object_from_data_frame(data_frame_file, array_general_features, 'General')
                 full_data_features['General'] = object_general
+                print(full_data_features['General'])
             full_data_features['Genome'] = genome_dict
             to_return[fileName] = full_data_features
     return to_return
@@ -311,6 +314,10 @@ def file_bucket_download():
     if valid_file:
         full_path = os.path.join(path_to_input_file, fileNameKey)
         req = minio_client.fget_object(aws_storage_bucket_name, fileNameKey, full_path)
+        print("---------------------------------------")
+        print(full_path)
+        print("---------------------------------------")
+        # status = status_to_client("Downloaded")
         to_return = {
             'faild_list': [],
             'status': status_to_client("Uploaded")}
@@ -435,7 +442,7 @@ def get_features_list():
     dict_to_return['Gene_Motif'] = []
     dict_to_return['Protein_Features'] = []
     dict_to_return['Protein_Motif'] = []
-    for feature in [*fc.dna_features_map]: # general_features_map
+    for feature in [*fc.dna_features_map]:  # general_features_map
         if str(feature).partition(".")[-1] != "GENE_ID":
             dict_to_return['Gene_Features'].append(str(feature).partition(".")[-1].replace("_", " "))
     # for feature in [*fc.gene_features_map]:
@@ -588,4 +595,4 @@ def statistic_feature_hist():
 
 if __name__ == '__main__':
     # redirect("http://www.medmolnet.com",code=302)
-    app.run(host="0.0.0.0" ,port=3000)
+    app.run(host="0.0.0.0", port=3000)
